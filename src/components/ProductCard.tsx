@@ -1,0 +1,75 @@
+import Link from "next/link";
+import Image from "next/image";
+import { Heart, ImageOff } from "lucide-react";
+import {
+  formatPrice,
+  getProductImageUrl,
+  type Product,
+} from "@/lib/shopify/types";
+import { getDefaultMerchandiseId } from "@/lib/shopify/cart";
+import AddToCartButton from "@/components/cart/AddToCartButton";
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = getProductImageUrl(product);
+  const merchandiseId = getDefaultMerchandiseId(product);
+
+  return (
+    <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft-lg">
+      <Link
+        href={`/products/${product.handle}`}
+        className="relative aspect-square overflow-hidden bg-kobbo-beige"
+      >
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={product.featuredImage?.altText ?? product.title}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-kobbo-muted">
+            <ImageOff className="h-8 w-8" />
+            <span className="text-xs">No image</span>
+          </div>
+        )}
+      </Link>
+      <button
+        type="button"
+        aria-label={`Add ${product.title} to wishlist`}
+        className="absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-kobbo-white/90 text-kobbo-black shadow-soft transition-all hover:scale-110 hover:bg-kobbo-yellow"
+      >
+        <Heart className="h-4 w-4" />
+      </button>
+
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <Link href={`/products/${product.handle}`}>
+          <h3 className="font-heading line-clamp-2 text-sm font-bold text-kobbo-black transition-colors hover:text-kobbo-muted sm:text-base">
+            {product.title}
+          </h3>
+        </Link>
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
+          <div className="flex flex-wrap items-baseline gap-1.5">
+            <span className="text-base font-bold text-kobbo-black sm:text-lg">
+              {formatPrice(product.price, product.currencyCode)}
+            </span>
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <span className="text-xs text-kobbo-muted line-through sm:text-sm">
+                {formatPrice(product.compareAtPrice, product.currencyCode)}
+              </span>
+            )}
+          </div>
+          <AddToCartButton
+            merchandiseId={merchandiseId}
+            productTitle={product.title}
+            disabled={!product.availableForSale}
+          />
+        </div>
+      </div>
+    </article>
+  );
+}

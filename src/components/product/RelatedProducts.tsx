@@ -1,0 +1,26 @@
+import ProductCard from "@/components/ProductCard";
+import type { Product } from "@/lib/shopify/types";
+
+interface RelatedProductsProps {
+  products: Product[];
+}
+
+export default function RelatedProducts({ products }: RelatedProductsProps) {
+  if (products.length === 0) return null;
+
+  return (
+    <section className="bg-kobbo-cream py-8 sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="font-heading text-2xl font-extrabold text-kobbo-black sm:text-3xl">
+          You May Also Like
+        </h2>
+
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
