@@ -1,3 +1,7 @@
+"use client";
+
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, ImageOff } from "lucide-react";
@@ -7,6 +11,7 @@ import {
   type Product,
 } from "@/lib/shopify/types";
 import { getDefaultMerchandiseId } from "@/lib/shopify/cart";
+import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 
 interface ProductCardProps {
@@ -16,6 +21,8 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const imageUrl = getProductImageUrl(product);
   const merchandiseId = getDefaultMerchandiseId(product);
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const wishlisted = isWishlisted(product.handle);
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft-lg">
@@ -40,10 +47,17 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
       <button
         type="button"
-        aria-label={`Add ${product.title} to wishlist`}
+        aria-label={
+          wishlisted
+            ? `Remove ${product.title} from wishlist`
+            : `Add ${product.title} to wishlist`
+        }
+        onClick={() => toggleWishlist(product.handle)}
         className="absolute right-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-kobbo-white/90 text-kobbo-black shadow-soft transition-all hover:scale-110 hover:bg-kobbo-yellow"
       >
-        <Heart className="h-4 w-4" />
+        <Heart
+          className={`h-4 w-4 ${wishlisted ? "fill-kobbo-yellow text-kobbo-yellow" : ""}`}
+        />
       </button>
 
       <div className="flex flex-1 flex-col p-3 sm:p-4">

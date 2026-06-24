@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Heart, Minus, Plus, Truck, RotateCcw, Lock, Loader2 } from "lucide-react";
 import { formatPrice, type Product } from "@/lib/shopify/types";
 import { useCart } from "@/context/cart-context";
+import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 
 interface ProductInfoProps {
@@ -18,7 +19,8 @@ const trustItems = [
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const wishlisted = isWishlisted(product.handle);
   const [selectedVariantId, setSelectedVariantId] = useState(
     product.variants.find((v) => v.availableForSale)?.id ??
       product.variants[0]?.id ??
@@ -169,7 +171,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       <button
         type="button"
-        onClick={() => setWishlisted(!wishlisted)}
+        onClick={() => toggleWishlist(product.handle)}
         className="mt-3 inline-flex items-center justify-center gap-2 rounded-full border-2 border-kobbo-beige py-3 text-sm font-semibold text-kobbo-black transition-all hover:border-kobbo-yellow hover:bg-kobbo-cream"
       >
         <Heart

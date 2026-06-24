@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   Search,
-  User,
   Heart,
   ShoppingCart,
   Menu,
   X,
 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/context/auth-context";
+import AccountMenu from "@/components/account/AccountMenu";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -22,6 +23,10 @@ const navLinks = [
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { cartCount, openCart } = useCart();
+  const { isLoggedIn } = useAuth();
+
+  const accountHref = isLoggedIn ? "/account" : "/login";
+  const wishlistHref = isLoggedIn ? "/account/wishlist" : "/login";
 
   return (
     <header className="sticky top-0 z-50 bg-kobbo-white/95 shadow-soft backdrop-blur-sm">
@@ -54,20 +59,14 @@ export default function Header() {
             >
               <Search className="h-5 w-5 text-kobbo-black" />
             </button>
-            <button
-              type="button"
-              aria-label="Account"
-              className="hidden rounded-full p-2 transition-colors hover:bg-kobbo-beige sm:block"
-            >
-              <User className="h-5 w-5 text-kobbo-black" />
-            </button>
-            <button
-              type="button"
+            <AccountMenu />
+            <Link
+              href={wishlistHref}
               aria-label="Wishlist"
               className="hidden rounded-full p-2 transition-colors hover:bg-kobbo-beige sm:block"
             >
               <Heart className="h-5 w-5 text-kobbo-black" />
-            </button>
+            </Link>
             <button
               type="button"
               aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
@@ -109,6 +108,31 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href={accountHref}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-kobbo-black transition-colors hover:bg-kobbo-beige"
+                onClick={() => setMobileOpen(false)}
+              >
+                {isLoggedIn ? "My Account" : "Login"}
+              </Link>
+              {isLoggedIn && (
+                <>
+                  <Link
+                    href="/account/orders"
+                    className="rounded-xl px-3 py-2 text-sm font-medium text-kobbo-black transition-colors hover:bg-kobbo-beige"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Orders
+                  </Link>
+                  <Link
+                    href="/account/wishlist"
+                    className="rounded-xl px-3 py-2 text-sm font-medium text-kobbo-black transition-colors hover:bg-kobbo-beige"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Wishlist
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         )}
