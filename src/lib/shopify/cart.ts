@@ -86,6 +86,14 @@ export async function getCart(cartId: string): Promise<Cart | null> {
   return normalizeCart(node);
 }
 
+export async function buyNowCart(
+  merchandiseId: string,
+  quantity: number,
+): Promise<Cart> {
+  const newCart = await createCart();
+  return addToCart(newCart.id, merchandiseId, quantity);
+}
+
 export async function addToCart(
   cartId: string,
   merchandiseId: string,

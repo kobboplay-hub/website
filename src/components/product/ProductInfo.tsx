@@ -26,7 +26,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       product.variants[0]?.id ??
       "",
   );
-  const { addToCart, isAddingMerchandise } = useCart();
+  const { buyNow, isBuyNowLoading } = useCart();
 
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ??
@@ -58,17 +58,15 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const isAvailable =
     selectedVariant?.availableForSale ?? product.availableForSale;
 
-  const isBuyNowLoading = selectedVariant?.id
-    ? isAddingMerchandise(selectedVariant.id)
+  const buyNowLoading = selectedVariant?.id
+    ? isBuyNowLoading(selectedVariant.id)
     : false;
 
   const handleBuyNow = async () => {
     if (!selectedVariant?.id) return;
-    const updated = await addToCart(selectedVariant.id, quantity, {
-      openDrawer: false,
-    });
-    if (updated?.checkoutUrl) {
-      window.location.href = updated.checkoutUrl;
+    const checkoutUrl = await buyNow(selectedVariant.id, quantity);
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
     }
   };
 
@@ -160,11 +158,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         />
         <button
           type="button"
-          disabled={!isAvailable || isBuyNowLoading}
+          disabled={!isAvailable || buyNowLoading}
           onClick={handleBuyNow}
           className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-kobbo-black bg-kobbo-black py-3.5 text-sm font-bold text-kobbo-white transition-all hover:-translate-y-0.5 hover:bg-kobbo-black/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isBuyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+          {buyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           Buy Now
         </button>
       </div>

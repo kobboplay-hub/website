@@ -1,5 +1,4 @@
-import AnnouncementBar from "@/components/AnnouncementBar";
-import Header from "@/components/Header";
+import SiteLayout from "@/components/SiteLayout";
 import HeroSection from "@/components/HeroSection";
 import TrustBadges from "@/components/TrustBadges";
 import BestSellers from "@/components/BestSellers";
@@ -8,7 +7,6 @@ import WhyParentsChooseUs from "@/components/WhyParentsChooseUs";
 import InstagramVideos from "@/components/InstagramVideos";
 import ParentReviews from "@/components/ParentReviews";
 import Newsletter from "@/components/Newsletter";
-import Footer from "@/components/Footer";
 import { getProducts } from "@/lib/shopify";
 import type { Product } from "@/lib/shopify/types";
 
@@ -24,20 +22,15 @@ export default async function Home() {
   }
 
   return (
-    <>
-      <AnnouncementBar />
-      <Header />
-      <main>
-        <HeroSection />
-        <TrustBadges />
-        <BestSellers products={products} />
-        <BrandStory />
-        <WhyParentsChooseUs />
-        <InstagramVideos />
-        <ParentReviews />
-        <Newsletter />
-      </main>
-      <Footer />
-    </>
+    <SiteLayout>
+      <HeroSection />
+      <TrustBadges />
+      <BestSellers products={products} />
+      <BrandStory />
+      <WhyParentsChooseUs />
+      <InstagramVideos />
+      <ParentReviews />
+      <Newsletter />
+    </SiteLayout>
   );
 }

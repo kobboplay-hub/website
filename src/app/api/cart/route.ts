@@ -3,6 +3,7 @@ import {
   createCart,
   getCart,
   addToCart,
+  buyNowCart,
   updateCartItem,
   removeCartItem,
 } from "@/lib/shopify/cart";
@@ -85,6 +86,18 @@ export async function POST(request: Request) {
           );
         }
         const cart = await removeCartItem(cartId, lineId);
+        return NextResponse.json({ cart });
+      }
+
+      case "buyNow": {
+        const { merchandiseId, quantity = 1 } = body;
+        if (!merchandiseId) {
+          return NextResponse.json(
+            { error: "Product variant is required" },
+            { status: 400 },
+          );
+        }
+        const cart = await buyNowCart(merchandiseId, quantity);
         return NextResponse.json({ cart });
       }
 

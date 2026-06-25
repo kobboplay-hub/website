@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import AnnouncementBar from "@/components/AnnouncementBar";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import SiteLayout from "@/components/SiteLayout";
 import Newsletter from "@/components/Newsletter";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import ProductGallery from "@/components/product/ProductGallery";
@@ -88,44 +86,39 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const video = getProductVideoThumbnail(product);
 
   return (
-    <>
-      <AnnouncementBar />
-      <Header />
-      <main className="bg-kobbo-cream">
-        <ProductBreadcrumb productName={product.title} />
+    <SiteLayout mainClassName="bg-kobbo-cream">
+      <ProductBreadcrumb productName={product.title} />
 
-        <section className="pb-8 sm:pb-10">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-              <ProductGallery
-                images={images}
-                productName={product.title}
-                altTexts={imageAltTexts}
-              />
-              <ProductInfo product={product} />
-            </div>
+      <section className="pb-8 sm:pb-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+            <ProductGallery
+              images={images}
+              productName={product.title}
+              altTexts={imageAltTexts}
+            />
+            <ProductInfo product={product} />
           </div>
-        </section>
+        </div>
+      </section>
 
-        <ProductHighlights highlights={defaultHighlights} />
-        <ProductVideo video={video} />
-        <ProductTabs content={tabsContent} />
-        <WhyParentsLoveIt items={defaultWhyParentsLove} />
-        <RelatedProducts products={relatedProducts} />
-        <CustomerReviews
-          rating={4.8}
-          reviewCount={defaultReviews.length * 40}
-          ratingBreakdown={defaultRatingBreakdown}
-          reviews={defaultReviews}
-        />
-        <FAQSection faqs={defaultFaqs} />
-        <RecentlyViewed
-          currentHandle={product.handle}
-          productPool={allProducts}
-        />
-        <Newsletter />
-      </main>
-      <Footer />
-    </>
+      <ProductHighlights highlights={defaultHighlights} />
+      <ProductVideo video={video} />
+      <ProductTabs content={tabsContent} />
+      <WhyParentsLoveIt items={defaultWhyParentsLove} />
+      <RelatedProducts products={relatedProducts} />
+      <CustomerReviews
+        rating={4.8}
+        reviewCount={defaultReviews.length * 40}
+        ratingBreakdown={defaultRatingBreakdown}
+        reviews={defaultReviews}
+      />
+      <FAQSection faqs={defaultFaqs} />
+      <RecentlyViewed
+        currentHandle={product.handle}
+        productPool={allProducts}
+      />
+      <Newsletter />
+    </SiteLayout>
   );
 }

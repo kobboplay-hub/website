@@ -28,9 +28,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${baloo.variable} ${inter.variable} h-full antialiased`}
+      className={`${baloo.variable} ${inter.variable} min-h-screen antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-kobbo-cream text-kobbo-black">
+      <body className="min-h-screen bg-kobbo-cream text-kobbo-black antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

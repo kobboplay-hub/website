@@ -1,21 +1,12 @@
 import Link from "next/link";
-import AnnouncementBar from "@/components/AnnouncementBar";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import SiteLayout from "@/components/SiteLayout";
 
 interface PageShellProps {
   children: React.ReactNode;
 }
 
 export default function PageShell({ children }: PageShellProps) {
-  return (
-    <>
-      <AnnouncementBar />
-      <Header />
-      <main className="bg-kobbo-cream">{children}</main>
-      <Footer />
-    </>
-  );
+  return <SiteLayout mainClassName="bg-kobbo-cream">{children}</SiteLayout>;
 }
 
 interface AuthCardShellProps {
@@ -26,8 +17,8 @@ interface AuthCardShellProps {
 
 export function AuthCardShell({ children, title, subtitle }: AuthCardShellProps) {
   return (
-    <PageShell>
-      <section className="flex min-h-[calc(100vh-200px)] items-center justify-center px-4 py-10 sm:px-6">
+    <SiteLayout mainClassName="bg-kobbo-cream">
+      <section className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
         <div className="w-full max-w-md">
           <div className="mb-6 text-center">
             <Link
@@ -48,6 +39,6 @@ export function AuthCardShell({ children, title, subtitle }: AuthCardShellProps)
           </div>
         </div>
       </section>
-    </PageShell>
+    </SiteLayout>
   );
 }

@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import AnnouncementBar from "@/components/AnnouncementBar";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import SiteLayout from "@/components/SiteLayout";
 import CartPageContent from "@/components/cart/CartPageContent";
 
 export const metadata: Metadata = {
@@ -11,15 +9,12 @@ export const metadata: Metadata = {
 
 export default function CartPage() {
   return (
-    <>
-      <AnnouncementBar />
-      <Header />
-      <main className="bg-kobbo-cream py-8 sm:py-10">
+    <SiteLayout mainClassName="bg-kobbo-cream">
+      <section className="py-8 sm:py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <CartPageContent />
         </div>
-      </main>
-      <Footer />
-    </>
+      </section>
+    </SiteLayout>
   );
 }

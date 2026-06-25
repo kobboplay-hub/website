@@ -14,6 +14,7 @@ import { CART_STORAGE_KEY } from "@/lib/shopify/cart";
 
 type PendingAction =
   | { type: "add"; merchandiseId: string }
+  | { type: "buyNow"; merchandiseId: string }
   | { type: "line"; lineId: string }
   | { type: "checkout" }
   | null;
@@ -35,6 +36,11 @@ interface CartContextValue {
     quantity?: number,
     options?: { openDrawer?: boolean },
   ) => Promise<Cart | null>;
+  buyNow: (
+    merchandiseId: string,
+    quantity?: number,
+  ) => Promise<string | null>;
+  isBuyNowLoading: (merchandiseId: string) => boolean;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
   openCart: () => void;
@@ -125,6 +131,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [pendingAction],
   );
 
+  const isBuyNowLoading = useCallback(
+    (merchandiseId: string) =>
+      pendingAction?.type === "buyNow" &&
+      pendingAction.merchandiseId === merchandiseId,
+    [pendingAction],
+  );
+
   const isLineLoading = useCallback(
     (lineId: string) =>
       pendingAction?.type === "line" && pendingAction.lineId === lineId,
@@ -136,6 +149,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const setCheckoutLoading = useCallback((loading: boolean) => {
     setPendingAction(loading ? { type: "checkout" } : null);
   }, []);
+
+  const buyNow = useCallback(
+    async (merchandiseId: string, quantity = 1): Promise<string | null> => {
+      setPendingAction({ type: "buyNow", merchandiseId });
+      setError(null);
+      try {
+        const checkoutCart = await postCart({
+          action: "buyNow",
+          merchandiseId,
+          quantity,
+        });
+        return checkoutCart.checkoutUrl;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Could not start checkout",
+        );
+        return null;
+      } finally {
+        setPendingAction(null);
+      }
+    },
+    [],
+  );
 
   const addToCart = useCallback(
     async (
@@ -245,9 +281,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       checkoutUrl: cart?.checkoutUrl ?? null,
       isDrawerOpen,
       isAddingMerchandise,
+      isBuyNowLoading,
       isLineLoading,
       isCheckoutLoading,
       addToCart,
+      buyNow,
       updateQuantity,
       removeItem,
       openCart: () => setIsDrawerOpen(true),
@@ -262,9 +300,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       error,
       isDrawerOpen,
       isAddingMerchandise,
+      isBuyNowLoading,
       isLineLoading,
       isCheckoutLoading,
       addToCart,
+      buyNow,
       updateQuantity,
       removeItem,
       refreshCart,
