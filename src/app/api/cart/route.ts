@@ -7,6 +7,10 @@ import {
   updateCartItem,
   removeCartItem,
 } from "@/lib/shopify/cart";
+import {
+  prepareCheckout,
+  withCustomerIdentity,
+} from "@/lib/shopify/cart-customer";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -36,7 +40,7 @@ export async function POST(request: Request) {
 
     switch (action) {
       case "create": {
-        const cart = await createCart();
+        const cart = await withCustomerIdentity(await createCart());
         return NextResponse.json({ cart });
       }
 
@@ -51,16 +55,20 @@ export async function POST(request: Request) {
 
         let id = cartId as string | undefined;
         if (!id) {
-          const newCart = await createCart();
+          const newCart = await withCustomerIdentity(await createCart());
           id = newCart.id;
         }
 
         try {
-          const cart = await addToCart(id, merchandiseId, quantity);
+          const cart = await withCustomerIdentity(
+            await addToCart(id, merchandiseId, quantity),
+          );
           return NextResponse.json({ cart });
         } catch {
-          const newCart = await createCart();
-          const cart = await addToCart(newCart.id, merchandiseId, quantity);
+          const newCart = await withCustomerIdentity(await createCart());
+          const cart = await withCustomerIdentity(
+            await addToCart(newCart.id, merchandiseId, quantity),
+          );
           return NextResponse.json({ cart });
         }
       }
@@ -73,7 +81,9 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const cart = await updateCartItem(cartId, lineId, quantity);
+        const cart = await withCustomerIdentity(
+          await updateCartItem(cartId, lineId, quantity),
+        );
         return NextResponse.json({ cart });
       }
 
@@ -85,7 +95,9 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const cart = await removeCartItem(cartId, lineId);
+        const cart = await withCustomerIdentity(
+          await removeCartItem(cartId, lineId),
+        );
         return NextResponse.json({ cart });
       }
 
@@ -97,7 +109,21 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const cart = await buyNowCart(merchandiseId, quantity);
+        const cart = await withCustomerIdentity(
+          await buyNowCart(merchandiseId, quantity),
+        );
+        return NextResponse.json({ cart });
+      }
+
+      case "prepareCheckout": {
+        const { cartId } = body;
+        if (!cartId) {
+          return NextResponse.json(
+            { error: "Cart ID is required" },
+            { status: 400 },
+          );
+        }
+        const cart = await prepareCheckout(cartId);
         return NextResponse.json({ cart });
       }
 

@@ -12,10 +12,9 @@ export default function CartPageContent() {
     cart,
     loading,
     isCheckoutLoading,
-    setCheckoutLoading,
+    proceedToCheckout,
     subtotal,
     currencyCode,
-    checkoutUrl,
     error,
     clearError,
   } = useCart();
@@ -23,10 +22,10 @@ export default function CartPageContent() {
   const isEmpty = !cart || cart.lines.length === 0;
   const qualifiesForFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
 
-  const handleCheckout = () => {
-    if (checkoutUrl) {
-      setCheckoutLoading(true);
-      window.location.href = checkoutUrl;
+  const handleCheckout = async () => {
+    const url = await proceedToCheckout();
+    if (url) {
+      window.location.href = url;
     }
   };
 
@@ -116,7 +115,7 @@ export default function CartPageContent() {
         <button
           type="button"
           onClick={handleCheckout}
-          disabled={isCheckoutLoading || !checkoutUrl}
+          disabled={isCheckoutLoading || isEmpty}
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-kobbo-yellow py-3.5 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isCheckoutLoading && <Loader2 className="h-4 w-4 animate-spin" />}

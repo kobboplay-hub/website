@@ -14,19 +14,18 @@ export default function CartDrawer() {
     closeCart,
     subtotal,
     currencyCode,
-    checkoutUrl,
     isCheckoutLoading,
-    setCheckoutLoading,
+    proceedToCheckout,
     error,
     clearError,
   } = useCart();
 
   const isEmpty = !cart || cart.lines.length === 0;
 
-  const handleCheckout = () => {
-    if (checkoutUrl) {
-      setCheckoutLoading(true);
-      window.location.href = checkoutUrl;
+  const handleCheckout = async () => {
+    const url = await proceedToCheckout();
+    if (url) {
+      window.location.href = url;
     }
   };
 
@@ -132,7 +131,7 @@ export default function CartDrawer() {
                 <button
                   type="button"
                   onClick={handleCheckout}
-                  disabled={isCheckoutLoading || !checkoutUrl}
+                  disabled={isCheckoutLoading}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-kobbo-yellow py-3 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isCheckoutLoading && <Loader2 className="h-4 w-4 animate-spin" />}

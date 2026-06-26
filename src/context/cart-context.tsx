@@ -47,6 +47,7 @@ interface CartContextValue {
   closeCart: () => void;
   clearError: () => void;
   refreshCart: () => Promise<void>;
+  proceedToCheckout: () => Promise<string | null>;
   setCheckoutLoading: (loading: boolean) => void;
 }
 
@@ -150,6 +151,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setPendingAction(loading ? { type: "checkout" } : null);
   }, []);
 
+  const proceedToCheckout = useCallback(async (): Promise<string | null> => {
+    const cartId = cart?.id ?? localStorage.getItem(CART_STORAGE_KEY);
+    if (!cartId) return null;
+
+    setPendingAction({ type: "checkout" });
+    setError(null);
+
+    try {
+      const updated = await postCart({
+        action: "prepareCheckout",
+        cartId,
+      });
+      setCart(updated);
+      saveCartId(updated.id);
+      return updated.checkoutUrl;
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not start checkout",
+      );
+      return null;
+    } finally {
+      setPendingAction(null);
+    }
+  }, [cart?.id, saveCartId]);
+
   const buyNow = useCallback(
     async (merchandiseId: string, quantity = 1): Promise<string | null> => {
       setPendingAction({ type: "buyNow", merchandiseId });
@@ -160,7 +186,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
           merchandiseId,
           quantity,
         });
-        return checkoutCart.checkoutUrl;
+        const prepared = await postCart({
+          action: "prepareCheckout",
+          cartId: checkoutCart.id,
+        });
+        setCart(prepared);
+        saveCartId(prepared.id);
+        return prepared.checkoutUrl;
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Could not start checkout",
@@ -170,7 +202,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setPendingAction(null);
       }
     },
-    [],
+    [saveCartId],
   );
 
   const addToCart = useCallback(
@@ -292,6 +324,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       closeCart: () => setIsDrawerOpen(false),
       clearError: () => setError(null),
       refreshCart,
+      proceedToCheckout,
       setCheckoutLoading,
     }),
     [
@@ -308,6 +341,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity,
       removeItem,
       refreshCart,
+      proceedToCheckout,
       setCheckoutLoading,
     ],
   );
