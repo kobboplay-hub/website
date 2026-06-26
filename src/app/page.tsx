@@ -8,6 +8,7 @@ import InstagramVideos from "@/components/InstagramVideos";
 import ParentReviews from "@/components/ParentReviews";
 import Newsletter from "@/components/Newsletter";
 import { getProducts } from "@/lib/shopify";
+import { getProductReviewSummaries } from "@/lib/judgeme";
 import type { Product } from "@/lib/shopify/types";
 
 export const revalidate = 3600;
@@ -15,8 +16,15 @@ export const revalidate = 3600;
 export default async function Home() {
   let products: Product[] = [];
 
+  let reviewSummaries = {};
+
   try {
     products = await getProducts(20);
+    if (products.length > 0) {
+      reviewSummaries = await getProductReviewSummaries(
+        products.slice(0, 5).map((product) => product.id),
+      );
+    }
   } catch (error) {
     console.error("Failed to fetch Shopify products:", error);
   }
@@ -25,7 +33,7 @@ export default async function Home() {
     <SiteLayout>
       <HeroSection />
       <TrustBadges />
-      <BestSellers products={products} />
+      <BestSellers products={products} reviewSummaries={reviewSummaries} />
       <BrandStory />
       <WhyParentsChooseUs />
       <InstagramVideos />

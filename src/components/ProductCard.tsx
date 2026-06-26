@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, ImageOff } from "lucide-react";
@@ -13,12 +11,18 @@ import {
 import { getDefaultMerchandiseId } from "@/lib/shopify/cart";
 import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
+import ProductCardRating from "@/components/reviews/ProductCardRating";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 interface ProductCardProps {
   product: Product;
+  reviewSummary?: JudgeMeProductSummary | null;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  reviewSummary,
+}: ProductCardProps) {
   const imageUrl = getProductImageUrl(product);
   const merchandiseId = getDefaultMerchandiseId(product);
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -66,7 +70,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.title}
           </h3>
         </Link>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
+        <ProductCardRating
+          productId={product.id}
+          initialSummary={reviewSummary}
+        />
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
           <div className="flex flex-wrap items-baseline gap-1.5">
             <span className="text-base font-bold text-kobbo-black sm:text-lg">
               {formatPrice(product.price, product.currencyCode)}

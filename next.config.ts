@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "cdn.shopify.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.judge.me",
+      },
+      {
+        protocol: "https",
+        hostname: "judgeme.imgix.net",
+      },
     ],
   },
 };

@@ -238,6 +238,7 @@ export const GET_CUSTOMER_ORDERS_QUERY = `
                       url
                     }
                     product {
+                      id
                       handle
                     }
                   }

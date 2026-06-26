@@ -37,6 +37,7 @@ export interface CustomerOrderLineItem {
   quantity: number;
   imageUrl: string | null;
   productHandle: string | null;
+  productId: string | null;
 }
 
 export interface CustomerOrder {

@@ -9,6 +9,7 @@ import {
   getProductImageUrl,
   type Product,
 } from "@/lib/shopify/types";
+import ProductCardRating from "@/components/reviews/ProductCardRating";
 
 interface RecentlyViewedProps {
   currentHandle: string;
@@ -103,6 +104,7 @@ export default function RecentlyViewed({
                   <p className="truncate text-sm font-bold text-kobbo-black">
                     {product.title}
                   </p>
+                  <ProductCardRating productId={product.id} />
                   <p className="mt-0.5 text-sm font-semibold text-kobbo-black">
                     {formatPrice(product.price, product.currencyCode)}
                   </p>

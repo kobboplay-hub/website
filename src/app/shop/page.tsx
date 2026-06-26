@@ -5,6 +5,7 @@ import ShopHeader from "@/components/shop/ShopHeader";
 import ProductGrid from "@/components/shop/ProductGrid";
 import ShopError from "@/components/shop/ShopError";
 import { getProducts } from "@/lib/shopify";
+import { getProductReviewSummaries } from "@/lib/judgeme";
 import type { Product } from "@/lib/shopify/types";
 
 export const metadata: Metadata = {
@@ -19,8 +20,15 @@ export default async function ShopPage() {
   let products: Product[] = [];
   let hasError = false;
 
+  let reviewSummaries = {};
+
   try {
     products = await getProducts(20);
+    if (products.length > 0) {
+      reviewSummaries = await getProductReviewSummaries(
+        products.map((product) => product.id),
+      );
+    }
   } catch (error) {
     console.error("Failed to fetch shop products:", error);
     hasError = true;
@@ -45,7 +53,10 @@ export default async function ShopPage() {
             </div>
           ) : (
             <div className="mt-8">
-              <ProductGrid products={products} />
+              <ProductGrid
+                products={products}
+                reviewSummaries={reviewSummaries}
+              />
             </div>
           )}
         </div>

@@ -22,6 +22,7 @@ import type {
   CustomerAddress,
   CustomerAddressInput,
   CustomerOrder,
+  CustomerOrderLineItem,
   CustomerProfile,
   CustomerRegisterInput,
   CustomerUpdateInput,
@@ -501,7 +502,7 @@ export async function getCustomerOrders(
                   quantity: number;
                   variant: {
                     image: { url: string } | null;
-                    product: { handle: string } | null;
+                    product: { id: string; handle: string } | null;
                   } | null;
                 };
               }[];
@@ -533,8 +534,134 @@ export async function getCustomerOrders(
       quantity: lineEdge.node.quantity,
       imageUrl: lineEdge.node.variant?.image?.url ?? null,
       productHandle: lineEdge.node.variant?.product?.handle ?? null,
+      productId: lineEdge.node.variant?.product?.id ?? null,
     })),
   }));
+}
+
+export type CustomerProductReviewPurchaseStatus =
+  | "eligible"
+  | "not_purchased"
+  | "payment_pending"
+  | "not_fulfilled";
+
+const INVALID_FINANCIAL_STATUSES = new Set(["VOIDED", "REFUNDED"]);
+const PAID_FINANCIAL_STATUSES = new Set(["PAID", "PARTIALLY_PAID"]);
+const FULFILLED_STATUSES = new Set(["FULFILLED", "PARTIALLY_FULFILLED"]);
+
+function parseShopifyProductNumericId(productId: string): string {
+  const match = productId.match(/\/Product\/(\d+)/);
+  return match ? match[1] : productId;
+}
+
+function normalizeComparableText(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function lineItemMatchesProduct(
+  item: CustomerOrderLineItem,
+  targetHandle: string,
+  targetId: string | null,
+  productTitle?: string,
+): boolean {
+  if (item.productHandle?.toLowerCase() === targetHandle) {
+    return true;
+  }
+
+  if (targetId && item.productId) {
+    if (parseShopifyProductNumericId(item.productId) === targetId) {
+      return true;
+    }
+  }
+
+  if (productTitle && item.title) {
+    const normalizedProduct = normalizeComparableText(productTitle);
+    const normalizedLine = normalizeComparableText(item.title);
+
+    if (
+      normalizedLine === normalizedProduct ||
+      normalizedLine.startsWith(`${normalizedProduct} -`) ||
+      normalizedLine.startsWith(`${normalizedProduct} –`) ||
+      normalizedLine.includes(normalizedProduct)
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export async function getCustomerProductReviewPurchaseStatus(
+  productHandle: string,
+  productId?: string,
+  productTitle?: string,
+): Promise<CustomerProductReviewPurchaseStatus> {
+  const orders = await getCustomerOrders(50);
+  const targetHandle = productHandle.toLowerCase();
+  const targetId = productId ? parseShopifyProductNumericId(productId) : null;
+
+  let hasMatchingOrder = false;
+  let hasUnpaidOrder = false;
+  let hasUnfulfilledPaidOrder = false;
+
+  for (const order of orders) {
+    const financialStatus = order.financialStatus.toUpperCase();
+    const fulfillmentStatus = order.fulfillmentStatus.toUpperCase();
+
+    if (INVALID_FINANCIAL_STATUSES.has(financialStatus)) {
+      continue;
+    }
+
+    const hasProduct = order.lineItems.some((item) =>
+      lineItemMatchesProduct(item, targetHandle, targetId, productTitle),
+    );
+
+    if (!hasProduct) {
+      continue;
+    }
+
+    hasMatchingOrder = true;
+
+    if (!PAID_FINANCIAL_STATUSES.has(financialStatus)) {
+      hasUnpaidOrder = true;
+      continue;
+    }
+
+    if (!FULFILLED_STATUSES.has(fulfillmentStatus)) {
+      hasUnfulfilledPaidOrder = true;
+      continue;
+    }
+
+    return "eligible";
+  }
+
+  if (!hasMatchingOrder) {
+    return "not_purchased";
+  }
+
+  if (hasUnfulfilledPaidOrder) {
+    return "not_fulfilled";
+  }
+
+  if (hasUnpaidOrder) {
+    return "payment_pending";
+  }
+
+  return "not_purchased";
+}
+
+/** @deprecated Use getCustomerProductReviewPurchaseStatus instead */
+export async function hasCustomerPurchasedProduct(
+  productHandle: string,
+  productId?: string,
+  productTitle?: string,
+): Promise<boolean> {
+  const status = await getCustomerProductReviewPurchaseStatus(
+    productHandle,
+    productId,
+    productTitle,
+  );
+  return status === "eligible";
 }
 
 export async function getCustomerAddresses(): Promise<CustomerAddress[]> {

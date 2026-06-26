@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { AuthCardShell } from "@/components/account/PageShell";
@@ -17,6 +17,8 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/account";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +40,7 @@ export default function RegisterForm() {
     setLoading(true);
     try {
       await register({ firstName, lastName, email, password });
-      router.push("/account");
+      router.push(redirectTo);
     } catch (err) {
       setError(
         err instanceof Error
@@ -131,7 +133,14 @@ export default function RegisterForm() {
         </button>
         <p className="text-center text-sm text-kobbo-muted">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-kobbo-black hover:underline">
+          <Link
+            href={
+              redirectTo !== "/account"
+                ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+                : "/login"
+            }
+            className="font-semibold text-kobbo-black hover:underline"
+          >
             Login
           </Link>
         </p>

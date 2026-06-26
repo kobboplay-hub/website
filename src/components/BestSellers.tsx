@@ -1,11 +1,17 @@
 import ProductCard from "./ProductCard";
 import type { Product } from "@/lib/shopify/types";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
+import { parseShopifyProductId } from "@/lib/judgeme";
 
 interface BestSellersProps {
   products: Product[];
+  reviewSummaries?: Record<string, JudgeMeProductSummary>;
 }
 
-export default function BestSellers({ products }: BestSellersProps) {
+export default function BestSellers({
+  products,
+  reviewSummaries = {},
+}: BestSellersProps) {
   return (
     <section id="shop" className="bg-kobbo-cream py-8 sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -30,7 +36,13 @@ export default function BestSellers({ products }: BestSellersProps) {
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
             {products.slice(0, 5).map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                reviewSummary={
+                  reviewSummaries[parseShopifyProductId(product.id)] ?? null
+                }
+              />
             ))}
           </div>
         )}

@@ -1,11 +1,17 @@
 import ProductCard from "@/components/ProductCard";
 import type { Product } from "@/lib/shopify/types";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
+import { parseShopifyProductId } from "@/lib/judgeme";
 
 interface RelatedProductsProps {
   products: Product[];
+  reviewSummaries?: Record<string, JudgeMeProductSummary>;
 }
 
-export default function RelatedProducts({ products }: RelatedProductsProps) {
+export default function RelatedProducts({
+  products,
+  reviewSummaries = {},
+}: RelatedProductsProps) {
   if (products.length === 0) return null;
 
   return (
@@ -17,7 +23,13 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              reviewSummary={
+                reviewSummaries[parseShopifyProductId(product.id)] ?? null
+              }
+            />
           ))}
         </div>
       </div>

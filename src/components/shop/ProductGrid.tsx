@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import type { Product } from "@/lib/shopify/types";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
+import { parseShopifyProductId } from "@/lib/judgeme";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "alpha";
 
@@ -16,9 +18,13 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 interface ProductGridProps {
   products: Product[];
+  reviewSummaries?: Record<string, JudgeMeProductSummary>;
 }
 
-export default function ProductGrid({ products }: ProductGridProps) {
+export default function ProductGrid({
+  products,
+  reviewSummaries = {},
+}: ProductGridProps) {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("featured");
 
@@ -85,7 +91,13 @@ export default function ProductGrid({ products }: ProductGridProps) {
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              reviewSummary={
+                reviewSummaries[parseShopifyProductId(product.id)] ?? null
+              }
+            />
           ))}
         </div>
       )}

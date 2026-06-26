@@ -10,16 +10,15 @@ import ProductVideo from "@/components/product/ProductVideo";
 import ProductTabs from "@/components/product/ProductTabs";
 import WhyParentsLoveIt from "@/components/product/WhyParentsLoveIt";
 import RelatedProducts from "@/components/product/RelatedProducts";
-import CustomerReviews from "@/components/product/CustomerReviews";
+import ProductReviews from "@/components/reviews/ProductReviews";
 import FAQSection from "@/components/product/FAQSection";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
 import { getProductByHandle, getProducts } from "@/lib/shopify";
 import { getProductImageUrls } from "@/lib/shopify/types";
+import { getProductReviewSummaries } from "@/lib/judgeme";
 import {
   defaultFaqs,
   defaultHighlights,
-  defaultRatingBreakdown,
-  defaultReviews,
   defaultWhyParentsLove,
   getProductTabsContent,
   getProductVideoThumbnail,
@@ -82,6 +81,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const relatedProducts = allProducts
     .filter((p) => p.handle !== product.handle)
     .slice(0, 4);
+
+  const reviewSummaries = await getProductReviewSummaries(
+    relatedProducts.map((p) => p.id),
+  );
+
   const tabsContent = getProductTabsContent(product);
   const video = getProductVideoThumbnail(product);
 
@@ -106,12 +110,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <ProductVideo video={video} />
       <ProductTabs content={tabsContent} />
       <WhyParentsLoveIt items={defaultWhyParentsLove} />
-      <RelatedProducts products={relatedProducts} />
-      <CustomerReviews
-        rating={4.8}
-        reviewCount={defaultReviews.length * 40}
-        ratingBreakdown={defaultRatingBreakdown}
-        reviews={defaultReviews}
+      <RelatedProducts
+        products={relatedProducts}
+        reviewSummaries={reviewSummaries}
+      />
+      <ProductReviews
+        productId={product.id}
+        productHandle={product.handle}
+        productTitle={product.title}
       />
       <FAQSection faqs={defaultFaqs} />
       <RecentlyViewed
