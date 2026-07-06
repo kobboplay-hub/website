@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       callbackUri,
     });
 
-    const loginUrl = buildShopifyHostedLoginUrl({
+    const loginUrl = await buildShopifyHostedLoginUrl({
       state,
       codeChallenge: challenge,
       redirectUri: callbackUri,

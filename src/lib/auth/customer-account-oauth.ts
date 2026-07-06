@@ -14,6 +14,20 @@ export interface TokenResponse {
 }
 
 const LOCALHOST_PATTERN = /localhost|127\.0\.0\.1/i;
+const DEFAULT_CALLBACK_PATH = "/account/authorize";
+
+function stripCallbackSuffix(url: string): string {
+  return url
+    .replace(/\/api\/auth\/callback\/?$/, "")
+    .replace(/\/account\/authorize\/?$/, "")
+    .replace(/\/$/, "");
+}
+
+function getCallbackPath(): string {
+  const configured = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_PATH?.trim();
+  if (!configured) return DEFAULT_CALLBACK_PATH;
+  return configured.startsWith("/") ? configured : `/${configured}`;
+}
 
 /**
  * Resolves the public site URL for OAuth callbacks.
@@ -22,9 +36,7 @@ const LOCALHOST_PATTERN = /localhost|127\.0\.0\.1/i;
 export function resolveRequestBaseUrl(request: Request): string {
   const explicitCallback = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_URL?.trim();
   if (explicitCallback) {
-    return explicitCallback
-      .replace(/\/api\/auth\/callback\/?$/, "")
-      .replace(/\/$/, "");
+    return stripCallbackSuffix(explicitCallback);
   }
 
   const forwardedHost = request.headers.get("x-forwarded-host");
@@ -54,9 +66,7 @@ export function resolveRequestBaseUrl(request: Request): string {
 export function getSiteBaseUrl(fallbackOrigin?: string): string {
   const explicitCallback = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_URL?.trim();
   if (explicitCallback) {
-    return explicitCallback
-      .replace(/\/api\/auth\/callback\/?$/, "")
-      .replace(/\/$/, "");
+    return stripCallbackSuffix(explicitCallback);
   }
 
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
@@ -74,7 +84,10 @@ export function getSiteBaseUrl(fallbackOrigin?: string): string {
 }
 
 export function getCustomerAccountCallbackUrl(baseUrl: string): string {
-  return `${baseUrl.replace(/\/$/, "")}/api/auth/callback`;
+  const explicit = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_URL?.trim();
+  if (explicit) return explicit;
+
+  return `${baseUrl.replace(/\/$/, "")}${getCallbackPath()}`;
 }
 
 export function resolveCustomerAccountCallbackUrl(request: Request): string {
@@ -110,28 +123,27 @@ function getShopDomain(): string {
 }
 
 /**
- * Shopify hosted Customer Account login (Google / email on Shopify UI).
+ * Redirect to Shopify hosted Customer Account OAuth (Google available on Shopify UI).
  */
-export function buildShopifyHostedLoginUrl(options: {
+export async function buildShopifyHostedLoginUrl(options: {
   state: string;
   codeChallenge: string;
   redirectUri: string;
-}): string {
+}): Promise<string> {
   const clientId = getClientId();
-  const loginUrl = new URL(
-    `https://shopify.com/authentication/${clientId}/login`,
-  );
+  const openIdConfig = await fetchOpenIdConfiguration();
+  const authUrl = new URL(openIdConfig.authorization_endpoint);
 
-  loginUrl.searchParams.set("client_id", clientId);
-  loginUrl.searchParams.set("response_type", "code");
-  loginUrl.searchParams.set("redirect_uri", options.redirectUri);
-  loginUrl.searchParams.set("scope", "openid email customer-account-api:full");
-  loginUrl.searchParams.set("state", options.state);
-  loginUrl.searchParams.set("code_challenge", options.codeChallenge);
-  loginUrl.searchParams.set("code_challenge_method", "S256");
-  loginUrl.searchParams.set("region_country", "IN");
+  authUrl.searchParams.set("client_id", clientId);
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("redirect_uri", options.redirectUri);
+  authUrl.searchParams.set("scope", "openid email customer-account-api:full");
+  authUrl.searchParams.set("state", options.state);
+  authUrl.searchParams.set("code_challenge", options.codeChallenge);
+  authUrl.searchParams.set("code_challenge_method", "S256");
+  authUrl.searchParams.set("region_country", "IN");
 
-  return loginUrl.toString();
+  return authUrl.toString();
 }
 
 export function absoluteRedirect(
