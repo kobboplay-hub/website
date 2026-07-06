@@ -107,11 +107,32 @@ export function generateOAuthState(): string {
 }
 
 function getClientId(): string {
-  const clientId = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID;
+  const clientId =
+    process.env.SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID?.trim() ||
+    process.env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID?.trim();
+
   if (!clientId) {
-    throw new Error("SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID is not configured.");
+    throw new Error(
+      "SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID is not configured. Copy the Client ID from Shopify Admin → Sales channels → Headless → Customer Account API → Credentials.",
+    );
   }
+
+  // 63118114877-style numeric IDs are shop auth path IDs, not OAuth client IDs.
+  if (/^\d+$/.test(clientId)) {
+    throw new Error(
+      "Invalid SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID. The number in shopify.com/authentication/63118114877/... is NOT the OAuth Client ID. Open Headless → Customer Account API → Credentials and copy the Client ID (UUID/hex format).",
+    );
+  }
+
   return clientId;
+}
+
+function getClientSecret(): string | undefined {
+  return (
+    process.env.SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_SECRET?.trim() ||
+    process.env.PRIVATE_CUSTOMER_ACCOUNT_API_CLIENT_SECRET?.trim() ||
+    undefined
+  );
 }
 
 function getShopDomain(): string {
@@ -192,12 +213,10 @@ export async function exchangeAuthorizationCode(options: {
     "Content-Type": "application/x-www-form-urlencoded",
   };
 
-  const clientSecret = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_SECRET;
+  const clientSecret = getClientSecret();
   if (clientSecret) {
-    const credentials = Buffer.from(`${getClientId()}:${clientSecret}`).toString(
-      "base64",
-    );
-    headers.Authorization = `Basic ${credentials}`;
+    // Confidential client: secret in body (avoid duplicate credentials in header).
+    body.set("client_secret", clientSecret);
   }
 
   const response = await fetch(openIdConfig.token_endpoint, {
