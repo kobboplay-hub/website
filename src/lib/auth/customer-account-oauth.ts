@@ -83,11 +83,21 @@ export function getSiteBaseUrl(fallbackOrigin?: string): string {
   return "http://localhost:3000";
 }
 
+function normalizeCallbackUrl(url: string): string {
+  const parsed = new URL(url.trim());
+  if (parsed.pathname.endsWith("/") && parsed.pathname.length > 1) {
+    parsed.pathname = parsed.pathname.slice(0, -1);
+  }
+  return parsed.toString();
+}
+
 export function getCustomerAccountCallbackUrl(baseUrl: string): string {
   const explicit = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_URL?.trim();
-  if (explicit) return explicit;
+  if (explicit) return normalizeCallbackUrl(explicit);
 
-  return `${baseUrl.replace(/\/$/, "")}${getCallbackPath()}`;
+  return normalizeCallbackUrl(
+    `${baseUrl.replace(/\/$/, "")}${getCallbackPath()}`,
+  );
 }
 
 export function resolveCustomerAccountCallbackUrl(request: Request): string {
