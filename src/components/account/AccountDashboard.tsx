@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
 import AccountLayoutShell from "@/components/account/AccountLayoutShell";
+import { AccountCardSkeleton } from "@/components/ui/SkeletonCard";
 import { SummaryCard } from "@/components/account/OrderCard";
 import { formatOrderDate } from "@/data/account";
 import { getIndianProvinceName, isIndiaCountry } from "@/lib/data/india-provinces";
@@ -156,11 +156,7 @@ export default function AccountDashboard() {
         </div>
       </div>
 
-      {loading && (
-        <div className="mt-6 flex justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-kobbo-yellow" />
-        </div>
-      )}
+      {loading && <AccountCardSkeleton />}
     </AccountLayoutShell>
   );
 }

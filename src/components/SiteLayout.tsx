@@ -12,7 +12,7 @@ export default function SiteLayout({
   mainClassName = "",
 }: SiteLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <AnnouncementBar />
       <Header />
       <main className={`flex flex-1 flex-col ${mainClassName}`.trim()}>

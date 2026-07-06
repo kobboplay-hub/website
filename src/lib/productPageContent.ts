@@ -1,4 +1,5 @@
-import type { Product } from "@/lib/shopify/types";
+import type { Product, ShopifyMediaVideo } from "@/lib/shopify/types";
+import { productFaqs, type ProductFAQ } from "@/data/faqs";
 
 export interface ProductHighlight {
   title: string;
@@ -13,18 +14,26 @@ export interface ProductReview {
   date: string;
 }
 
-export interface ProductFAQ {
-  question: string;
-  answer: string;
-}
 
-export interface ProductVideoData {
-  type: "youtube" | "mp4";
+/** Supported video sources on PDP — managed via Shopify media or metafields */
+export type ProductVideoType = "youtube" | "mp4" | "instagram" | "external";
+
+export interface ProductVideoItem {
+  id: string;
+  type: ProductVideoType;
   url: string;
   thumbnail: string;
+  label?: string;
 }
 
-/** Static PDP content — reviews, FAQs, highlights until Shopify metafields are wired */
+export interface ProductTabsContent {
+  descriptionHtml: string;
+  features: string[];
+  specifications: { label: string; value: string }[];
+  careInstructions: string[];
+}
+
+/** Static PDP content — highlights until Shopify metafields are wired */
 export const defaultHighlights = [
   {
     title: "Skill Development",
@@ -62,28 +71,9 @@ export const defaultWhyParentsLove = [
   },
 ];
 
-export const defaultFaqs = [
-  {
-    question: "What age group is this toy suitable for?",
-    answer:
-      "Please refer to the product description for age recommendations. Always supervise play for younger children.",
-  },
-  {
-    question: "What materials are used?",
-    answer:
-      "Material details are listed in the product description and specifications tab.",
-  },
-  {
-    question: "Is assembly required?",
-    answer:
-      "Check the product description for assembly requirements. Most toys arrive ready to play.",
-  },
-  {
-    question: "How should I clean the toy?",
-    answer:
-      "Wipe clean with a damp cloth. Avoid soaking or using harsh chemicals.",
-  },
-];
+/** @deprecated Import from @/data/faqs — kept for backward compatibility */
+export const defaultFaqs = productFaqs;
+export type { ProductFAQ };
 
 export const defaultReviews = [
   {
@@ -117,44 +107,206 @@ export const defaultRatingBreakdown = [
   { stars: 1, percent: 1 },
 ];
 
-export const placeholderVideo = {
-  type: "youtube" as const,
+export const placeholderVideo: ProductVideoItem = {
+  id: "placeholder",
+  type: "youtube",
   url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
   thumbnail:
     "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200&h=675&fit=crop",
+  label: "Product Demo",
 };
 
-export function getProductTabsContent(product: Product) {
-  const featuresMetafield = product.metafields.find((m) => m.key === "features");
-  const careMetafield = product.metafields.find(
-    (m) => m.key === "care_instructions",
-  );
-  const specsMetafield = product.metafields.find(
-    (m) => m.key === "specifications",
-  );
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
 
-  const features = featuresMetafield
-    ? featuresMetafield.value.split("\n").filter(Boolean)
+function getMetafieldValue(product: Product, key: string): string | null {
+  const field = product.metafields.find((m) => m.key === key);
+  return field?.value?.trim() || null;
+}
+
+/** Parse list metafield — supports JSON array, comma-separated, or newline-separated URLs */
+export function parseListMetafield(value: string): string[] {
+  const trimmed = value.trim();
+  if (!trimmed) return [];
+
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown;
+      if (Array.isArray(parsed)) {
+        return parsed.map(String).map((s) => s.trim()).filter(Boolean);
+      }
+    } catch {
+      // fall through to delimiter parsing
+    }
+  }
+
+  return trimmed
+    .split(/[,\n]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function parseVideoUrl(rawUrl: string): ProductVideoItem | null {
+  const url = rawUrl.trim();
+  if (!url) return null;
+
+  const defaultThumb =
+    "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&h=450&fit=crop";
+
+  if (/instagram\.com/i.test(url)) {
+    return {
+      id: `ig-${url}`,
+      type: "instagram",
+      url,
+      thumbnail: defaultThumb,
+      label: "Watch on Instagram",
+    };
+  }
+
+  if (/youtube\.com|youtu\.be/i.test(url)) {
+    const embedUrl = toYouTubeEmbedUrl(url);
+    if (!embedUrl) return null;
+    const videoId = embedUrl.split("/embed/")[1]?.split("?")[0];
+    return {
+      id: `yt-${videoId ?? url}`,
+      type: "youtube",
+      url: embedUrl,
+      thumbnail: videoId
+        ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+        : defaultThumb,
+      label: "Watch on YouTube",
+    };
+  }
+
+  if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) {
+    return {
+      id: `mp4-${url}`,
+      type: "mp4",
+      url,
+      thumbnail: defaultThumb,
+      label: "Play Video",
+    };
+  }
+
+  return {
+    id: `ext-${url}`,
+    type: "external",
+    url,
+    thumbnail: defaultThumb,
+    label: "Watch Video",
+  };
+}
+
+function toYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) {
+      const id = parsed.pathname.slice(1);
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (parsed.pathname.includes("/embed/")) {
+      return url;
+    }
+    const id = parsed.searchParams.get("v");
+    return id ? `https://www.youtube.com/embed/${id}` : null;
+  } catch {
+    return null;
+  }
+}
+
+function mediaVideoToItem(
+  media: ShopifyMediaVideo,
+  fallbackThumb: string,
+): ProductVideoItem | null {
+  if (media.mediaContentType === "VIDEO" && media.sources?.[0]?.url) {
+    return {
+      id: media.id,
+      type: "mp4",
+      url: media.sources[0].url,
+      thumbnail: media.previewImage?.url ?? fallbackThumb,
+      label: media.alt ?? "Product Video",
+    };
+  }
+
+  if (media.mediaContentType === "EXTERNAL_VIDEO" && media.embedUrl) {
+    const origin = media.originUrl ?? media.embedUrl;
+    if (/instagram\.com/i.test(origin)) {
+      return {
+        id: media.id,
+        type: "instagram",
+        url: origin,
+        thumbnail: media.previewImage?.url ?? fallbackThumb,
+        label: "Watch on Instagram",
+      };
+    }
+    if (/youtube\.com|youtu\.be/i.test(origin) || media.host === "YOUTUBE") {
+      const embed = toYouTubeEmbedUrl(media.embedUrl) ?? media.embedUrl;
+      const videoId = embed.split("/embed/")[1]?.split("?")[0];
+      return {
+        id: media.id,
+        type: "youtube",
+        url: embed,
+        thumbnail:
+          media.previewImage?.url ??
+          (videoId
+            ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+            : fallbackThumb),
+        label: "Watch on YouTube",
+      };
+    }
+    return {
+      id: media.id,
+      type: "external",
+      url: media.embedUrl,
+      thumbnail: media.previewImage?.url ?? fallbackThumb,
+      label: "Watch Video",
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Product tabs — content from Shopify description + metafields.
+ * Metafields: custom.features, custom.specifications, custom.care_instructions
+ */
+export function getProductTabsContent(product: Product): ProductTabsContent {
+  const featuresValue = getMetafieldValue(product, "features");
+  const careValue = getMetafieldValue(product, "care_instructions");
+  const specsValue = getMetafieldValue(product, "specifications");
+
+  const features = featuresValue
+    ? parseListMetafield(featuresValue.replace(/\n/g, ","))
     : product.tags.length > 0
       ? product.tags
-      : ["Premium quality toy", "Designed for interactive play"];
+      : [];
 
-  const careInstructions = careMetafield
-    ? careMetafield.value.split("\n").filter(Boolean)
-    : [
-        "Wipe clean with a soft, damp cloth after use.",
-        "Keep away from direct sunlight and moisture.",
-        "Store in a dry place when not in use.",
-      ];
+  const careInstructions = careValue
+    ? parseListMetafield(careValue.replace(/\n/g, ","))
+    : [];
 
-  const specifications = specsMetafield
-    ? specsMetafield.value.split("\n").map((line) => {
-        const [label, ...rest] = line.split(":");
-        return { label: label.trim(), value: rest.join(":").trim() };
-      })
+  const specifications = specsValue
+    ? specsValue
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const colonIndex = line.indexOf(":");
+          if (colonIndex === -1) return { label: line, value: "" };
+          return {
+            label: line.slice(0, colonIndex).trim(),
+            value: line.slice(colonIndex + 1).trim(),
+          };
+        })
+        .filter((s) => s.label && s.value)
     : [
-        { label: "Vendor", value: product.vendor || "Kobbo" },
-        { label: "Type", value: product.productType || "Toy" },
+        ...(product.vendor
+          ? [{ label: "Brand", value: product.vendor }]
+          : []),
+        ...(product.productType
+          ? [{ label: "Type", value: product.productType }]
+          : []),
         {
           label: "Availability",
           value: product.availableForSale ? "In Stock" : "Out of Stock",
@@ -162,31 +314,67 @@ export function getProductTabsContent(product: Product) {
       ].filter((s) => s.value);
 
   return {
-    descriptionHtml: product.descriptionHtml,
+    descriptionHtml: product.descriptionHtml || product.description,
     features,
     specifications,
     careInstructions,
   };
 }
 
-export function getProductVideoThumbnail(product: Product) {
-  const videoMetafield = product.metafields.find((m) => m.key === "video_url");
-  const imageUrl =
+export function hasTabContent(
+  tabId: "description" | "features" | "specifications" | "care",
+  content: ProductTabsContent,
+): boolean {
+  switch (tabId) {
+    case "description":
+      return stripHtml(content.descriptionHtml).length > 0;
+    case "features":
+      return content.features.length > 0;
+    case "specifications":
+      return content.specifications.length > 0;
+    case "care":
+      return content.careInstructions.length > 0;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Product videos — priority:
+ * A) Shopify product media (Video / ExternalVideo)
+ * B) Metafield custom.product_videos (list or comma-separated URLs)
+ * C) Legacy metafield custom.video_url
+ * D) Placeholder fallback
+ */
+export function getProductVideos(product: Product): ProductVideoItem[] {
+  const fallbackThumb =
     product.featuredImage?.url ??
     product.images[0]?.url ??
     placeholderVideo.thumbnail;
 
-  if (videoMetafield?.value) {
-    const url = videoMetafield.value;
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
-      return {
-        type: "youtube" as const,
-        url: url.includes("embed") ? url : placeholderVideo.url,
-        thumbnail: imageUrl,
-      };
-    }
-    return { type: "mp4" as const, url, thumbnail: imageUrl };
+  const fromMedia =
+    product.mediaVideos
+      ?.map((m) => mediaVideoToItem(m, fallbackThumb))
+      .filter((v): v is ProductVideoItem => v !== null) ?? [];
+
+  if (fromMedia.length > 0) {
+    return fromMedia.slice(0, 4);
   }
 
-  return { ...placeholderVideo, thumbnail: imageUrl };
+  const metafieldUrls = [
+    ...parseListMetafield(getMetafieldValue(product, "product_videos") ?? ""),
+    ...(getMetafieldValue(product, "video_url")
+      ? [getMetafieldValue(product, "video_url")!]
+      : []),
+  ];
+
+  const fromMetafields = metafieldUrls
+    .map(parseVideoUrl)
+    .filter((v): v is ProductVideoItem => v !== null);
+
+  if (fromMetafields.length > 0) {
+    return fromMetafields.slice(0, 4);
+  }
+
+  return [{ ...placeholderVideo, thumbnail: fallbackThumb }];
 }

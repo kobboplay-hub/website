@@ -57,7 +57,7 @@ export default function AddToCartButton({
       type="button"
       disabled={disabled || !merchandiseId || isLoading}
       onClick={handleClick}
-      className={`inline-flex items-center justify-center gap-2 rounded-full bg-kobbo-yellow py-3.5 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light hover:shadow-soft-lg disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-full bg-kobbo-yellow text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light hover:shadow-soft-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 lg:hover:-translate-y-0.5 ${className}`}
     >
       {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
       {label}

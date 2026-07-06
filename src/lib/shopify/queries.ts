@@ -81,6 +81,7 @@ export const PRODUCT_DETAIL_FRAGMENT = `
         { namespace: "custom", key: "care_instructions" }
         { namespace: "custom", key: "features" }
         { namespace: "custom", key: "video_url" }
+        { namespace: "custom", key: "product_videos" }
         { namespace: "custom", key: "specifications" }
       ]
     ) {
@@ -89,8 +90,50 @@ export const PRODUCT_DETAIL_FRAGMENT = `
       value
       type
     }
+    media(first: 10) {
+      edges {
+        node {
+          mediaContentType
+          alt
+          ... on Video {
+            id
+            sources {
+              url
+              mimeType
+            }
+            previewImage {
+              url
+              altText
+            }
+          }
+          ... on ExternalVideo {
+            id
+            embedUrl
+            host
+            originUrl
+            previewImage {
+              url
+              altText
+            }
+          }
+        }
+      }
+    }
   }
   ${PRODUCT_CARD_FRAGMENT}
+`;
+
+export const SEARCH_PRODUCTS_QUERY = `
+  ${PRODUCT_CARD_FRAGMENT}
+  query SearchProducts($query: String!, $first: Int!) {
+    products(first: $first, query: $query) {
+      edges {
+        node {
+          ...ProductCard
+        }
+      }
+    }
+  }
 `;
 
 export const GET_PRODUCTS_QUERY = `

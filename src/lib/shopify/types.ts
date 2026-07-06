@@ -31,6 +31,18 @@ export interface ShopifySeo {
   description: string | null;
 }
 
+/** Shopify product media — Video and ExternalVideo nodes from Storefront API */
+export interface ShopifyMediaVideo {
+  id: string;
+  mediaContentType: string;
+  alt?: string | null;
+  sources?: { url: string; mimeType: string }[];
+  embedUrl?: string | null;
+  host?: string | null;
+  originUrl?: string | null;
+  previewImage?: ShopifyImage | null;
+}
+
 /** Normalized product for frontend use */
 export interface Product {
   id: string;
@@ -50,6 +62,8 @@ export interface Product {
   tags: string[];
   seo: ShopifySeo;
   metafields: ShopifyMetafield[];
+  /** Populated on product detail fetches — Shopify media videos */
+  mediaVideos?: ShopifyMediaVideo[];
 }
 
 export interface Collection {
@@ -84,6 +98,9 @@ export interface ShopifyProductNode {
   variants: { edges: { node: ShopifyVariant }[] };
   seo?: ShopifySeo;
   metafields?: (ShopifyMetafield | null)[];
+  media?: {
+    edges: { node: ShopifyMediaVideo }[];
+  };
 }
 
 export interface ShopifyCollectionNode {

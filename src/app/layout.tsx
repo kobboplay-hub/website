@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import Providers from "@/components/Providers";
+import { homeMetadata } from "@/data/seo";
 import "./globals.css";
 
 const baloo = Baloo_2({
@@ -14,11 +15,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Kobbo — Premium Toys for Little Minds",
-  description:
-    "Handpicked toys that spark curiosity, build skills and create joyful memories.",
-};
+export const metadata: Metadata = homeMetadata;
 
 export default function RootLayout({
   children,

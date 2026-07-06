@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import type { CustomerProfile } from "@/lib/shopify/customer-types";
+import { mapAuthErrorMessage } from "@/lib/auth/messages";
 
 interface AuthContextValue {
   user: CustomerProfile | null;
@@ -32,9 +33,12 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 async function parseApiError(response: Response): Promise<string> {
   try {
     const data = await response.json();
-    return data.error ?? "Something went wrong. Please try again.";
+    return mapAuthErrorMessage(
+      data.error ?? "Something went wrong. Please try again.",
+      data.code,
+    );
   } catch {
-    return "Something went wrong. Please try again.";
+    return "We're having trouble connecting. Please check your internet and try again.";
   }
 }
 

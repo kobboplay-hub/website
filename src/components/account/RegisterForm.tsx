@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { AuthCardShell } from "@/components/account/PageShell";
+import AuthAlert from "@/components/account/AuthAlert";
+import PasswordInput from "@/components/account/PasswordInput";
 
 export default function RegisterForm() {
   const [firstName, setFirstName] = useState("");
@@ -29,7 +32,7 @@ export default function RegisterForm() {
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords do not match. Please check and try again.");
       return;
     }
     if (password.length < 5) {
@@ -42,11 +45,11 @@ export default function RegisterForm() {
       await register({ firstName, lastName, email, password });
       router.push(redirectTo);
     } catch (err) {
-      setError(
+      const raw =
         err instanceof Error
           ? err.message
-          : "Registration failed. Please try again.",
-      );
+          : "Registration failed. Please try again.";
+      setError(mapAuthErrorMessage(raw));
     } finally {
       setLoading(false);
     }
@@ -58,14 +61,14 @@ export default function RegisterForm() {
       subtitle="Join Kobbo for a playful shopping experience"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </p>
-        )}
+        {error && <AuthAlert variant="error">{error}</AuthAlert>}
+
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="firstName" className="text-sm font-semibold text-kobbo-black">
+            <label
+              htmlFor="firstName"
+              className="text-sm font-semibold text-kobbo-black"
+            >
               First name
             </label>
             <input
@@ -76,7 +79,10 @@ export default function RegisterForm() {
             />
           </div>
           <div>
-            <label htmlFor="lastName" className="text-sm font-semibold text-kobbo-black">
+            <label
+              htmlFor="lastName"
+              className="text-sm font-semibold text-kobbo-black"
+            >
               Last name
             </label>
             <input
@@ -88,7 +94,10 @@ export default function RegisterForm() {
           </div>
         </div>
         <div>
-          <label htmlFor="email" className="text-sm font-semibold text-kobbo-black">
+          <label
+            htmlFor="email"
+            className="text-sm font-semibold text-kobbo-black"
+          >
             Email
           </label>
           <input
@@ -99,30 +108,21 @@ export default function RegisterForm() {
             className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
           />
         </div>
-        <div>
-          <label htmlFor="password" className="text-sm font-semibold text-kobbo-black">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
-          />
-        </div>
-        <div>
-          <label htmlFor="confirmPassword" className="text-sm font-semibold text-kobbo-black">
-            Confirm password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
-          />
-        </div>
+        <PasswordInput
+          id="password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+        />
+        <PasswordInput
+          id="confirmPassword"
+          label="Confirm password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+        />
+        <p className="text-xs leading-relaxed text-kobbo-muted">
+          Sign in using email. Mobile login can be enabled later if required.
+        </p>
         <button
           type="submit"
           disabled={loading}

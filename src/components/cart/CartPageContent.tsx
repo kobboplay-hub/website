@@ -6,6 +6,11 @@ import { useCart } from "@/context/cart-context";
 import { formatPrice } from "@/lib/shopify/types";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/shopify/cart";
 import CartLineItem from "@/components/cart/CartLineItem";
+import CartPromoNotes from "@/components/cart/CartPromoNotes";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorState from "@/components/ui/ErrorState";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { emptyStates, errorStates } from "@/data/empty-states";
 
 export default function CartPageContent() {
   const {
@@ -23,6 +28,8 @@ export default function CartPageContent() {
   const qualifiesForFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   const handleCheckout = async () => {
+    // Shopify-hosted checkout: form fields and payment labels are controlled by Shopify.
+    // This storefront only redirects to cart.checkoutUrl from the Storefront API.
     const url = await proceedToCheckout();
     if (url) {
       window.location.href = url;
@@ -30,32 +37,18 @@ export default function CartPageContent() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-kobbo-yellow" />
-      </div>
-    );
+    return <LoadingSpinner label="Loading your cart" />;
   }
 
   if (isEmpty) {
     return (
-      <div className="rounded-3xl bg-kobbo-white px-6 py-16 text-center shadow-soft">
-        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-kobbo-cream">
-          <span className="text-5xl">🧸</span>
-        </div>
-        <p className="font-heading mt-6 text-2xl font-bold text-kobbo-black">
-          Cart is Empty
-        </p>
-        <p className="mt-2 text-sm text-kobbo-muted">
-          Discover playful toys for little minds.
-        </p>
-        <Link
-          href="/shop"
-          className="mt-6 inline-flex items-center justify-center rounded-full bg-kobbo-yellow px-8 py-3 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light"
-        >
-          Continue Shopping
-        </Link>
-      </div>
+      <EmptyState
+        title={emptyStates.cart.title}
+        description={emptyStates.cart.description}
+        cta={emptyStates.cart.cta}
+        ctaHref={emptyStates.cart.ctaHref}
+        emoji={emptyStates.cart.emoji}
+      />
     );
   }
 
@@ -66,11 +59,11 @@ export default function CartPageContent() {
           Your Cart
         </h1>
         {error && (
-          <div className="mt-4 flex items-center justify-between rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
-            <span>{error}</span>
-            <button type="button" onClick={clearError}>
-              Dismiss
-            </button>
+          <div className="mt-4">
+            <ErrorState
+              title={errorStates.cart.title}
+              description={error}
+            />
           </div>
         )}
         <div className="mt-6 space-y-3">
@@ -111,6 +104,10 @@ export default function CartPageContent() {
             ? "You qualify for free shipping!"
             : `Free shipping on orders above ₹${FREE_SHIPPING_THRESHOLD.toLocaleString("en-IN")}`}
         </p>
+
+        <div className="mt-3">
+          <CartPromoNotes />
+        </div>
 
         <button
           type="button"

@@ -3,11 +3,13 @@ import {
   GET_PRODUCT_BY_HANDLE_QUERY,
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
+  SEARCH_PRODUCTS_QUERY,
 } from "./queries";
 import type {
   Collection,
   Product,
   ShopifyCollectionNode,
+  ShopifyMediaVideo,
   ShopifyMetafield,
   ShopifyProductNode,
 } from "./types";
@@ -97,6 +99,19 @@ function normalizeMetafields(
   return metafields.filter((m): m is ShopifyMetafield => m !== null);
 }
 
+function normalizeMediaVideos(
+  media?: ShopifyProductNode["media"],
+): ShopifyMediaVideo[] {
+  if (!media?.edges) return [];
+  return media.edges
+    .map((edge) => edge.node)
+    .filter(
+      (node) =>
+        node.mediaContentType === "VIDEO" ||
+        node.mediaContentType === "EXTERNAL_VIDEO",
+    );
+}
+
 export function normalizeProduct(node: ShopifyProductNode): Product {
   const currencyCode = node.priceRange.minVariantPrice.currencyCode;
 
@@ -118,6 +133,7 @@ export function normalizeProduct(node: ShopifyProductNode): Product {
     tags: node.tags,
     seo: node.seo ?? { title: null, description: null },
     metafields: normalizeMetafields(node.metafields),
+    mediaVideos: normalizeMediaVideos(node.media),
   };
 }
 
@@ -192,4 +208,37 @@ export async function getCollectionProducts(
 
 export function isShopifyConfigured(): boolean {
   return getShopifyConfig() !== null;
+}
+
+/** Search products by title via Shopify Storefront API query */
+export async function searchProducts(
+  query: string,
+  limit = 20,
+): Promise<Product[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  try {
+    const data = await shopifyFetch<{
+      products: { edges: { node: ShopifyProductNode }[] };
+    }>({
+      query: SEARCH_PRODUCTS_QUERY,
+      variables: { query: trimmed, first: limit },
+      revalidate: 300,
+    });
+
+    const results = data.products.edges.map((edge) =>
+      normalizeProduct(edge.node),
+    );
+
+    if (results.length > 0) return results;
+  } catch {
+    // fall through to local filter
+  }
+
+  const all = await getProducts(50);
+  const lower = trimmed.toLowerCase();
+  return all
+    .filter((p) => p.title.toLowerCase().includes(lower))
+    .slice(0, limit);
 }

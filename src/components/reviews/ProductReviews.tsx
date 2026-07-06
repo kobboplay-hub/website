@@ -2,11 +2,9 @@ import ReviewSummary from "@/components/reviews/ReviewSummary";
 import ReviewCard from "@/components/reviews/ReviewCard";
 import WriteReviewButton from "@/components/reviews/WriteReviewButton";
 import { getProductReviews } from "@/lib/judgeme";
-import {
-  getReviewEligibility,
-  getReviewEligibilityMessage,
-} from "@/lib/review-eligibility";
+import { getReviewEligibility, getReviewEligibilityMessage } from "@/lib/review-eligibility";
 import { getCustomerToken } from "@/lib/auth/session";
+import { emptyStates } from "@/data/empty-states";
 import type { JudgeMeProductReviewData } from "@/lib/judgeme";
 
 interface ProductReviewsProps {
@@ -31,10 +29,10 @@ function EmptyReviews({
   return (
     <div className="rounded-3xl bg-kobbo-cream px-6 py-12 text-center">
       <p className="font-heading text-xl font-bold text-kobbo-black">
-        No reviews yet
+        {emptyStates.reviews.title}
       </p>
       <p className="mt-2 text-sm text-kobbo-muted">
-        Be the first to share your experience with this toy.
+        {emptyStates.reviews.description}
       </p>
       {statusMessage && (
         <p className="mt-3 text-sm font-medium text-kobbo-muted">

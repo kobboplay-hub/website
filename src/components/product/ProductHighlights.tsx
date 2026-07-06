@@ -11,15 +11,15 @@ export default function ProductHighlights({
   highlights,
 }: ProductHighlightsProps) {
   return (
-    <section className="bg-kobbo-white py-8 sm:py-10">
+    <section className="bg-kobbo-white py-6 sm:py-8 lg:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4 lg:gap-4">
           {highlights.map((item, index) => {
             const Icon = iconMap[index] ?? Puzzle;
             return (
               <div
                 key={item.title}
-                className="rounded-2xl bg-kobbo-cream p-4 shadow-soft"
+                className="rounded-xl bg-kobbo-cream p-3 shadow-soft sm:rounded-2xl sm:p-4"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-kobbo-yellow/30">
                   <Icon className="h-4 w-4 text-kobbo-black" />

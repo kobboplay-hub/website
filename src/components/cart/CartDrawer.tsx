@@ -6,6 +6,9 @@ import { useCart } from "@/context/cart-context";
 import { formatPrice } from "@/lib/shopify/types";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/shopify/cart";
 import CartLineItem from "./CartLineItem";
+import CartPromoNotes from "./CartPromoNotes";
+import EmptyState from "@/components/ui/EmptyState";
+import { emptyStates } from "@/data/empty-states";
 
 export default function CartDrawer() {
   const {
@@ -23,6 +26,8 @@ export default function CartDrawer() {
   const isEmpty = !cart || cart.lines.length === 0;
 
   const handleCheckout = async () => {
+    // Shopify-hosted checkout: form fields and payment labels are controlled by Shopify.
+    // This storefront only redirects to cart.checkoutUrl from the Storefront API.
     const url = await proceedToCheckout();
     if (url) {
       window.location.href = url;
@@ -68,7 +73,7 @@ export default function CartDrawer() {
         </div>
 
         {error && (
-          <div className="mx-5 mt-4 flex items-center justify-between rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mx-5 mt-4 flex items-center justify-between rounded-2xl border border-kobbo-yellow/40 bg-kobbo-yellow/15 px-4 py-3 text-sm text-kobbo-black">
             <span>{error}</span>
             <button type="button" onClick={clearError} aria-label="Dismiss">
               <X className="h-4 w-4" />
@@ -77,23 +82,14 @@ export default function CartDrawer() {
         )}
 
         {isEmpty ? (
-          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-kobbo-cream">
-              <span className="text-5xl">🧸</span>
-            </div>
-            <p className="font-heading mt-6 text-xl font-bold text-kobbo-black">
-              Cart is Empty
-            </p>
-            <p className="mt-2 text-sm text-kobbo-muted">
-              Discover playful toys for little minds.
-            </p>
-            <Link
-              href="/shop"
-              onClick={closeCart}
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-kobbo-yellow px-8 py-3 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light"
-            >
-              Continue Shopping
-            </Link>
+          <div className="flex flex-1 flex-col justify-center px-5">
+            <EmptyState
+              title={emptyStates.cart.title}
+              description={emptyStates.cart.description}
+              cta={emptyStates.cart.cta}
+              ctaHref={emptyStates.cart.ctaHref}
+              emoji={emptyStates.cart.emoji}
+            />
           </div>
         ) : (
           <>
@@ -118,6 +114,9 @@ export default function CartDrawer() {
                     ? "You qualify for free shipping!"
                     : `Free shipping on orders above ₹${FREE_SHIPPING_THRESHOLD.toLocaleString("en-IN")}`}
                 </p>
+                <div className="pt-1">
+                  <CartPromoNotes compact />
+                </div>
               </div>
 
               <div className="mt-4 flex flex-col gap-2.5">

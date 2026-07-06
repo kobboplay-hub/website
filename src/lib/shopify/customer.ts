@@ -33,17 +33,15 @@ import {
   normalizeCountry,
   normalizeIndianProvince,
 } from "@/lib/data/india-provinces";
+import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { parseMoney } from "./types";
+import { CustomerApiError } from "./customer-errors";
+import {
+  getCustomerAuthProvider,
+} from "@/lib/auth/session";
+import * as customerAccount from "./customer-account";
 
-export class CustomerApiError extends Error {
-  code?: string;
-
-  constructor(message: string, code?: string) {
-    super(message);
-    this.name = "CustomerApiError";
-    this.code = code;
-  }
-}
+export { CustomerApiError } from "./customer-errors";
 
 interface ShopifyGraphQLResponse<T> {
   data?: T;
@@ -88,7 +86,7 @@ async function customerShopifyFetch<T>(
 
   if (!response.ok) {
     throw new CustomerApiError(
-      `Shopify API error: ${response.status} ${response.statusText}`,
+      "We're having trouble connecting. Please check your internet and try again.",
     );
   }
 
@@ -214,7 +212,7 @@ export async function registerCustomer(
   }
 
   const tokenData = await createAccessToken(input.email, input.password);
-  await setCustomerToken(tokenData.accessToken, tokenData.expiresAt);
+  await setCustomerToken(tokenData.accessToken, tokenData.expiresAt, "storefront");
 
   const profile = await getCurrentCustomer(tokenData.accessToken);
   if (!profile) {
@@ -245,11 +243,11 @@ async function createAccessToken(email: string, password: string) {
     const code = customerUserErrors[0]?.code ?? undefined;
     if (code === "UNIDENTIFIED_CUSTOMER") {
       throw new CustomerApiError(
-        "Incorrect email or password. Please try again.",
+        "We couldn't sign you in. Please check your email and password.",
         code,
       );
     }
-    throw new CustomerApiError(message, code);
+    throw new CustomerApiError(mapAuthErrorMessage(message, code), code);
   }
 
   if (!customerAccessToken) {
@@ -264,7 +262,7 @@ export async function loginCustomer(
   password: string,
 ): Promise<CustomerProfile> {
   const tokenData = await createAccessToken(email, password);
-  await setCustomerToken(tokenData.accessToken, tokenData.expiresAt);
+  await setCustomerToken(tokenData.accessToken, tokenData.expiresAt, "storefront");
 
   const profile = await getCurrentCustomer(tokenData.accessToken);
   if (!profile) {
@@ -277,8 +275,9 @@ export async function loginCustomer(
 
 export async function logoutCustomer(): Promise<void> {
   const token = await getCustomerToken();
+  const provider = await getCustomerAuthProvider();
 
-  if (token) {
+  if (token && provider === "storefront") {
     try {
       await customerShopifyFetch(CUSTOMER_ACCESS_TOKEN_DELETE_MUTATION, {
         customerAccessToken: token,
@@ -368,6 +367,7 @@ export async function resetCustomerPasswordByUrl(
   await setCustomerToken(
     data.customerResetByUrl.customerAccessToken!.accessToken,
     data.customerResetByUrl.customerAccessToken!.expiresAt,
+    "storefront",
   );
 
   return profile;
@@ -405,6 +405,7 @@ export async function resetCustomerPassword(
   await setCustomerToken(
     data.customerReset.customerAccessToken!.accessToken,
     data.customerReset.customerAccessToken!.expiresAt,
+    "storefront",
   );
 
   return profile;
@@ -415,6 +416,16 @@ export async function getCurrentCustomer(
 ): Promise<CustomerProfile | null> {
   const token = accessToken ?? (await getCustomerToken());
   if (!token) return null;
+
+  const provider = await getCustomerAuthProvider();
+
+  if (provider === "customer_account") {
+    const profile = await customerAccount.getCustomerAccountProfile(token);
+    if (!profile && !accessToken) {
+      await clearCustomerToken();
+    }
+    return profile;
+  }
 
   const data = await customerShopifyFetch<{
     customer: {
@@ -444,6 +455,10 @@ export async function updateCustomerProfile(
   const token = await getCustomerToken();
   if (!token) {
     throw new CustomerApiError("Not authenticated");
+  }
+
+  if ((await getCustomerAuthProvider()) === "customer_account") {
+    return customerAccount.updateCustomerAccountProfile(token, input);
   }
 
   const data = await customerShopifyFetch<{
@@ -482,6 +497,10 @@ export async function getCustomerOrders(
   const token = await getCustomerToken();
   if (!token) {
     throw new CustomerApiError("Not authenticated");
+  }
+
+  if ((await getCustomerAuthProvider()) === "customer_account") {
+    return customerAccount.getCustomerAccountOrders(token, first);
   }
 
   const data = await customerShopifyFetch<{
@@ -677,6 +696,10 @@ export async function createCustomerAddress(
     throw new CustomerApiError("Not authenticated");
   }
 
+  if ((await getCustomerAuthProvider()) === "customer_account") {
+    return customerAccount.createCustomerAccountAddress(token, address);
+  }
+
   const data = await customerShopifyFetch<{
     customerAddressCreate: {
       customerAddress: CustomerAddress | null;
@@ -709,6 +732,10 @@ export async function updateCustomerAddress(
     throw new CustomerApiError("Not authenticated");
   }
 
+  if ((await getCustomerAuthProvider()) === "customer_account") {
+    return customerAccount.updateCustomerAccountAddress(token, id, address);
+  }
+
   const data = await customerShopifyFetch<{
     customerAddressUpdate: {
       customerAddress: CustomerAddress | null;
@@ -739,6 +766,11 @@ export async function deleteCustomerAddress(id: string): Promise<void> {
     throw new CustomerApiError("Not authenticated");
   }
 
+  if ((await getCustomerAuthProvider()) === "customer_account") {
+    await customerAccount.deleteCustomerAccountAddress(token, id);
+    return;
+  }
+
   const data = await customerShopifyFetch<{
     customerAddressDelete: {
       deletedCustomerAddressId: string | null;
@@ -762,6 +794,11 @@ export async function setDefaultCustomerAddress(
   const token = await getCustomerToken();
   if (!token) {
     throw new CustomerApiError("Not authenticated");
+  }
+
+  if ((await getCustomerAuthProvider()) === "customer_account") {
+    await customerAccount.setDefaultCustomerAccountAddress(token, addressId);
+    return;
   }
 
   const data = await customerShopifyFetch<{

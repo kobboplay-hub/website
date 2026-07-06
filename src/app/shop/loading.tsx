@@ -12,7 +12,7 @@ export default function ShopLoading() {
           <div className="h-11 w-full rounded-full bg-kobbo-beige sm:w-44" />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="overflow-hidden rounded-2xl bg-kobbo-white shadow-soft">
               <div className="aspect-square bg-kobbo-beige" />

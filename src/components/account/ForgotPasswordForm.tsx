@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Loader2, CheckCircle, Copy, Check } from "lucide-react";
 import { AuthCardShell } from "@/components/account/PageShell";
+import AuthAlert from "@/components/account/AuthAlert";
+import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import {
   getPasswordResetEmailLink,
   getSiteUrl,
@@ -48,11 +50,11 @@ export default function ForgotPasswordForm() {
 
       setSent(true);
     } catch (err) {
-      setError(
+      const raw =
         err instanceof Error
           ? err.message
-          : "Failed to send reset email. Please try again.",
-      );
+          : "Failed to send reset email. Please try again.";
+      setError(mapAuthErrorMessage(raw));
     } finally {
       setLoading(false);
     }
@@ -122,11 +124,7 @@ export default function ForgotPasswordForm() {
       subtitle="We'll email you a link to reset your password"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </p>
-        )}
+        {error && <AuthAlert variant="error">{error}</AuthAlert>}
         <div>
           <label
             htmlFor="email"

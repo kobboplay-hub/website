@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle } from "lucide-react";
 import { AuthCardShell } from "@/components/account/PageShell";
+import AuthAlert from "@/components/account/AuthAlert";
+import PasswordInput from "@/components/account/PasswordInput";
+import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { useAuth } from "@/context/auth-context";
 import { parseShopifyResetUrl } from "@/lib/auth/reset-password";
 
@@ -84,11 +87,11 @@ export default function ResetPasswordForm({
       await refreshUser();
       setTimeout(() => router.push("/account"), 1500);
     } catch (err) {
-      setError(
+      const raw =
         err instanceof Error
           ? err.message
-          : "Password reset failed. Please try again.",
-      );
+          : "Password reset failed. Please try again.";
+      setError(mapAuthErrorMessage(raw));
     } finally {
       setLoading(false);
     }
@@ -111,11 +114,7 @@ export default function ResetPasswordForm({
             </ol>
           </div>
 
-          {error && (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-              {error}
-            </p>
-          )}
+          {error && <AuthAlert variant="error">{error}</AuthAlert>}
 
           <div>
             <label
@@ -198,43 +197,21 @@ export default function ResetPasswordForm({
       subtitle="Apna naya Kobbo password set karein"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </p>
-        )}
-        <div>
-          <label
-            htmlFor="password"
-            className="text-sm font-semibold text-kobbo-black"
-          >
-            New password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="text-sm font-semibold text-kobbo-black"
-          >
-            Confirm password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
-          />
-        </div>
+        {error && <AuthAlert variant="error">{error}</AuthAlert>}
+        <PasswordInput
+          id="password"
+          label="New password"
+          value={password}
+          onChange={setPassword}
+          required
+        />
+        <PasswordInput
+          id="confirmPassword"
+          label="Confirm password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          required
+        />
         <button
           type="submit"
           disabled={loading}

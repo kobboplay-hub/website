@@ -1,11 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { Loader2 } from "lucide-react";
 import AccountLayoutShell from "@/components/account/AccountLayoutShell";
 import OrderCard from "@/components/account/OrderCard";
+import EmptyState from "@/components/ui/EmptyState";
+import ErrorState from "@/components/ui/ErrorState";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { parseShopifyProductId } from "@/lib/judgeme";
+import { mapAuthErrorMessage } from "@/lib/auth/messages";
+import { emptyStates, errorStates } from "@/data/empty-states";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
 
 export default function OrdersPageContent() {
@@ -76,7 +79,9 @@ export default function OrdersPageContent() {
       })
       .catch((err) =>
         setError(
-          err instanceof Error ? err.message : "Failed to load orders",
+          mapAuthErrorMessage(
+            err instanceof Error ? err.message : errorStates.orders.description,
+          ),
         ),
       )
       .finally(() => setLoading(false));
@@ -93,9 +98,7 @@ export default function OrdersPageContent() {
   if (loading) {
     return (
       <AccountLayoutShell title="Order History">
-        <div className="flex justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-kobbo-yellow" />
-        </div>
+        <LoadingSpinner label="Loading your orders" />
       </AccountLayoutShell>
     );
   }
@@ -103,9 +106,12 @@ export default function OrdersPageContent() {
   if (error) {
     return (
       <AccountLayoutShell title="Order History">
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-          {error}
-        </p>
+        <ErrorState
+          title={errorStates.orders.title}
+          description={error}
+          cta="Back to Account"
+          ctaHref="/account"
+        />
       </AccountLayoutShell>
     );
   }
@@ -113,20 +119,12 @@ export default function OrdersPageContent() {
   if (orders.length === 0) {
     return (
       <AccountLayoutShell title="Order History">
-        <div className="rounded-3xl bg-kobbo-white px-6 py-16 text-center shadow-soft">
-          <p className="font-heading text-xl font-bold text-kobbo-black">
-            No orders yet
-          </p>
-          <p className="mt-2 text-sm text-kobbo-muted">
-            When you place an order, it will show up here.
-          </p>
-          <Link
-            href="/shop"
-            className="mt-6 inline-flex rounded-full bg-kobbo-yellow px-6 py-3 text-sm font-bold text-kobbo-black shadow-soft"
-          >
-            Start Shopping
-          </Link>
-        </div>
+        <EmptyState
+          title={emptyStates.orders.title}
+          description={emptyStates.orders.description}
+          cta={emptyStates.orders.cta}
+          ctaHref={emptyStates.orders.ctaHref}
+        />
       </AccountLayoutShell>
     );
   }

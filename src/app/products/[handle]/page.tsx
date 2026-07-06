@@ -21,8 +21,9 @@ import {
   defaultHighlights,
   defaultWhyParentsLove,
   getProductTabsContent,
-  getProductVideoThumbnail,
+  getProductVideos,
 } from "@/lib/productPageContent";
+import { productMetadata, buildPageTitle } from "@/data/seo";
 
 interface ProductPageProps {
   params: Promise<{ handle: string }>;
@@ -46,15 +47,16 @@ export async function generateMetadata({
 
   try {
     const product = await getProductByHandle(handle);
-    if (!product) return { title: "Product Not Found — Kobbo" };
+    if (!product) {
+      return { title: buildPageTitle("Product Not Found") };
+    }
 
-    return {
-      title: product.seo.title ?? `${product.title} — Kobbo`,
-      description:
-        product.seo.description ?? product.description.slice(0, 160),
-    };
+    return productMetadata(
+      product.title,
+      product.seo.description ?? product.description.slice(0, 160),
+    );
   } catch {
-    return { title: "Product — Kobbo" };
+    return { title: buildPageTitle("Product") };
   }
 }
 
@@ -87,15 +89,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 
   const tabsContent = getProductTabsContent(product);
-  const video = getProductVideoThumbnail(product);
+  const videos = getProductVideos(product);
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
       <ProductBreadcrumb productName={product.title} />
 
-      <section className="pb-8 sm:pb-10">
+      <section className="pb-24 sm:pb-28 lg:pb-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          <div className="grid grid-cols-1 gap-5 sm:gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">
             <ProductGallery
               images={images}
               productName={product.title}
@@ -107,7 +109,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </section>
 
       <ProductHighlights highlights={defaultHighlights} />
-      <ProductVideo video={video} />
+      <ProductVideo videos={videos} />
       <ProductTabs content={tabsContent} />
       <WhyParentsLoveIt items={defaultWhyParentsLove} />
       <RelatedProducts

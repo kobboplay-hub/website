@@ -4,15 +4,14 @@ import Newsletter from "@/components/Newsletter";
 import ShopHeader from "@/components/shop/ShopHeader";
 import ProductGrid from "@/components/shop/ProductGrid";
 import ShopError from "@/components/shop/ShopError";
+import EmptyState from "@/components/ui/EmptyState";
 import { getProducts } from "@/lib/shopify";
 import { getProductReviewSummaries } from "@/lib/judgeme";
+import { shopMetadata } from "@/data/seo";
+import { emptyStates } from "@/data/empty-states";
 import type { Product } from "@/lib/shopify/types";
 
-export const metadata: Metadata = {
-  title: "Shop Toys — Kobbo",
-  description:
-    "Explore playful, skill-building toys curated for little minds.",
-};
+export const metadata: Metadata = shopMetadata;
 
 export const revalidate = 3600;
 
@@ -43,13 +42,11 @@ export default async function ShopPage() {
           {hasError ? (
             <ShopError />
           ) : products.length === 0 ? (
-            <div className="mt-12 rounded-3xl bg-kobbo-white px-6 py-16 text-center shadow-soft">
-              <p className="font-heading text-xl font-bold text-kobbo-black">
-                No toys found
-              </p>
-              <p className="mt-2 text-sm text-kobbo-muted">
-                Check back soon for new arrivals.
-              </p>
+            <div className="mt-8">
+              <EmptyState
+                title={emptyStates.shop.title}
+                description={emptyStates.shop.description}
+              />
             </div>
           ) : (
             <div className="mt-8">
