@@ -13,11 +13,72 @@ export interface TokenResponse {
   token_type?: string;
 }
 
-export function getSiteBaseUrl(fallbackOrigin?: string): string {
+const LOCALHOST_PATTERN = /localhost|127\.0\.0\.1/i;
+
+/**
+ * Resolves the public site URL for OAuth callbacks.
+ * On Vercel/production, uses the actual request host — not a stale localhost env.
+ */
+export function resolveRequestBaseUrl(request: Request): string {
+  const explicitCallback = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_URL?.trim();
+  if (explicitCallback) {
+    return explicitCallback
+      .replace(/\/api\/auth\/callback\/?$/, "")
+      .replace(/\/$/, "");
+  }
+
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost.split(",")[0].trim()}`.replace(
+      /\/$/,
+      "",
+    );
+  }
+
+  const requestOrigin = new URL(request.url).origin.replace(/\/$/, "");
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+
+  if (configured && !LOCALHOST_PATTERN.test(configured)) {
+    return configured;
+  }
+
+  if (requestOrigin && !LOCALHOST_PATTERN.test(requestOrigin)) {
+    return requestOrigin;
+  }
+
+  if (configured) return configured;
+  return requestOrigin || "http://localhost:3000";
+}
+
+export function getSiteBaseUrl(fallbackOrigin?: string): string {
+  const explicitCallback = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CALLBACK_URL?.trim();
+  if (explicitCallback) {
+    return explicitCallback
+      .replace(/\/api\/auth\/callback\/?$/, "")
+      .replace(/\/$/, "");
+  }
+
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (configured && !LOCALHOST_PATTERN.test(configured)) {
+    return configured;
+  }
+
+  if (fallbackOrigin && !LOCALHOST_PATTERN.test(fallbackOrigin)) {
+    return fallbackOrigin.replace(/\/$/, "");
+  }
+
   if (configured) return configured;
   if (fallbackOrigin) return fallbackOrigin.replace(/\/$/, "");
   return "http://localhost:3000";
+}
+
+export function getCustomerAccountCallbackUrl(baseUrl: string): string {
+  return `${baseUrl.replace(/\/$/, "")}/api/auth/callback`;
+}
+
+export function resolveCustomerAccountCallbackUrl(request: Request): string {
+  return getCustomerAccountCallbackUrl(resolveRequestBaseUrl(request));
 }
 
 export function generateCodeVerifier(): string {
@@ -48,18 +109,13 @@ function getShopDomain(): string {
   return domain;
 }
 
-export function getCustomerAccountCallbackUrl(fallbackOrigin?: string): string {
-  return `${getSiteBaseUrl(fallbackOrigin)}/api/auth/callback`;
-}
-
 /**
- * Shopify hosted Customer Account login (Google / email available on Shopify UI).
- * Uses Customer Account API OAuth + PKCE — not custom Google OAuth.
+ * Shopify hosted Customer Account login (Google / email on Shopify UI).
  */
 export function buildShopifyHostedLoginUrl(options: {
   state: string;
   codeChallenge: string;
-  redirectUri?: string;
+  redirectUri: string;
 }): string {
   const clientId = getClientId();
   const loginUrl = new URL(
@@ -68,10 +124,7 @@ export function buildShopifyHostedLoginUrl(options: {
 
   loginUrl.searchParams.set("client_id", clientId);
   loginUrl.searchParams.set("response_type", "code");
-  loginUrl.searchParams.set(
-    "redirect_uri",
-    options.redirectUri ?? getCustomerAccountCallbackUrl(),
-  );
+  loginUrl.searchParams.set("redirect_uri", options.redirectUri);
   loginUrl.searchParams.set("scope", "openid email customer-account-api:full");
   loginUrl.searchParams.set("state", options.state);
   loginUrl.searchParams.set("code_challenge", options.codeChallenge);
@@ -86,7 +139,7 @@ export function absoluteRedirect(
   pathname: string,
   searchParams?: Record<string, string>,
 ): URL {
-  const baseUrl = getSiteBaseUrl(new URL(request.url).origin);
+  const baseUrl = resolveRequestBaseUrl(request);
   const url = new URL(pathname, baseUrl);
   if (searchParams) {
     for (const [key, value] of Object.entries(searchParams)) {
@@ -112,13 +165,13 @@ export async function fetchOpenIdConfiguration(): Promise<OpenIdConfiguration> {
 export async function exchangeAuthorizationCode(options: {
   code: string;
   codeVerifier: string;
-  redirectUri?: string;
+  redirectUri: string;
 }): Promise<TokenResponse> {
   const openIdConfig = await fetchOpenIdConfiguration();
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     client_id: getClientId(),
-    redirect_uri: options.redirectUri ?? getCustomerAccountCallbackUrl(),
+    redirect_uri: options.redirectUri,
     code: options.code,
     code_verifier: options.codeVerifier,
   });
@@ -154,7 +207,7 @@ export async function exchangeAuthorizationCode(options: {
 
 export function tokenExpiresAt(expiresIn?: number): string {
   if (!expiresIn || expiresIn <= 0) {
-    return new Date(Date.now() + 60 * 60 * 24 * 14 * 1000).toISOString();
+    return new Date(Date.now() + 60 * 60 * 24 * 1000).toISOString();
   }
   return new Date(Date.now() + expiresIn * 1000).toISOString();
 }

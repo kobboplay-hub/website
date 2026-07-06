@@ -5,7 +5,7 @@ import {
   generateCodeChallenge,
   generateCodeVerifier,
   generateOAuthState,
-  getCustomerAccountCallbackUrl,
+  resolveCustomerAccountCallbackUrl,
 } from "@/lib/auth/customer-account-oauth";
 import { setOAuthSession } from "@/lib/auth/session";
 
@@ -17,11 +17,10 @@ function safeRedirectPath(value: string | null): string {
 }
 
 export async function GET(request: Request) {
-  const requestOrigin = new URL(request.url).origin;
-
   try {
     const { searchParams } = new URL(request.url);
     const redirectTo = safeRedirectPath(searchParams.get("redirect"));
+    const callbackUri = resolveCustomerAccountCallbackUrl(request);
 
     const state = generateOAuthState();
     const verifier = generateCodeVerifier();
@@ -31,12 +30,13 @@ export async function GET(request: Request) {
       state,
       verifier,
       redirectTo,
+      callbackUri,
     });
 
     const loginUrl = buildShopifyHostedLoginUrl({
       state,
       codeChallenge: challenge,
-      redirectUri: getCustomerAccountCallbackUrl(requestOrigin),
+      redirectUri: callbackUri,
     });
 
     return NextResponse.redirect(loginUrl);

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import {
   absoluteRedirect,
   exchangeAuthorizationCode,
-  getCustomerAccountCallbackUrl,
   tokenExpiresAt,
 } from "@/lib/auth/customer-account-oauth";
 import {
@@ -19,7 +18,6 @@ function safeRedirectPath(value: string): string {
 }
 
 export async function GET(request: Request) {
-  const requestOrigin = new URL(request.url).origin;
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
@@ -54,7 +52,7 @@ export async function GET(request: Request) {
     const tokenData = await exchangeAuthorizationCode({
       code,
       codeVerifier: oauthSession.verifier,
-      redirectUri: getCustomerAccountCallbackUrl(requestOrigin),
+      redirectUri: oauthSession.callbackUri,
     });
 
     const profile = await getCustomerAccountProfile(tokenData.access_token);

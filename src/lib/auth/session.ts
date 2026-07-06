@@ -5,6 +5,7 @@ export const CUSTOMER_AUTH_PROVIDER_COOKIE = "kobbo_customer_auth_provider";
 export const OAUTH_STATE_COOKIE = "kobbo_oauth_state";
 export const OAUTH_VERIFIER_COOKIE = "kobbo_oauth_verifier";
 export const OAUTH_REDIRECT_COOKIE = "kobbo_oauth_redirect";
+export const OAUTH_CALLBACK_URI_COOKIE = "kobbo_oauth_callback_uri";
 
 export type CustomerAuthProvider = "storefront" | "customer_account";
 
@@ -58,6 +59,7 @@ export async function setOAuthSession(values: {
   state: string;
   verifier: string;
   redirectTo: string;
+  callbackUri: string;
 }): Promise<void> {
   const cookieStore = await cookies();
   const options = {
@@ -71,25 +73,29 @@ export async function setOAuthSession(values: {
   cookieStore.set(OAUTH_STATE_COOKIE, values.state, options);
   cookieStore.set(OAUTH_VERIFIER_COOKIE, values.verifier, options);
   cookieStore.set(OAUTH_REDIRECT_COOKIE, values.redirectTo, options);
+  cookieStore.set(OAUTH_CALLBACK_URI_COOKIE, values.callbackUri, options);
 }
 
 export async function consumeOAuthSession(): Promise<{
   state: string;
   verifier: string;
   redirectTo: string;
+  callbackUri: string;
 } | null> {
   const cookieStore = await cookies();
   const state = cookieStore.get(OAUTH_STATE_COOKIE)?.value;
   const verifier = cookieStore.get(OAUTH_VERIFIER_COOKIE)?.value;
   const redirectTo = cookieStore.get(OAUTH_REDIRECT_COOKIE)?.value ?? "/account";
+  const callbackUri = cookieStore.get(OAUTH_CALLBACK_URI_COOKIE)?.value;
 
   cookieStore.delete(OAUTH_STATE_COOKIE);
   cookieStore.delete(OAUTH_VERIFIER_COOKIE);
   cookieStore.delete(OAUTH_REDIRECT_COOKIE);
+  cookieStore.delete(OAUTH_CALLBACK_URI_COOKIE);
 
-  if (!state || !verifier) return null;
+  if (!state || !verifier || !callbackUri) return null;
 
-  return { state, verifier, redirectTo };
+  return { state, verifier, redirectTo, callbackUri };
 }
 
 export async function requireCustomerToken(): Promise<string> {
