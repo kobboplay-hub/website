@@ -105,12 +105,12 @@ export default function ResetPasswordForm({
       >
         <div className="space-y-4">
           <div className="rounded-xl bg-kobbo-yellow/20 px-4 py-3 text-left text-xs leading-relaxed text-kobbo-black">
-            <p className="font-semibold">Email link Shopify pe khul raha hai?</p>
+            <p className="font-semibold">Does the email link open on Shopify?</p>
             <ol className="mt-2 list-decimal space-y-1 pl-4">
-              <li>Email mein &quot;Reset password&quot; par right-click karein</li>
-              <li>&quot;Copy link&quot; / link copy karein</li>
-              <li>Niche paste karein aur Continue dabayein</li>
-              <li>Naya password set karein — aap Kobbo site par rahenge</li>
+              <li>Right-click &quot;Reset password&quot; in the email</li>
+              <li>Select &quot;Copy link&quot;</li>
+              <li>Paste it below and click Continue</li>
+              <li>Set a new password — you&apos;ll stay on the Kobbo site</li>
             </ol>
           </div>
 
@@ -184,7 +184,7 @@ export default function ResetPasswordForm({
         <div className="text-center">
           <CheckCircle className="mx-auto h-12 w-12 text-kobbo-green" />
           <p className="mt-4 text-sm text-kobbo-muted">
-            Password reset ho gaya. Aapko account page par bhej rahe hain…
+            Your password has been reset. Redirecting you to your account…
           </p>
         </div>
       </AuthCardShell>
@@ -194,7 +194,7 @@ export default function ResetPasswordForm({
   return (
     <AuthCardShell
       title="Set New Password"
-      subtitle="Apna naya Kobbo password set karein"
+      subtitle="Choose a new password for your Kobbo account"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <AuthAlert variant="error">{error}</AuthAlert>}

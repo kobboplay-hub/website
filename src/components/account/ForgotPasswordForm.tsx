@@ -73,19 +73,19 @@ export default function ForgotPasswordForm() {
           </div>
 
           <p className="mt-5 rounded-xl bg-kobbo-yellow/20 px-4 py-3 text-xs leading-relaxed text-kobbo-black">
-            Email mein link click karo → naya password set karo → aap{" "}
-            <strong>Kobbo website</strong> par account mein login ho jaoge.
+            Click the link in your email, set a new password, and you&apos;ll be
+            signed in to your <strong>Kobbo</strong> account.
           </p>
 
           <details className="mt-4 rounded-xl border border-kobbo-beige bg-kobbo-cream p-3">
             <summary className="cursor-pointer text-xs font-semibold text-kobbo-black">
-              Agar link Shopify.com pe khulta hai — ye 1 baar setup karo
+              If the link opens on Shopify.com — one-time setup
             </summary>
             <ol className="mt-2 list-decimal space-y-1 pl-4 text-xs text-kobbo-muted">
               <li>Shopify Admin → Settings → Notifications</li>
               <li>Customer account password reset → Edit</li>
-              <li>Reset button link ko niche wale se replace karo</li>
-              <li>Save karo, phir naya reset email bhejo</li>
+              <li>Replace the reset button link with the template below</li>
+              <li>Save, then send a new reset email</li>
             </ol>
             <code className="mt-2 block overflow-x-auto rounded-lg bg-kobbo-white p-2 text-[10px] leading-relaxed text-kobbo-black">
               {emailTemplateLink}
