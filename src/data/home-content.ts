@@ -30,6 +30,15 @@ export const bestSellersContent = {
   viewAllHref: "/shop",
 };
 
+export const newsletterSection = {
+  title: "Let's Keep the Fun Going!",
+  subtitle: "Join our newsletter for offers, new toys and parenting tips.",
+  placeholder: "Enter your email",
+  buttonLabel: "Subscribe",
+  successFallback:
+    "Thanks for subscribing! You'll hear from us about offers, new toys and parenting tips.",
+};
+
 export const instagramSection = {
   title: "Unboxing & Play Moments",
   subtitle:
