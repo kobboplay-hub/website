@@ -49,8 +49,11 @@ export default function ProductFloatingVideoWidget({
     updateOffset();
 
     const bar = document.getElementById(MOBILE_BUY_BAR_ID);
-    const observer = bar ? new ResizeObserver(updateOffset) : null;
-    observer?.observe(bar);
+    let observer: ResizeObserver | null = null;
+    if (bar) {
+      observer = new ResizeObserver(updateOffset);
+      observer.observe(bar);
+    }
     window.addEventListener("resize", updateOffset);
 
     return () => {
