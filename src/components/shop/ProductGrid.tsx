@@ -54,14 +54,14 @@ export default function ProductGrid({
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 sm:max-w-md">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-kobbo-muted" />
+        <div className="relative w-full sm:max-w-md sm:flex-1">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-kobbo-muted" />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search toys..."
-            className="w-full rounded-full border-2 border-transparent bg-kobbo-white py-2.5 pl-11 pr-4 text-sm text-kobbo-black placeholder:text-kobbo-muted/60 shadow-soft outline-none transition-colors focus:border-kobbo-yellow"
+            placeholder="Search on this page..."
+            className="min-h-11 w-full rounded-full border-2 border-transparent bg-kobbo-white py-2.5 pl-11 pr-4 text-sm text-kobbo-black placeholder:text-kobbo-muted/60 shadow-soft outline-none transition-colors focus:border-kobbo-yellow"
           />
         </div>
 
@@ -69,7 +69,7 @@ export default function ProductGrid({
           value={sort}
           onChange={(e) => setSort(e.target.value as SortOption)}
           aria-label="Sort products"
-          className="rounded-full border-2 border-transparent bg-kobbo-white px-4 py-2.5 text-sm font-medium text-kobbo-black shadow-soft outline-none transition-colors focus:border-kobbo-yellow sm:min-w-[180px]"
+          className="min-h-11 w-full rounded-full border-2 border-transparent bg-kobbo-white px-4 py-2.5 text-sm font-medium text-kobbo-black shadow-soft outline-none transition-colors focus:border-kobbo-yellow sm:min-w-[180px] sm:w-auto"
         >
           {sortOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -80,16 +80,16 @@ export default function ProductGrid({
       </div>
 
       {filteredProducts.length === 0 ? (
-        <div className="mt-12 rounded-3xl bg-kobbo-white px-6 py-16 text-center shadow-soft">
-          <p className="font-heading text-xl font-bold text-kobbo-black">
+        <div className="mt-8 rounded-2xl bg-kobbo-white px-5 py-12 text-center shadow-soft sm:mt-12 sm:rounded-3xl sm:px-6 sm:py-16">
+          <p className="font-heading text-lg font-bold text-kobbo-black sm:text-xl">
             No toys found
           </p>
           <p className="mt-2 text-sm text-kobbo-muted">
-            Try searching for something else.
+            Try searching for something else on this page.
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}

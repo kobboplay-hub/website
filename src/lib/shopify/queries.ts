@@ -303,6 +303,23 @@ export const GET_PRODUCTS_QUERY = `
   }
 `;
 
+export const GET_PRODUCTS_PAGINATED_QUERY = `
+  ${PRODUCT_CARD_FRAGMENT}
+  query GetProductsPaginated($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...ProductCard
+        }
+      }
+    }
+  }
+`;
+
 export const GET_PRODUCT_BY_HANDLE_QUERY = `
   ${PRODUCT_DETAIL_FRAGMENT}
   query GetProductByHandle($handle: String!) {
