@@ -19,11 +19,26 @@ export interface ShopifyVariant {
   selectedOptions: { name: string; value: string }[];
 }
 
+/** Resolved file/media reference on a product metafield */
+export interface ShopifyMetafieldReference {
+  id?: string;
+  alt?: string | null;
+  sources?: { url: string; mimeType: string }[];
+  embedUrl?: string | null;
+  host?: string | null;
+  originUrl?: string | null;
+  previewImage?: ShopifyImage | null;
+  url?: string;
+  mimeType?: string | null;
+}
+
 export interface ShopifyMetafield {
   namespace: string;
   key: string;
   value: string;
   type: string;
+  reference?: ShopifyMetafieldReference | null;
+  references?: { edges: { node: ShopifyMetafieldReference }[] };
 }
 
 export interface ShopifySeo {

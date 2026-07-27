@@ -15,7 +15,6 @@ import { useCart } from "@/context/cart-context";
 import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductDescription from "@/components/product/ProductDescription";
-import CartPromoNotes from "@/components/cart/CartPromoNotes";
 
 interface ProductInfoProps {
   product: Product;
@@ -163,10 +162,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           </div>
         </div>
 
-        <div className="mt-4">
-          <CartPromoNotes showPaymentOffer={false} compact />
-        </div>
-
         {/* Primary actions */}
         <div className="mt-5 space-y-2.5">
           <AddToCartButton
@@ -216,6 +211,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Mobile sticky buy bar — standard ecommerce pattern */}
       <div
+        id="product-mobile-buy-bar"
         className="fixed bottom-0 left-0 right-0 z-40 border-t border-kobbo-beige bg-kobbo-white/95 px-4 py-3 shadow-soft-lg backdrop-blur-md lg:hidden"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >

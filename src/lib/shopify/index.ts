@@ -1,5 +1,6 @@
 import {
   GET_PRODUCTS_QUERY,
+  GET_PRODUCTS_WITH_VIDEOS_QUERY,
   GET_PRODUCT_BY_HANDLE_QUERY,
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
@@ -152,6 +153,17 @@ export async function getProducts(limit = 20): Promise<Product[]> {
     products: { edges: { node: ShopifyProductNode }[] };
   }>({
     query: GET_PRODUCTS_QUERY,
+    variables: { first: limit },
+  });
+
+  return data.products.edges.map((edge) => normalizeProduct(edge.node));
+}
+
+export async function getProductsWithVideos(limit = 50): Promise<Product[]> {
+  const data = await shopifyFetch<{
+    products: { edges: { node: ShopifyProductNode }[] };
+  }>({
+    query: GET_PRODUCTS_WITH_VIDEOS_QUERY,
     variables: { first: limit },
   });
 

@@ -4,7 +4,7 @@
  */
 
 export const announcementBar = {
-  text: "Free Shipping | 7-Day Easy Returns",
+  text: "₹50 Off on Online Payments",
 };
 
 export const heroContent = {
@@ -33,7 +33,7 @@ export const bestSellersContent = {
 export const instagramSection = {
   title: "Unboxing & Play Moments",
   subtitle:
-    "Watch real toy moments, demos and playful unboxing videos from our Instagram.",
+    "Watch real unboxing moments and playful demos from our products.",
   profileUrl:
     "https://www.instagram.com/kobboplay?igsh=MXE3bDZ3NWxzbzk0bg%3D%3D&utm_source=qr",
   viewOnInstagramLabel: "View on Instagram",

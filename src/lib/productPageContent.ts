@@ -1,4 +1,9 @@
-import type { Product, ShopifyMediaVideo } from "@/lib/shopify/types";
+import type {
+  Product,
+  ShopifyMediaVideo,
+  ShopifyMetafield,
+  ShopifyMetafieldReference,
+} from "@/lib/shopify/types";
 import { productFaqs, type ProductFAQ } from "@/data/faqs";
 
 export interface ProductHighlight {
@@ -24,6 +29,13 @@ export interface ProductVideoItem {
   url: string;
   thumbnail: string;
   label?: string;
+}
+
+export interface HomeProductVideo {
+  id: string;
+  title: string;
+  handle: string;
+  video: ProductVideoItem;
 }
 
 export interface ProductTabsContent {
@@ -267,6 +279,111 @@ function mediaVideoToItem(
   return null;
 }
 
+function metafieldReferenceToItem(
+  ref: ShopifyMetafieldReference,
+  fallbackThumb: string,
+): ProductVideoItem | null {
+  if (ref.sources?.[0]?.url) {
+    return mediaVideoToItem(
+      {
+        id: ref.id ?? "metafield-video",
+        mediaContentType: "VIDEO",
+        alt: ref.alt,
+        sources: ref.sources,
+        previewImage: ref.previewImage,
+      },
+      fallbackThumb,
+    );
+  }
+
+  if (ref.embedUrl) {
+    return mediaVideoToItem(
+      {
+        id: ref.id ?? "metafield-external-video",
+        mediaContentType: "EXTERNAL_VIDEO",
+        alt: ref.alt,
+        embedUrl: ref.embedUrl,
+        host: ref.host,
+        originUrl: ref.originUrl,
+        previewImage: ref.previewImage,
+      },
+      fallbackThumb,
+    );
+  }
+
+  if (ref.url) {
+    if (
+      ref.mimeType?.startsWith("video/") ||
+      /\.(mp4|webm|mov)(\?|$)/i.test(ref.url)
+    ) {
+      return {
+        id: ref.id ?? ref.url,
+        type: "mp4",
+        url: ref.url,
+        thumbnail: fallbackThumb,
+        label: "Product Video",
+      };
+    }
+
+    return parseVideoUrl(ref.url);
+  }
+
+  return null;
+}
+
+function extractVideosFromMetafield(
+  metafield: ShopifyMetafield,
+  fallbackThumb: string,
+): ProductVideoItem[] {
+  const videos: ProductVideoItem[] = [];
+
+  if (metafield.reference) {
+    const item = metafieldReferenceToItem(metafield.reference, fallbackThumb);
+    if (item) videos.push(item);
+  }
+
+  for (const edge of metafield.references?.edges ?? []) {
+    const item = metafieldReferenceToItem(edge.node, fallbackThumb);
+    if (item) videos.push(item);
+  }
+
+  if (videos.length > 0) {
+    return videos;
+  }
+
+  const urls =
+    metafield.key === "video_url"
+      ? [metafield.value]
+      : parseListMetafield(metafield.value ?? "");
+
+  return urls
+    .filter((url) => url && !url.startsWith("gid://"))
+    .map(parseVideoUrl)
+    .filter((v): v is ProductVideoItem => v !== null);
+}
+
+function collectProductVideos(product: Product): ProductVideoItem[] {
+  const fallbackThumb =
+    product.featuredImage?.url ??
+    product.images[0]?.url ??
+    placeholderVideo.thumbnail;
+
+  const fromMedia =
+    product.mediaVideos
+      ?.map((m) => mediaVideoToItem(m, fallbackThumb))
+      .filter((v): v is ProductVideoItem => v !== null) ?? [];
+
+  if (fromMedia.length > 0) {
+    return fromMedia;
+  }
+
+  const metafieldKeys = ["product_video", "product_videos", "video_url"] as const;
+  return metafieldKeys.flatMap((key) => {
+    const field = product.metafields.find((m) => m.key === key);
+    return field ? extractVideosFromMetafield(field, fallbackThumb) : [];
+  });
+}
+
 /**
  * Product tabs — content from Shopify description + metafields.
  * Metafields: custom.features, custom.specifications, custom.care_instructions
@@ -342,7 +459,7 @@ export function hasTabContent(
 /**
  * Product videos — priority:
  * A) Shopify product media (Video / ExternalVideo)
- * B) Metafield custom.product_videos (list or comma-separated URLs)
+ * B) Metafield custom.product_video / custom.product_videos (file or URL)
  * C) Legacy metafield custom.video_url
  * D) Placeholder fallback
  */
@@ -352,29 +469,38 @@ export function getProductVideos(product: Product): ProductVideoItem[] {
     product.images[0]?.url ??
     placeholderVideo.thumbnail;
 
-  const fromMedia =
-    product.mediaVideos
-      ?.map((m) => mediaVideoToItem(m, fallbackThumb))
-      .filter((v): v is ProductVideoItem => v !== null) ?? [];
+  const videos = collectProductVideos(product);
 
-  if (fromMedia.length > 0) {
-    return fromMedia.slice(0, 4);
-  }
-
-  const metafieldUrls = [
-    ...parseListMetafield(getMetafieldValue(product, "product_videos") ?? ""),
-    ...(getMetafieldValue(product, "video_url")
-      ? [getMetafieldValue(product, "video_url")!]
-      : []),
-  ];
-
-  const fromMetafields = metafieldUrls
-    .map(parseVideoUrl)
-    .filter((v): v is ProductVideoItem => v !== null);
-
-  if (fromMetafields.length > 0) {
-    return fromMetafields.slice(0, 4);
+  if (videos.length > 0) {
+    return videos.slice(0, 4);
   }
 
   return [{ ...placeholderVideo, thumbnail: fallbackThumb }];
+}
+
+/** First real product video for gallery preview — null when none configured */
+export function getPrimaryProductVideo(product: Product): ProductVideoItem | null {
+  const videos = collectProductVideos(product);
+  return videos[0] ?? null;
+}
+
+/** Homepage video cards from products that have uploaded videos */
+export function getHomepageProductVideos(
+  products: Product[],
+  limit = 8,
+): HomeProductVideo[] {
+  return products
+    .map((product) => {
+      const video = getPrimaryProductVideo(product);
+      if (!video) return null;
+
+      return {
+        id: product.id,
+        title: product.title,
+        handle: product.handle,
+        video,
+      };
+    })
+    .filter((item): item is HomeProductVideo => item !== null)
+    .slice(0, limit);
 }

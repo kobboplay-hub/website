@@ -81,6 +81,7 @@ export const PRODUCT_DETAIL_FRAGMENT = `
         { namespace: "custom", key: "care_instructions" }
         { namespace: "custom", key: "features" }
         { namespace: "custom", key: "video_url" }
+        { namespace: "custom", key: "product_video" }
         { namespace: "custom", key: "product_videos" }
         { namespace: "custom", key: "specifications" }
       ]
@@ -89,6 +90,52 @@ export const PRODUCT_DETAIL_FRAGMENT = `
       key
       value
       type
+      reference {
+        ... on Video {
+          id
+          alt
+          sources {
+            url
+            mimeType
+          }
+          previewImage {
+            url
+            altText
+            width
+            height
+          }
+        }
+        ... on GenericFile {
+          id
+          url
+          mimeType
+        }
+      }
+      references(first: 10) {
+        edges {
+          node {
+            ... on Video {
+              id
+              alt
+              sources {
+                url
+                mimeType
+              }
+              previewImage {
+                url
+                altText
+                width
+                height
+              }
+            }
+            ... on GenericFile {
+              id
+              url
+              mimeType
+            }
+          }
+        }
+      }
     }
     media(first: 10) {
       edges {
@@ -121,6 +168,113 @@ export const PRODUCT_DETAIL_FRAGMENT = `
     }
   }
   ${PRODUCT_CARD_FRAGMENT}
+`;
+
+export const PRODUCT_WITH_VIDEO_FRAGMENT = `
+  fragment ProductWithVideo on Product {
+    ...ProductCard
+    metafields(
+      identifiers: [
+        { namespace: "custom", key: "video_url" }
+        { namespace: "custom", key: "product_video" }
+        { namespace: "custom", key: "product_videos" }
+      ]
+    ) {
+      namespace
+      key
+      value
+      type
+      reference {
+        ... on Video {
+          id
+          alt
+          sources {
+            url
+            mimeType
+          }
+          previewImage {
+            url
+            altText
+            width
+            height
+          }
+        }
+        ... on GenericFile {
+          id
+          url
+          mimeType
+        }
+      }
+      references(first: 10) {
+        edges {
+          node {
+            ... on Video {
+              id
+              alt
+              sources {
+                url
+                mimeType
+              }
+              previewImage {
+                url
+                altText
+                width
+                height
+              }
+            }
+            ... on GenericFile {
+              id
+              url
+              mimeType
+            }
+          }
+        }
+      }
+    }
+    media(first: 5) {
+      edges {
+        node {
+          mediaContentType
+          alt
+          ... on Video {
+            id
+            sources {
+              url
+              mimeType
+            }
+            previewImage {
+              url
+              altText
+            }
+          }
+          ... on ExternalVideo {
+            id
+            embedUrl
+            host
+            originUrl
+            previewImage {
+              url
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+  ${PRODUCT_CARD_FRAGMENT}
+`;
+
+export const GET_PRODUCTS_WITH_VIDEOS_QUERY = `
+  ${PRODUCT_WITH_VIDEO_FRAGMENT}
+  query GetProductsWithVideos($first: Int!) {
+    products(first: $first) {
+      edges {
+        node {
+          ...ProductWithVideo
+        }
+      }
+    }
+  }
 `;
 
 export const SEARCH_PRODUCTS_QUERY = `

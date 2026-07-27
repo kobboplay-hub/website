@@ -11,6 +11,8 @@ import {
   User,
   Home,
   Store,
+  Info,
+  Mail,
   ChevronRight,
   type LucideIcon,
 } from "lucide-react";
@@ -22,6 +24,8 @@ import SearchOverlay from "@/components/search/SearchOverlay";
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Shop", href: "/shop", icon: Store },
+  { label: "About", href: "/#about", icon: Info },
+  { label: "Contact", href: "/contact", icon: Mail },
 ];
 
 function MobileMenuRow({

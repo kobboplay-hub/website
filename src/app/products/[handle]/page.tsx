@@ -4,6 +4,7 @@ import SiteLayout from "@/components/SiteLayout";
 import Newsletter from "@/components/Newsletter";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import ProductGallery from "@/components/product/ProductGallery";
+import ProductFloatingVideoWidget from "@/components/product/ProductFloatingVideoWidget";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductHighlights from "@/components/product/ProductHighlights";
 import ProductVideo from "@/components/product/ProductVideo";
@@ -22,6 +23,7 @@ import {
   defaultWhyParentsLove,
   getProductTabsContent,
   getProductVideos,
+  getPrimaryProductVideo,
 } from "@/lib/productPageContent";
 import { productMetadata, buildPageTitle } from "@/data/seo";
 
@@ -90,6 +92,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const tabsContent = getProductTabsContent(product);
   const videos = getProductVideos(product);
+  const primaryVideo = getPrimaryProductVideo(product);
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
@@ -107,6 +110,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </section>
+
+      {primaryVideo && (
+        <ProductFloatingVideoWidget
+          video={primaryVideo}
+          productHandle={product.handle}
+        />
+      )}
 
       <ProductHighlights highlights={defaultHighlights} />
       <ProductVideo videos={videos} />

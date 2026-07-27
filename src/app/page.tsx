@@ -7,7 +7,7 @@ import WhyParentsChooseUs from "@/components/WhyParentsChooseUs";
 import InstagramVideos from "@/components/InstagramVideos";
 import ParentReviews from "@/components/ParentReviews";
 import Newsletter from "@/components/Newsletter";
-import { getProducts } from "@/lib/shopify";
+import { getProductsWithVideos } from "@/lib/shopify";
 import { getProductReviewSummaries } from "@/lib/judgeme";
 import type { Product } from "@/lib/shopify/types";
 
@@ -19,7 +19,7 @@ export default async function Home() {
   let reviewSummaries = {};
 
   try {
-    products = await getProducts(20);
+    products = await getProductsWithVideos(50);
     if (products.length > 0) {
       reviewSummaries = await getProductReviewSummaries(
         products.slice(0, 5).map((product) => product.id),
@@ -36,7 +36,7 @@ export default async function Home() {
       <BestSellers products={products} reviewSummaries={reviewSummaries} />
       <BrandStory />
       <WhyParentsChooseUs />
-      <InstagramVideos />
+      <InstagramVideos products={products} />
       <ParentReviews />
       <Newsletter />
     </SiteLayout>
