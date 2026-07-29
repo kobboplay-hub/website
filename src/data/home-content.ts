@@ -35,8 +35,7 @@ export const newsletterSection = {
   subtitle: "Join our newsletter for offers, new toys and parenting tips.",
   placeholder: "Enter your email",
   buttonLabel: "Subscribe",
-  successFallback:
-    "Thanks for subscribing! You'll hear from us about offers, new toys and parenting tips.",
+  successFallback: "Thank you for subscribing!",
 };
 
 export const instagramSection = {

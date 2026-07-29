@@ -1,20 +1,34 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { ShopSortOption } from "@/lib/shopify";
 
 interface ShopPaginationProps {
   page: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  searchQuery?: string;
+  sort?: ShopSortOption;
 }
 
-function getPageHref(pageNumber: number): string {
-  return pageNumber <= 1 ? "/shop" : `/shop?page=${pageNumber}`;
+function getPageHref(
+  pageNumber: number,
+  searchQuery?: string,
+  sort?: ShopSortOption,
+): string {
+  const params = new URLSearchParams();
+  if (pageNumber > 1) params.set("page", String(pageNumber));
+  if (searchQuery?.trim()) params.set("q", searchQuery.trim());
+  if (sort && sort !== "featured") params.set("sort", sort);
+  const qs = params.toString();
+  return qs ? `/shop?${qs}` : "/shop";
 }
 
 export default function ShopPagination({
   page,
   hasNextPage,
   hasPreviousPage,
+  searchQuery,
+  sort,
 }: ShopPaginationProps) {
   if (!hasPreviousPage && !hasNextPage) return null;
 
@@ -32,7 +46,7 @@ export default function ShopPagination({
       <div className="flex w-full max-w-md items-center justify-center gap-1.5 sm:gap-2">
         {hasPreviousPage ? (
           <Link
-            href={getPageHref(page - 1)}
+            href={getPageHref(page - 1, searchQuery, sort)}
             aria-label="Previous page"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-kobbo-beige bg-kobbo-white px-3 text-sm font-semibold text-kobbo-black shadow-soft transition-all hover:border-kobbo-yellow hover:shadow-soft-lg sm:px-4"
           >
@@ -51,11 +65,10 @@ export default function ShopPagination({
         <div className="flex items-center gap-1.5">
           {pageNumbers.map((pageNumber) => {
             const isCurrent = pageNumber === page;
-
             return (
               <Link
                 key={pageNumber}
-                href={getPageHref(pageNumber)}
+                href={getPageHref(pageNumber, searchQuery, sort)}
                 aria-label={`Page ${pageNumber}`}
                 aria-current={isCurrent ? "page" : undefined}
                 className={`inline-flex h-11 min-w-11 items-center justify-center rounded-full border-2 px-3 text-sm font-bold transition-all ${
@@ -72,7 +85,7 @@ export default function ShopPagination({
 
         {hasNextPage ? (
           <Link
-            href={getPageHref(page + 1)}
+            href={getPageHref(page + 1, searchQuery, sort)}
             aria-label="Next page"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-kobbo-beige bg-kobbo-white px-3 text-sm font-semibold text-kobbo-black shadow-soft transition-all hover:border-kobbo-yellow hover:shadow-soft-lg sm:px-4"
           >

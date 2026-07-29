@@ -2,6 +2,7 @@ import {
   GET_PRODUCTS_QUERY,
   GET_PRODUCTS_PAGINATED_QUERY,
   GET_PRODUCTS_WITH_VIDEOS_QUERY,
+  SEARCH_PRODUCTS_PAGINATED_QUERY,
   GET_PRODUCT_BY_HANDLE_QUERY,
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
@@ -161,6 +162,94 @@ export async function getProducts(limit = 20): Promise<Product[]> {
 }
 
 export const SHOP_PRODUCTS_PER_PAGE = 12;
+
+export type ShopSortOption = "featured" | "price-asc" | "price-desc" | "alpha";
+
+interface ShopifyProductSortParams {
+  sortKey: string;
+  reverse: boolean;
+}
+
+function toShopifySortParams(sort: ShopSortOption): ShopifyProductSortParams {
+  switch (sort) {
+    case "price-asc":  return { sortKey: "PRICE", reverse: false };
+    case "price-desc": return { sortKey: "PRICE", reverse: true };
+    case "alpha":      return { sortKey: "TITLE", reverse: false };
+    default:           return { sortKey: "RELEVANCE", reverse: false };
+  }
+}
+
+export interface ShopProductsResult {
+  products: Product[];
+  page: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  totalFetched: number;
+  searchQuery: string;
+  sort: ShopSortOption;
+}
+
+export async function getShopProductsPage(
+  page = 1,
+  pageSize = SHOP_PRODUCTS_PER_PAGE,
+  searchQuery = "",
+  sort: ShopSortOption = "featured",
+): Promise<ShopProductsResult> {
+  const safePage = Math.max(1, Math.floor(page) || 1);
+  const targetCount = safePage * pageSize;
+  const { sortKey, reverse } = toShopifySortParams(sort);
+
+  // Build Shopify query string — title search if provided
+  const shopifyQuery = searchQuery.trim()
+    ? `title:*${searchQuery.trim()}* OR product_type:*${searchQuery.trim()}*`
+    : "";
+
+  let cursor: string | undefined;
+  let hasNextPage = true;
+  const collected: Product[] = [];
+
+  while (collected.length < targetCount && hasNextPage) {
+    const remaining = targetCount - collected.length;
+    const batchSize = Math.min(50, remaining);
+
+    const data = await shopifyFetch<{
+      products: {
+        pageInfo: { hasNextPage: boolean; endCursor: string | null };
+        edges: { node: ShopifyProductNode }[];
+      };
+    }>({
+      query: SEARCH_PRODUCTS_PAGINATED_QUERY,
+      variables: {
+        query: shopifyQuery,
+        first: batchSize,
+        after: cursor ?? null,
+        sortKey,
+        reverse,
+      },
+    });
+
+    const batch = data.products.edges.map((edge) => normalizeProduct(edge.node));
+    collected.push(...batch);
+    hasNextPage = data.products.pageInfo.hasNextPage;
+    cursor = data.products.pageInfo.endCursor ?? undefined;
+
+    if (batch.length === 0) break;
+  }
+
+  const start = (safePage - 1) * pageSize;
+
+  return {
+    products: collected.slice(start, start + pageSize),
+    page: safePage,
+    pageSize,
+    hasNextPage: collected.length > start + pageSize || hasNextPage,
+    hasPreviousPage: safePage > 1,
+    totalFetched: collected.length,
+    searchQuery: searchQuery.trim(),
+    sort,
+  };
+}
 
 export interface ProductsPageResult {
   products: Product[];

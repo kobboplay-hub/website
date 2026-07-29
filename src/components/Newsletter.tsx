@@ -1,18 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
 import { newsletterSection } from "@/data/home-content";
 
 type FormStatus = "idle" | "loading" | "success" | "error";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function Newsletter() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const isSubmittingRef = useRef(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isSubmittingRef.current || status === "loading") return;
+
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedEmail) {
+      setStatus("error");
+      setMessage("Email is required.");
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      setStatus("error");
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    isSubmittingRef.current = true;
     setStatus("loading");
     setMessage("");
 
@@ -20,7 +41,7 @@ export default function Newsletter() {
       const response = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: trimmedEmail }),
       });
 
       const data = (await response.json()) as {
@@ -42,6 +63,8 @@ export default function Newsletter() {
           ? error.message
           : "Subscription failed. Please try again.",
       );
+    } finally {
+      isSubmittingRef.current = false;
     }
   };
 
@@ -90,11 +113,12 @@ export default function Newsletter() {
                   required
                   disabled={status === "loading"}
                   aria-label="Email address"
+                  aria-invalid={status === "error"}
                   className="min-h-11 flex-1 rounded-full border-2 border-transparent bg-kobbo-white px-5 py-2.5 text-sm text-kobbo-black placeholder:text-kobbo-muted/60 outline-none transition-colors focus:border-kobbo-yellow disabled:opacity-60"
                 />
                 <button
                   type="submit"
-                  disabled={status === "loading"}
+                  disabled={status === "loading" || !email.trim()}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-6 py-2.5 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                 >
                   {status === "loading" ? (

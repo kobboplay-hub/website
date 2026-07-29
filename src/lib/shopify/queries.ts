@@ -290,6 +290,23 @@ export const SEARCH_PRODUCTS_QUERY = `
   }
 `;
 
+export const SEARCH_PRODUCTS_PAGINATED_QUERY = `
+  ${PRODUCT_CARD_FRAGMENT}
+  query SearchProductsPaginated($query: String!, $first: Int!, $after: String, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
+    products(first: $first, after: $after, query: $query, sortKey: $sortKey, reverse: $reverse) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...ProductCard
+        }
+      }
+    }
+  }
+`;
+
 export const GET_PRODUCTS_QUERY = `
   ${PRODUCT_CARD_FRAGMENT}
   query GetProducts($first: Int!) {

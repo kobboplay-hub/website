@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { subscribeToNewsletter } from "@/lib/shopify/customer";
+import { subscribeToNewsletter } from "@/lib/shopify/newsletter";
 import { apiErrorResponse } from "@/lib/auth/errors";
 
 export async function POST(request: Request) {

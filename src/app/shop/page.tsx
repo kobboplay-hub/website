@@ -4,36 +4,60 @@ import SiteLayout from "@/components/SiteLayout";
 import Newsletter from "@/components/Newsletter";
 import ShopHeader from "@/components/shop/ShopHeader";
 import ProductGrid from "@/components/shop/ProductGrid";
+import ShopFilters from "@/components/shop/ShopFilters";
 import ShopPagination from "@/components/shop/ShopPagination";
 import ShopError from "@/components/shop/ShopError";
 import EmptyState from "@/components/ui/EmptyState";
-import { getProductsPage, SHOP_PRODUCTS_PER_PAGE } from "@/lib/shopify";
+import {
+  getShopProductsPage,
+  SHOP_PRODUCTS_PER_PAGE,
+  type ShopSortOption,
+} from "@/lib/shopify";
 import { getProductReviewSummaries } from "@/lib/judgeme";
 import { shopMetadata } from "@/data/seo";
 import { emptyStates } from "@/data/empty-states";
 
 export const metadata: Metadata = shopMetadata;
 
-export const revalidate = 3600;
+export const revalidate = 0;
 
 interface ShopPageProps {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    sort?: string;
+  }>;
+}
+
+const validSorts: ShopSortOption[] = ["featured", "price-asc", "price-desc", "alpha"];
+
+function parseSort(raw: string | undefined): ShopSortOption {
+  return validSorts.includes(raw as ShopSortOption)
+    ? (raw as ShopSortOption)
+    : "featured";
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, sort: sortParam } = await searchParams;
   const currentPage = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const searchQuery = (q ?? "").trim();
+  const sort = parseSort(sortParam);
 
-  let productsPage;
+  let result;
   let hasError = false;
   let reviewSummaries = {};
 
   try {
-    productsPage = await getProductsPage(currentPage, SHOP_PRODUCTS_PER_PAGE);
+    result = await getShopProductsPage(
+      currentPage,
+      SHOP_PRODUCTS_PER_PAGE,
+      searchQuery,
+      sort,
+    );
 
-    if (productsPage.products.length > 0) {
+    if (result.products.length > 0) {
       reviewSummaries = await getProductReviewSummaries(
-        productsPage.products.map((product) => product.id),
+        result.products.map((p) => p.id),
       );
     }
   } catch (error) {
@@ -41,19 +65,18 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     hasError = true;
   }
 
-  if (
-    !hasError &&
-    productsPage &&
-    productsPage.products.length === 0 &&
-    currentPage > 1
-  ) {
-    redirect("/shop");
+  if (!hasError && result && result.products.length === 0 && currentPage > 1) {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("q", searchQuery);
+    if (sort !== "featured") params.set("sort", sort);
+    const qs = params.toString();
+    redirect(qs ? `/shop?${qs}` : "/shop");
   }
 
-  const products = productsPage?.products ?? [];
-  const page = productsPage?.page ?? currentPage;
-  const hasNextPage = productsPage?.hasNextPage ?? false;
-  const hasPreviousPage = productsPage?.hasPreviousPage ?? false;
+  const products = result?.products ?? [];
+  const page = result?.page ?? currentPage;
+  const hasNextPage = result?.hasNextPage ?? false;
+  const hasPreviousPage = result?.hasPreviousPage ?? false;
   const showingFrom = products.length > 0 ? (page - 1) * SHOP_PRODUCTS_PER_PAGE + 1 : 0;
   const showingTo = showingFrom > 0 ? showingFrom + products.length - 1 : 0;
 
@@ -65,19 +88,26 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             showingFrom={hasError ? undefined : showingFrom}
             showingTo={hasError ? undefined : showingTo}
             hasMore={hasError ? undefined : hasNextPage}
+            searchQuery={searchQuery}
           />
+
+          <ShopFilters searchQuery={searchQuery} sort={sort} />
 
           {hasError ? (
             <ShopError />
           ) : products.length === 0 ? (
             <div className="mt-6 sm:mt-8">
               <EmptyState
-                title={emptyStates.shop.title}
-                description={emptyStates.shop.description}
+                title={searchQuery ? "No products found" : emptyStates.shop.title}
+                description={
+                  searchQuery
+                    ? `No toys matched "${searchQuery}". Try a different search.`
+                    : emptyStates.shop.description
+                }
               />
             </div>
           ) : (
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-5 sm:mt-6">
               <ProductGrid
                 products={products}
                 reviewSummaries={reviewSummaries}
@@ -86,6 +116,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 page={page}
                 hasNextPage={hasNextPage}
                 hasPreviousPage={hasPreviousPage}
+                searchQuery={searchQuery}
+                sort={sort}
               />
             </div>
           )}
