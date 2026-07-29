@@ -8,24 +8,35 @@ import WhyParentsChooseUs from "@/components/WhyParentsChooseUs";
 import InstagramVideos from "@/components/InstagramVideos";
 import ParentReviews from "@/components/ParentReviews";
 import Newsletter from "@/components/Newsletter";
-import { getCollections, getProductsWithVideos } from "@/lib/shopify";
+import {
+  getCollections,
+  getProductsWithVideos,
+  getRecentProducts,
+} from "@/lib/shopify";
 import { getProductReviewSummaries } from "@/lib/judgeme";
 import type { Collection, Product } from "@/lib/shopify/types";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  let products: Product[] = [];
+  let recentProducts: Product[] = [];
+  let productsWithVideos: Product[] = [];
   let collections: Collection[] = [];
   let reviewSummaries = {};
 
   try {
-    products = await getProductsWithVideos(50);
-    if (products.length > 0) {
+    recentProducts = await getRecentProducts(5);
+    if (recentProducts.length > 0) {
       reviewSummaries = await getProductReviewSummaries(
-        products.slice(0, 5).map((product) => product.id),
+        recentProducts.map((product) => product.id),
       );
     }
+  } catch (error) {
+    console.error("Failed to fetch recent products:", error);
+  }
+
+  try {
+    productsWithVideos = await getProductsWithVideos(50);
   } catch (error) {
     console.error("Failed to fetch Shopify products:", error);
   }
@@ -40,11 +51,14 @@ export default async function Home() {
     <SiteLayout>
       <HeroSection />
       <TrustBadges />
-      <BestSellers products={products} reviewSummaries={reviewSummaries} />
+      <BestSellers
+        products={recentProducts}
+        reviewSummaries={reviewSummaries}
+      />
       <CollectionsSection collections={collections} />
       <BrandStory />
       <WhyParentsChooseUs />
-      <InstagramVideos products={products} />
+      <InstagramVideos products={productsWithVideos} />
       <ParentReviews />
       <Newsletter />
     </SiteLayout>

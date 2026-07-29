@@ -28,7 +28,7 @@ export default function AnnouncementBar() {
           className={`flex items-center gap-x-4 overflow-x-auto scrollbar-none sm:grid sm:gap-0 sm:overflow-visible ${cols}`}
         >
           {announcementBar.items.map((item, index) => {
-            const isAccent = Boolean(item.accent);
+            const isAccent = "accent" in item && Boolean(item.accent);
             const href = "href" in item ? item.href : undefined;
 
             const content = (

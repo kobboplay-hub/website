@@ -18,10 +18,10 @@ export default function BestSellers({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center sm:text-left">
           <h2 className="font-heading text-2xl font-extrabold text-kobbo-black sm:text-3xl">
-            Best Sellers
+            Recently Added
           </h2>
           <p className="mt-1.5 text-sm text-kobbo-muted sm:mt-1">
-            Our most-loved toys, chosen by kids and parents.
+            Fresh picks — the newest toys just added to Kobbo.
           </p>
         </div>
 

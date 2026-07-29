@@ -248,6 +248,19 @@ export const GET_PRODUCTS_WITH_VIDEOS_QUERY = `
   }
 `;
 
+export const GET_RECENT_PRODUCTS_QUERY = `
+  ${PRODUCT_CARD_FRAGMENT}
+  query GetRecentProducts($first: Int!) {
+    products(first: $first, sortKey: CREATED_AT, reverse: true) {
+      edges {
+        node {
+          ...ProductCard
+        }
+      }
+    }
+  }
+`;
+
 export const SEARCH_PRODUCTS_QUERY = `
   ${PRODUCT_CARD_FRAGMENT}
   query SearchProducts($query: String!, $first: Int!) {

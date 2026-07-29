@@ -2,6 +2,7 @@ import {
   GET_PRODUCTS_QUERY,
   GET_PRODUCTS_PAGINATED_QUERY,
   GET_PRODUCTS_WITH_VIDEOS_QUERY,
+  GET_RECENT_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_PAGINATED_QUERY,
   GET_PRODUCT_BY_HANDLE_QUERY,
   GET_COLLECTIONS_QUERY,
@@ -356,6 +357,19 @@ export async function getProductsWithVideos(limit = 50): Promise<Product[]> {
   }>({
     query: GET_PRODUCTS_WITH_VIDEOS_QUERY,
     variables: { first: limit },
+  });
+
+  return data.products.edges.map((edge) => normalizeProduct(edge.node));
+}
+
+/** Newest products first — used for homepage "Recently Added" */
+export async function getRecentProducts(limit = 5): Promise<Product[]> {
+  const data = await shopifyFetch<{
+    products: { edges: { node: ShopifyProductNode }[] };
+  }>({
+    query: GET_RECENT_PRODUCTS_QUERY,
+    variables: { first: limit },
+    revalidate: 60,
   });
 
   return data.products.edges.map((edge) => normalizeProduct(edge.node));
