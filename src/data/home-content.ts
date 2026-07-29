@@ -38,8 +38,8 @@ export const heroContent = {
   ],
   imageBadgeTitle: "Screen-Free",
   imageBadgeSubtitle: "Learning Toys",
-  imageDesktop: "/ChatGPT Image Jul 27, 2026, 04_37_01 PM.png",
-  imageMobile: "/ChatGPT Image Jul 27, 2026, 04_56_18 PM.png",
+  imageDesktop: "/hero-desktop.png",
+  imageMobile: "/hero-mobile.png",
   imageAlt: "Child playing with colorful educational toys",
 };
 
