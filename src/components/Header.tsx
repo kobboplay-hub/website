@@ -137,7 +137,7 @@ export default function Header() {
             <Link
               href="/"
               onClick={closeMobile}
-              className="flex h-10 items-center font-heading text-[1.35rem] font-extrabold leading-none tracking-tight text-kobbo-yellow sm:text-2xl"
+              className="flex h-10 items-center font-heading text-[1.75rem] font-extrabold leading-none tracking-tight text-kobbo-yellow sm:text-2xl lg:text-[2.1rem]"
             >
               Kobbo
             </Link>
@@ -174,7 +174,7 @@ export default function Header() {
                   <Link
                     href={wishlistHref}
                     aria-label="Wishlist"
-                    className={`${iconBtn} hidden sm:flex`}
+                    className={iconBtn}
                   >
                     <Heart className="h-5 w-5" strokeWidth={2} />
                   </Link>

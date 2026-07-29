@@ -35,7 +35,7 @@ export default function ProductTabs({ content }: ProductTabsProps) {
   if (visibleTabs.length === 0) return null;
 
   return (
-    <section className="bg-kobbo-cream py-5 sm:py-6">
+    <section className="bg-kobbo-cream py-3 sm:py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl bg-kobbo-white shadow-soft">
           <div className="flex overflow-x-auto border-b border-kobbo-beige [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

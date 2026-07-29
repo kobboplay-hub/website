@@ -15,7 +15,7 @@ export default function CustomerReviews({
   reviews,
 }: CustomerReviewsProps) {
   return (
-    <section className="bg-kobbo-white py-8 sm:py-10">
+    <section className="bg-kobbo-white py-4 sm:py-5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="font-heading text-2xl font-extrabold text-kobbo-black sm:text-3xl">
           Customer Reviews

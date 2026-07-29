@@ -32,17 +32,19 @@ const socialIcons: Record<string, React.ReactNode> = {
 export default function Footer() {
   return (
     <footer id="contact" className="bg-kobbo-black text-kobbo-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-7 lg:grid-cols-4">
+          <div className="text-center sm:text-left">
             <Link
               href="/"
               className="font-heading text-2xl font-extrabold text-kobbo-yellow"
             >
               Kobbo
             </Link>
-            <p className="mt-2 text-sm text-white/70">{footerBrand.tagline}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <p className="mx-auto mt-2 max-w-xs text-sm text-white/70 sm:mx-0">
+              {footerBrand.tagline}
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
               {footerSocialLinks.map(({ label, href }) => (
                 <a
                   key={label}
@@ -124,7 +126,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 sm:flex-row">
+        <div className="mt-5 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:flex-row sm:pt-5">
           <p className="text-center text-xs text-white/50 sm:text-left">
             © {new Date().getFullYear()} Kobbo. All rights reserved.
           </p>

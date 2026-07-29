@@ -141,7 +141,7 @@ export default function ProductVideo({ videos }: ProductVideoProps) {
         : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2";
 
   return (
-    <section className="py-5 sm:py-7">
+    <section className="py-4 sm:py-5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl bg-kobbo-beige shadow-soft">
           <div className="p-6 sm:p-8">

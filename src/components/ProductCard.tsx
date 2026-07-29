@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { Heart, ImageOff } from "lucide-react";
 import {
   formatPrice,
   getProductImageUrl,
+  getProductPreviewVideoUrl,
   type Product,
 } from "@/lib/shopify/types";
 import { getDefaultMerchandiseId } from "@/lib/shopify/cart";
@@ -24,12 +26,69 @@ export default function ProductCard({
   reviewSummary,
 }: ProductCardProps) {
   const imageUrl = getProductImageUrl(product);
+  const videoUrl = getProductPreviewVideoUrl(product);
   const merchandiseId = getDefaultMerchandiseId(product);
   const { isWishlisted, toggleWishlist } = useWishlist();
   const wishlisted = isWishlisted(product.handle);
 
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const cardRef = useRef<HTMLElement | null>(null);
+  const [showVideo, setShowVideo] = useState(false);
+  const [canHover, setCanHover] = useState(false);
+
+  useEffect(() => {
+    setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (!videoUrl || canHover) return;
+
+    const node = cardRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        setShowVideo(entry.isIntersecting && entry.intersectionRatio > 0.55);
+      },
+      { threshold: [0.4, 0.55, 0.75] },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [videoUrl, canHover]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !videoUrl) return;
+
+    if (showVideo) {
+      video.currentTime = 0;
+      void video.play().catch(() => {
+        // Autoplay may be blocked — keep poster image visible.
+      });
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  }, [showVideo, videoUrl]);
+
+  function handlePointerEnter() {
+    if (canHover && videoUrl) setShowVideo(true);
+  }
+
+  function handlePointerLeave() {
+    if (canHover) setShowVideo(false);
+  }
+
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft-lg">
+    <article
+      ref={cardRef}
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft-lg"
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+    >
       <Link
         href={`/products/${product.handle}`}
         className="relative aspect-square overflow-hidden bg-kobbo-beige"
@@ -40,7 +99,9 @@ export default function ProductCard({
             alt={product.featuredImage?.altText ?? product.title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`object-cover transition-all duration-500 group-hover:scale-105 ${
+              showVideo ? "opacity-0" : "opacity-100"
+            }`}
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-kobbo-muted">
@@ -48,7 +109,23 @@ export default function ProductCard({
             <span className="text-xs">No image</span>
           </div>
         )}
+
+        {videoUrl && (
+          <video
+            ref={videoRef}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+              showVideo ? "opacity-100" : "opacity-0"
+            }`}
+            src={videoUrl}
+            muted
+            playsInline
+            loop
+            preload="metadata"
+            aria-hidden
+          />
+        )}
       </Link>
+
       <button
         type="button"
         aria-label={

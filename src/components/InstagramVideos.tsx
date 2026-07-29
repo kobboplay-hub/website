@@ -15,25 +15,25 @@ export default function InstagramVideos({ products }: InstagramVideosProps) {
   if (videos.length === 0) return null;
 
   return (
-    <section className="bg-kobbo-cream py-8 sm:py-10">
+    <section className="bg-kobbo-cream py-4 sm:py-5 lg:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+        <div className="px-1 text-center">
           <h2 className="font-heading text-2xl font-extrabold text-kobbo-black sm:text-3xl">
             {instagramSection.title}
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-kobbo-muted sm:text-base">
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-kobbo-muted sm:text-base">
             {instagramSection.subtitle}
           </p>
         </div>
 
         <HomeProductVideosGrid videos={videos} />
 
-        <div className="mt-6 text-center sm:mt-8">
+        <div className="mt-4 text-center sm:mt-5">
           <Link
             href={instagramSection.profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-kobbo-black/10 bg-kobbo-white px-6 py-2.5 text-sm font-bold text-kobbo-black transition-all hover:border-kobbo-yellow hover:shadow-soft"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border-2 border-kobbo-black/10 bg-kobbo-white px-6 py-2.5 text-sm font-bold text-kobbo-black transition-all hover:border-kobbo-yellow hover:shadow-soft sm:w-auto"
           >
             {instagramSection.viewOnInstagramLabel}
             <ExternalLink className="h-4 w-4" />

@@ -4,30 +4,53 @@
  */
 
 export const announcementBar = {
-  text: "₹50 Off on Online Payments",
+  items: [
+    {
+      id: "offer",
+      label: "₹50 Off on Online Payments",
+      icon: "sparkles" as const,
+    },
+    {
+      id: "ganpati",
+      label: "New: Ganpati Collection",
+      icon: "ganpati" as const,
+      accent: true as const,
+      href: "/collections/ganpati-collection",
+    },
+    {
+      id: "payments",
+      label: "Secure Payments",
+      icon: "shield" as const,
+    },
+  ] as const,
 };
 
 export const heroContent = {
-  badge: "Designed to Learn Through Play",
-  headline: "Toys That Grow",
-  headlineAccent: "Curious Minds",
-  tagline: "More Than Toys.",
+  ratingValue: "4.8",
+  ratingLabel: "Rated by 675+ Happy Families",
+  headline: "More than toys",
   description:
-    "Educational toys, creative kits and games designed for growing children.",
+    "Educational toys, STEM kits & creative play for growing minds",
   primaryCta: { label: "Shop Now", href: "/shop" },
-  secondaryCta: { label: "Our Story", href: "#about" },
-  imageBadge: "Screen-Free Childhood",
-  /** PLACEHOLDER: Replace with client hero image */
-  imageUrl:
-    "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=900&h=1100&fit=crop",
-  imageAlt: "Colorful premium educational toys for children",
+  trustItems: [
+    { id: "safe", label: "Safe Materials", icon: "shield" as const },
+    { id: "designed", label: "Thoughtfully Designed", icon: "leaf" as const },
+  ],
+  imageBadgeTitle: "Screen-Free",
+  imageBadgeSubtitle: "Learning Toys",
+  imageDesktop: "/ChatGPT Image Jul 27, 2026, 04_37_01 PM.png",
+  imageMobile: "/ChatGPT Image Jul 27, 2026, 04_56_18 PM.png",
+  imageAlt: "Child playing with colorful educational toys",
 };
 
-export const bestSellersContent = {
-  title: "Best Sellers",
-  subtitle: "Our most-loved toys, chosen by kids and parents.",
-  viewAllLabel: "View All Products",
-  viewAllHref: "/shop",
+export const collectionsSection = {
+  title: "Shop by Collection",
+  subtitle: "Explore curated collections for every mood and celebration.",
+};
+
+export const ganpatiCollection = {
+  handle: "ganpati-collection",
+  title: "Ganpati Collection",
 };
 
 export const newsletterSection = {

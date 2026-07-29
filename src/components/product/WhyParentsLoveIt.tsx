@@ -9,7 +9,7 @@ interface WhyParentsLoveItProps {
 
 export default function WhyParentsLoveIt({ items }: WhyParentsLoveItProps) {
   return (
-    <section className="py-5 sm:py-7">
+    <section className="py-4 sm:py-5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="font-heading text-center text-2xl font-extrabold text-kobbo-black sm:text-3xl">
           Why Parents Love It

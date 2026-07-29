@@ -69,14 +69,14 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-5 sm:py-7">
+    <section className="py-4 sm:py-5 lg:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-kobbo-yellow/20 px-5 py-6 shadow-soft sm:px-8 sm:py-8">
+        <div className="rounded-2xl bg-kobbo-yellow/20 px-4 py-5 shadow-soft sm:rounded-3xl sm:px-8 sm:py-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-heading text-xl font-extrabold text-kobbo-black sm:text-2xl">
               {newsletterSection.title}
             </h2>
-            <p className="mt-2 text-sm text-kobbo-muted sm:text-base">
+            <p className="mt-2 text-sm leading-relaxed text-kobbo-muted sm:text-base">
               {newsletterSection.subtitle}
             </p>
 

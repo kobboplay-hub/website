@@ -190,6 +190,57 @@ export interface ShopProductsResult {
   sort: ShopSortOption;
 }
 
+export interface ShopProductsCursorResult {
+  products: Product[];
+  endCursor: string | null;
+  hasNextPage: boolean;
+  searchQuery: string;
+  sort: ShopSortOption;
+}
+
+function buildShopifyProductQuery(searchQuery: string): string {
+  const trimmed = searchQuery.trim();
+  if (!trimmed) return "";
+  return `title:*${trimmed}* OR product_type:*${trimmed}*`;
+}
+
+export async function getShopProductsByCursor(
+  pageSize = SHOP_PRODUCTS_PER_PAGE,
+  searchQuery = "",
+  sort: ShopSortOption = "featured",
+  after: string | null = null,
+): Promise<ShopProductsCursorResult> {
+  const { sortKey, reverse } = toShopifySortParams(sort);
+  const shopifyQuery = buildShopifyProductQuery(searchQuery);
+  const first = Math.min(50, Math.max(1, pageSize));
+
+  const data = await shopifyFetch<{
+    products: {
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+      edges: { node: ShopifyProductNode }[];
+    };
+  }>({
+    query: SEARCH_PRODUCTS_PAGINATED_QUERY,
+    variables: {
+      query: shopifyQuery,
+      first,
+      after,
+      sortKey,
+      reverse,
+    },
+    revalidate: false,
+    cache: "no-store",
+  });
+
+  return {
+    products: data.products.edges.map((edge) => normalizeProduct(edge.node)),
+    endCursor: data.products.pageInfo.endCursor,
+    hasNextPage: data.products.pageInfo.hasNextPage,
+    searchQuery: searchQuery.trim(),
+    sort,
+  };
+}
+
 export async function getShopProductsPage(
   page = 1,
   pageSize = SHOP_PRODUCTS_PER_PAGE,
@@ -199,11 +250,7 @@ export async function getShopProductsPage(
   const safePage = Math.max(1, Math.floor(page) || 1);
   const targetCount = safePage * pageSize;
   const { sortKey, reverse } = toShopifySortParams(sort);
-
-  // Build Shopify query string — title search if provided
-  const shopifyQuery = searchQuery.trim()
-    ? `title:*${searchQuery.trim()}* OR product_type:*${searchQuery.trim()}*`
-    : "";
+  const shopifyQuery = buildShopifyProductQuery(searchQuery);
 
   let cursor: string | undefined;
   let hasNextPage = true;
@@ -335,6 +382,8 @@ export async function getCollections(limit = 20): Promise<Collection[]> {
   }>({
     query: GET_COLLECTIONS_QUERY,
     variables: { first: limit },
+    revalidate: false,
+    cache: "no-store",
   });
 
   return data.collections.edges.map((edge) => normalizeCollection(edge.node));
@@ -349,6 +398,8 @@ export async function getCollectionProducts(
   }>({
     query: GET_COLLECTION_PRODUCTS_QUERY,
     variables: { handle, first: limit },
+    revalidate: false,
+    cache: "no-store",
   });
 
   if (!data.collection) return null;
@@ -360,6 +411,44 @@ export async function getCollectionProducts(
         normalizeProduct(edge.node),
       ) ?? [],
   };
+}
+
+function normalizeHandle(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+/** Resolve a collection by handle, then by title keyword (e.g. "ganpati"). */
+export async function findCollectionProducts(
+  preferredHandle: string,
+  titleKeyword: string,
+  limit = 20,
+): Promise<{ collection: Collection; products: Product[] } | null> {
+  const byHandle = await getCollectionProducts(preferredHandle, limit);
+  if (byHandle && byHandle.products.length > 0) return byHandle;
+
+  const collections = await getCollections(50);
+  const keyword = titleKeyword.trim().toLowerCase();
+
+  const match = collections.find((collection) => {
+    const title = collection.title.toLowerCase();
+    const handle = collection.handle.toLowerCase();
+    return (
+      title.includes(keyword) ||
+      handle.includes(keyword) ||
+      normalizeHandle(collection.title) === normalizeHandle(preferredHandle)
+    );
+  });
+
+  if (!match) {
+    // Collection exists in Admin but may be unpublished — return handle attempt anyway
+    return byHandle;
+  }
+
+  if (match.handle === preferredHandle && byHandle) {
+    return byHandle;
+  }
+
+  return getCollectionProducts(match.handle, limit);
 }
 
 export function isShopifyConfigured(): boolean {

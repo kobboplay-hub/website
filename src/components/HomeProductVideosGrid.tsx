@@ -42,7 +42,7 @@ export default function HomeProductVideosGrid({
   return (
     <>
       <div
-        className={`mt-5 grid gap-2.5 sm:gap-3 ${getGridClass(videos.length)}`}
+        className={`mt-4 grid gap-2.5 sm:gap-3 ${getGridClass(videos.length)}`}
       >
         {videos.map((item) => (
           <article

@@ -152,3 +152,18 @@ export function getProductImageUrls(product: Product): string[] {
   if (product.featuredImage?.url) return [product.featuredImage.url];
   return [];
 }
+
+/** First playable Shopify-hosted video URL for product card hover previews */
+export function getProductPreviewVideoUrl(product: Product): string | null {
+  const video = product.mediaVideos?.find(
+    (item) =>
+      item.mediaContentType === "VIDEO" &&
+      Boolean(item.sources?.some((source) => source.url)),
+  );
+  if (!video?.sources?.length) return null;
+
+  const mp4 = video.sources.find((source) =>
+    source.mimeType?.includes("mp4"),
+  );
+  return mp4?.url ?? video.sources[0]?.url ?? null;
+}
