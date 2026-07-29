@@ -6,9 +6,14 @@
 export const announcementBar = {
   items: [
     {
-      id: "offer",
-      label: "₹50 Off on Online Payments",
-      icon: "sparkles" as const,
+      id: "shipping",
+      label: "Free Shipping Across India",
+      icon: "truck" as const,
+    },
+    {
+      id: "returns",
+      label: "7-Day Easy Returns",
+      icon: "returns" as const,
     },
     {
       id: "ganpati",

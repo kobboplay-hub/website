@@ -12,10 +12,11 @@ import {
   Home,
   Store,
   Info,
-  Mail,
+  Star,
   ChevronRight,
   type LucideIcon,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
 import AccountMenu from "@/components/account/AccountMenu";
@@ -23,9 +24,9 @@ import SearchOverlay from "@/components/search/SearchOverlay";
 
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
-  { label: "Shop", href: "/shop", icon: Store },
-  { label: "About", href: "/#about", icon: Info },
-  { label: "Contact", href: "/contact", icon: Mail },
+  { label: "Shop Toys", href: "/shop", icon: Store },
+  { label: "About Us", href: "/#about", icon: Info },
+  { label: "Reviews", href: "/#reviews", icon: Star },
 ];
 
 function MobileMenuRow({
@@ -86,9 +87,11 @@ function MobileMenuRow({
   );
 }
 
-export default function Header() {
+export default function Header({ immersive = false }: { immersive?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
   const { cartCount, openCart } = useCart();
   const { isLoggedIn } = useAuth();
 
@@ -112,8 +115,34 @@ export default function Header() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const iconBtn =
-    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-kobbo-black transition-colors hover:bg-kobbo-cream active:bg-kobbo-beige";
+  useEffect(() => {
+    if (!immersive) return;
+
+    const hero = document.getElementById("hero");
+    if (!hero) {
+      const onScroll = () => setScrolled(window.scrollY > 80);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
+
+    // Sticky solid header once the hero leaves the top of the viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setScrolled(!entry.isIntersecting);
+      },
+      { root: null, threshold: 0, rootMargin: "-72px 0px 0px 0px" },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [immersive]);
+
+  const solidNav = !immersive || scrolled || mobileOpen;
+  const stickySolid = immersive && scrolled;
+
+  const iconBtn = solidNav
+    ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-kobbo-black transition-colors hover:bg-kobbo-cream active:bg-kobbo-beige"
+    : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-kobbo-black transition-colors hover:bg-white/50 active:bg-white/70";
 
   return (
     <>
@@ -127,8 +156,20 @@ export default function Header() {
       )}
 
       <header
-        className={`sticky top-0 z-50 bg-kobbo-white/98 backdrop-blur-md lg:border-b lg:border-kobbo-beige/60 lg:shadow-soft ${
-          mobileOpen ? "shadow-soft-lg" : "border-b border-kobbo-beige/60 shadow-soft"
+        className={`z-50 transition-all duration-300 ${
+          immersive
+            ? stickySolid
+              ? "fixed inset-x-0 top-0"
+              : "absolute inset-x-0 top-0"
+            : "sticky top-0"
+        } ${
+          solidNav
+            ? `border-b border-kobbo-beige bg-kobbo-white ${
+                mobileOpen || stickySolid
+                  ? "shadow-soft-lg"
+                  : "shadow-soft"
+              }`
+            : "border-b border-transparent bg-transparent"
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -137,24 +178,35 @@ export default function Header() {
             <Link
               href="/"
               onClick={closeMobile}
-              className="flex h-10 items-center font-heading text-[1.75rem] font-extrabold leading-none tracking-tight text-kobbo-yellow sm:text-2xl lg:text-[2.1rem]"
+              className="flex h-10 items-center font-heading text-[1.75rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-2xl lg:text-[2.1rem]"
             >
-              Kobbo
+              kobbo
             </Link>
 
             <nav
               className="hidden items-center gap-8 lg:flex"
               aria-label="Main navigation"
             >
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="text-sm font-medium text-kobbo-black transition-colors hover:text-kobbo-muted"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`relative text-sm font-medium transition-colors hover:text-kobbo-muted ${
+                      isActive
+                        ? "font-semibold text-kobbo-black after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-kobbo-yellow"
+                        : "text-kobbo-black"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="flex h-10 items-center gap-0.5 sm:gap-1">

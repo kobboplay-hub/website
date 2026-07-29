@@ -48,7 +48,7 @@ export default async function Home() {
   }
 
   return (
-    <SiteLayout>
+    <SiteLayout immersiveHero>
       <HeroSection />
       <TrustBadges />
       <BestSellers

@@ -46,23 +46,23 @@ function ScreenFreeBadge({
   return (
     <div
       className={`flex items-center rounded-2xl bg-white/95 shadow-soft-lg backdrop-blur-sm ${
-        compact ? "gap-1.5 px-2.5 py-1.5" : "gap-2 px-3 py-2"
+        compact ? "gap-1.5 px-2.5 py-1.5" : "gap-2.5 px-3.5 py-2.5"
       } ${className}`}
     >
       <ScreenFreeIcon
-        className={`shrink-0 ${compact ? "h-8 w-8" : "h-9 w-9 sm:h-10 sm:w-10"}`}
+        className={`shrink-0 ${compact ? "h-8 w-8" : "h-10 w-10"}`}
       />
       <div className="leading-tight">
         <p
           className={`font-bold text-kobbo-black ${
-            compact ? "text-[11px]" : "text-xs sm:text-sm"
+            compact ? "text-[11px]" : "text-sm"
           }`}
         >
           {title}
         </p>
         <p
           className={`font-medium text-kobbo-green ${
-            compact ? "text-[10px]" : "text-[11px] sm:text-xs"
+            compact ? "text-[10px]" : "text-xs"
           }`}
         >
           {subtitle}
@@ -88,37 +88,33 @@ export default function HeroSection() {
   } = heroContent;
 
   return (
-    <section className="relative overflow-hidden bg-kobbo-cream">
-      {/* ══════════ MOBILE — image first, content bottom-centered ══════════ */}
-      <div className="relative h-[min(92svh,640px)] sm:hidden">
+    <section id="hero" className="relative overflow-hidden bg-kobbo-cream">
+      {/* ══════════ MOBILE ══════════ */}
+      <div className="relative h-[min(88svh,620px)] sm:hidden">
         <div className="absolute inset-0">
           <Image
             src={imageMobile}
             alt={imageAlt}
             fill
             priority
+            quality={95}
             sizes="100vw"
-            className="object-cover object-[center_28%]"
+            className="object-cover object-[center_22%]"
           />
-          {/* Soft top vignette so photo feels cinematic */}
-          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/10 to-transparent" />
-          {/* Strong bottom wash for readable, premium text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#faf6ef] via-[#faf6ef]/85 via-35% to-transparent to-70%" />
+          {/* Light bottom wash only — keep photo crisp */}
+          <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-white via-white/80 to-transparent" />
         </div>
 
-        {/* Floating badge — top-right, clear of the face */}
-        <div className="pointer-events-none absolute right-3 top-4 z-10">
+        <div className="pointer-events-none absolute right-3 top-[4.75rem] z-10">
           <ScreenFreeBadge
             title={imageBadgeTitle}
             subtitle={imageBadgeSubtitle}
             compact
-            className="shadow-soft-lg"
           />
         </div>
 
-        {/* Bottom-centered content */}
-        <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-6 pt-16 text-center">
-          <div className="mx-auto inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 shadow-soft backdrop-blur-sm">
+        <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-6 pt-10 text-center">
+          <div className="mx-auto inline-flex items-center gap-1.5 rounded-full bg-[#fff8e8]/95 px-3 py-1.5 shadow-soft backdrop-blur-sm">
             <Star
               className="h-3.5 w-3.5 fill-kobbo-yellow text-kobbo-yellow"
               strokeWidth={0}
@@ -131,7 +127,7 @@ export default function HeroSection() {
             </p>
           </div>
 
-          <h1 className="font-heading mx-auto mt-3 max-w-[16ch] text-[2.4rem] font-extrabold leading-[1.05] tracking-tight text-kobbo-black">
+          <h1 className="font-heading mx-auto mt-3 max-w-[15ch] text-[2.35rem] font-extrabold leading-[1.05] tracking-tight text-kobbo-black">
             {headline}
             <span className="text-kobbo-yellow">.</span>
           </h1>
@@ -154,10 +150,7 @@ export default function HeroSection() {
             {trustItems.map((item, index) => (
               <div key={item.id} className="flex items-center gap-3">
                 {index > 0 && (
-                  <span
-                    aria-hidden
-                    className="h-3.5 w-px bg-kobbo-muted/30"
-                  />
+                  <span aria-hidden className="h-3.5 w-px bg-kobbo-muted/30" />
                 )}
                 <div className="flex items-center gap-1.5">
                   {item.icon === "shield" ? (
@@ -173,23 +166,25 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* ══════════ DESKTOP / TABLET ══════════ */}
-      <div className="relative hidden min-h-[560px] sm:block lg:min-h-[640px]">
+      {/* ══════════ DESKTOP / TABLET — crisp immersive ══════════ */}
+      <div className="relative hidden min-h-[100svh] max-h-[900px] sm:block lg:min-h-[720px]">
         <div className="absolute inset-0">
           <Image
             src={imageDesktop}
             alt={imageAlt}
             fill
             priority
+            quality={95}
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover object-[72%_center]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#f7f1e8]/92 via-[#f7f1e8]/55 to-transparent lg:via-[#f7f1e8]/40" />
+          {/* Soft left readability only — no heavy fade */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/20 via-40% to-transparent lg:from-white/45 lg:via-white/10" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-center px-6 py-20 lg:min-h-[640px] lg:px-8 lg:py-24">
+        <div className="relative mx-auto flex min-h-[100svh] max-h-[900px] max-w-7xl items-center px-6 pb-16 pt-28 lg:min-h-[720px] lg:px-8 lg:pb-20 lg:pt-32">
           <div className="relative w-full max-w-xl">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3.5 py-1.5 shadow-soft backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#fff8e8]/95 px-3.5 py-1.5 shadow-soft backdrop-blur-sm">
               <Star
                 className="h-3.5 w-3.5 fill-kobbo-yellow text-kobbo-yellow"
                 strokeWidth={0}
@@ -202,33 +197,30 @@ export default function HeroSection() {
               </p>
             </div>
 
-            <h1 className="font-heading mt-6 text-5xl font-extrabold leading-[1.05] tracking-tight text-kobbo-black lg:text-6xl xl:text-[4.25rem]">
+            <h1 className="font-heading mt-5 text-5xl font-extrabold leading-[1.05] tracking-tight text-kobbo-black lg:mt-6 lg:text-6xl xl:text-[4.35rem]">
               {headline}
               <span className="text-kobbo-yellow">.</span>
             </h1>
 
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-kobbo-muted">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-kobbo-muted lg:mt-5 lg:text-lg">
               {description}
             </p>
 
-            <div className="mt-8">
+            <div className="mt-7 lg:mt-8">
               <Link
                 href={primaryCta.href}
-                className="inline-flex min-h-[3.25rem] items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-8 py-3 text-base font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light hover:shadow-soft-lg"
+                className="inline-flex min-h-[3.25rem] min-w-[200px] items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-10 py-3.5 text-base font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light hover:shadow-soft-lg"
               >
                 {primaryCta.label}
                 <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
               </Link>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-kobbo-muted">
+            <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 text-kobbo-muted lg:mt-8">
               {trustItems.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-3">
+                <div key={item.id} className="flex items-center gap-4">
                   {index > 0 && (
-                    <span
-                      aria-hidden
-                      className="h-3.5 w-px bg-kobbo-muted/30"
-                    />
+                    <span aria-hidden className="h-4 w-px bg-kobbo-muted/30" />
                   )}
                   <div className="flex items-center gap-1.5">
                     {item.icon === "shield" ? (
@@ -243,12 +235,11 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute right-8 top-[42%] -translate-y-1/2 lg:right-12 xl:right-16">
+          <div className="pointer-events-none absolute right-8 top-[48%] -translate-y-1/2 lg:right-14 xl:right-20">
             <div className="animate-[float_4s_ease-in-out_infinite]">
               <ScreenFreeBadge
                 title={imageBadgeTitle}
                 subtitle={imageBadgeSubtitle}
-                className="gap-2.5 px-3.5 py-2.5"
               />
             </div>
           </div>

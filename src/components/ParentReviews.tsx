@@ -3,7 +3,7 @@ import { reviews } from "@/data/reviews";
 
 export default function ParentReviews() {
   return (
-    <section className="bg-kobbo-white py-4 sm:py-5 lg:py-6">
+    <section id="reviews" className="bg-kobbo-white py-4 sm:py-5 lg:py-6">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="font-heading text-center text-2xl font-extrabold text-kobbo-black sm:text-3xl">
           What Parents Are Saying

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, ShieldCheck } from "lucide-react";
+import { Truck, RefreshCw, ShieldCheck } from "lucide-react";
 import { announcementBar } from "@/data/home-content";
 
 function GanpatiIcon({ className }: { className?: string }) {
@@ -16,25 +16,24 @@ function GanpatiIcon({ className }: { className?: string }) {
 }
 
 export default function AnnouncementBar() {
-  const cols =
-    announcementBar.items.length === 3
-      ? "sm:grid-cols-3"
-      : "sm:grid-cols-4";
-
   return (
-    <div className="border-b border-kobbo-beige/80 bg-kobbo-beige/70 text-kobbo-black">
+    <div className="relative z-[60] border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">
       <div className="mx-auto max-w-7xl px-3 py-2 sm:px-6 lg:px-8">
-        <ul
-          className={`flex items-center gap-x-4 overflow-x-auto scrollbar-none sm:grid sm:gap-0 sm:overflow-visible ${cols}`}
-        >
+        <ul className="flex items-center gap-x-4 overflow-x-auto scrollbar-none sm:grid sm:grid-cols-4 sm:gap-0 sm:overflow-visible">
           {announcementBar.items.map((item, index) => {
             const isAccent = "accent" in item && Boolean(item.accent);
             const href = "href" in item ? item.href : undefined;
 
             const content = (
               <>
-                {item.icon === "sparkles" && (
-                  <Sparkles
+                {item.icon === "truck" && (
+                  <Truck
+                    className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
+                    strokeWidth={2}
+                  />
+                )}
+                {item.icon === "returns" && (
+                  <RefreshCw
                     className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
                     strokeWidth={2}
                   />
