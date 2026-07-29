@@ -43,6 +43,7 @@ interface PasswordInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
+  hasError?: boolean;
 }
 
 export default function PasswordInput({
@@ -52,12 +53,16 @@ export default function PasswordInput({
   onChange,
   placeholder = "••••••••",
   required,
+  hasError = false,
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
 
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-semibold text-kobbo-black">
+      <label
+        htmlFor={id}
+        className={`text-sm font-semibold ${hasError ? "text-red-600" : "text-kobbo-black"}`}
+      >
         {label}
       </label>
       <div className="relative mt-1.5">
@@ -68,7 +73,11 @@ export default function PasswordInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
-          className="w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream py-3 pl-4 pr-12 text-sm outline-none transition-colors focus:border-kobbo-yellow"
+          className={`w-full rounded-2xl border-2 py-3 pl-4 pr-12 text-sm outline-none transition-colors ${
+            hasError
+              ? "border-red-400 bg-red-50 focus:border-red-500"
+              : "border-kobbo-beige bg-kobbo-cream focus:border-kobbo-yellow"
+          }`}
         />
         <button
           type="button"
@@ -77,9 +86,9 @@ export default function PasswordInput({
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-kobbo-muted transition-colors hover:bg-kobbo-beige hover:text-kobbo-black"
         >
           {visible ? (
-            <EyeOffIcon className="h-4 w-4" />
-          ) : (
             <EyeIcon className="h-4 w-4" />
+          ) : (
+            <EyeOffIcon className="h-4 w-4" />
           )}
         </button>
       </div>

@@ -47,7 +47,7 @@ export default function RecentlyViewed({
   if (products.length === 0) return null;
 
   return (
-    <section className="bg-kobbo-cream py-8 sm:py-10">
+    <section className="bg-kobbo-cream py-5 sm:py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-xl font-extrabold text-kobbo-black sm:text-2xl">

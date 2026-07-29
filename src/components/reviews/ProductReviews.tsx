@@ -83,7 +83,7 @@ export default async function ProductReviews({
       : null;
 
   return (
-    <section id="product-reviews" className="bg-kobbo-white py-8 sm:py-10">
+    <section id="product-reviews" className="bg-kobbo-white py-5 sm:py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="font-heading text-2xl font-extrabold text-kobbo-black sm:text-3xl">

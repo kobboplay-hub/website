@@ -98,7 +98,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <SiteLayout mainClassName="bg-kobbo-cream">
       <ProductBreadcrumb productName={product.title} />
 
-      <section className="pb-24 sm:pb-28 lg:pb-10">
+      <section className="pb-20 sm:pb-24 lg:pb-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-5 sm:gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">
             <ProductGallery

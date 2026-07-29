@@ -46,7 +46,7 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-8 sm:py-10">
+    <section className="py-5 sm:py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-kobbo-yellow/20 px-5 py-6 shadow-soft sm:px-8 sm:py-8">
           <div className="mx-auto max-w-2xl text-center">

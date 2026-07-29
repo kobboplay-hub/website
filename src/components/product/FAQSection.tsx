@@ -9,10 +9,10 @@ interface FAQSectionProps {
 }
 
 export default function FAQSection({ faqs }: FAQSectionProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-8 sm:py-10">
+    <section className="py-5 sm:py-7">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <h2 className="font-heading text-center text-2xl font-extrabold text-kobbo-black sm:text-3xl">
           Frequently Asked Questions

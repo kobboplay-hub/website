@@ -10,6 +10,16 @@ import { AuthCardShell } from "@/components/account/PageShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import PasswordInput from "@/components/account/PasswordInput";
 
+type FieldError = "firstName" | "lastName" | "email" | "password" | "confirmPassword" | "general";
+
+function inputClass(hasError: boolean) {
+  return `mt-1.5 w-full rounded-2xl border-2 px-4 py-3 text-sm outline-none transition-colors ${
+    hasError
+      ? "border-red-400 bg-red-50 focus:border-red-500"
+      : "border-kobbo-beige bg-kobbo-cream focus:border-kobbo-yellow"
+  }`;
+}
+
 export default function RegisterForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -17,26 +27,49 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [errorFields, setErrorFields] = useState<FieldError[]>([]);
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/account";
 
+  const setFieldError = (fields: FieldError[], message: string) => {
+    setError(message);
+    setErrorFields(fields);
+  };
+
+  const clearError = () => {
+    setError("");
+    setErrorFields([]);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    clearError();
 
-    if (!firstName || !lastName || !email || !password) {
-      setError("Please fill in all fields.");
+    if (!firstName) {
+      setFieldError(["firstName"], "Please enter your first name.");
       return;
     }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match. Please check and try again.");
+    if (!lastName) {
+      setFieldError(["lastName"], "Please enter your last name.");
+      return;
+    }
+    if (!email) {
+      setFieldError(["email"], "Please enter your email address.");
+      return;
+    }
+    if (!password) {
+      setFieldError(["password"], "Please enter a password.");
       return;
     }
     if (password.length < 5) {
-      setError("Password must be at least 5 characters.");
+      setFieldError(["password"], "Password must be at least 5 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setFieldError(["password", "confirmPassword"], "Passwords do not match. Please check and try again.");
       return;
     }
 
@@ -49,11 +82,15 @@ export default function RegisterForm() {
         err instanceof Error
           ? err.message
           : "Registration failed. Please try again.";
-      setError(mapAuthErrorMessage(raw));
+      const msg = mapAuthErrorMessage(raw);
+      const emailRelated = /email|account|taken|exists|registered/i.test(msg);
+      setFieldError(emailRelated ? ["email"] : ["general"], msg);
     } finally {
       setLoading(false);
     }
   };
+
+  const has = (field: FieldError) => errorFields.includes(field);
 
   return (
     <AuthCardShell
@@ -67,36 +104,37 @@ export default function RegisterForm() {
           <div>
             <label
               htmlFor="firstName"
-              className="text-sm font-semibold text-kobbo-black"
+              className={`text-sm font-semibold ${has("firstName") ? "text-red-600" : "text-kobbo-black"}`}
             >
               First name
             </label>
             <input
               id="firstName"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
+              onChange={(e) => { setFirstName(e.target.value); if (has("firstName")) clearError(); }}
+              className={inputClass(has("firstName"))}
             />
           </div>
           <div>
             <label
               htmlFor="lastName"
-              className="text-sm font-semibold text-kobbo-black"
+              className={`text-sm font-semibold ${has("lastName") ? "text-red-600" : "text-kobbo-black"}`}
             >
               Last name
             </label>
             <input
               id="lastName"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
+              onChange={(e) => { setLastName(e.target.value); if (has("lastName")) clearError(); }}
+              className={inputClass(has("lastName"))}
             />
           </div>
         </div>
+
         <div>
           <label
             htmlFor="email"
-            className="text-sm font-semibold text-kobbo-black"
+            className={`text-sm font-semibold ${has("email") ? "text-red-600" : "text-kobbo-black"}`}
           >
             Email
           </label>
@@ -104,22 +142,26 @@ export default function RegisterForm() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1.5 w-full rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none focus:border-kobbo-yellow"
+            onChange={(e) => { setEmail(e.target.value); if (has("email")) clearError(); }}
+            className={inputClass(has("email"))}
           />
         </div>
+
         <PasswordInput
           id="password"
           label="Password"
           value={password}
-          onChange={setPassword}
+          onChange={(v) => { setPassword(v); if (has("password")) clearError(); }}
+          hasError={has("password")}
         />
         <PasswordInput
           id="confirmPassword"
           label="Confirm password"
           value={confirmPassword}
-          onChange={setConfirmPassword}
+          onChange={(v) => { setConfirmPassword(v); if (has("confirmPassword")) clearError(); }}
+          hasError={has("confirmPassword")}
         />
+
         <p className="text-xs leading-relaxed text-kobbo-muted">
           Sign in using email. Mobile login can be enabled later if required.
         </p>
