@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment } from "react";
 import { ArrowRight, Leaf, ShieldCheck, Star } from "lucide-react";
 import { heroContent } from "@/data/home-content";
 
@@ -7,26 +8,16 @@ function ScreenFreeIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" fill="none" aria-hidden className={className}>
       <circle cx="20" cy="20" r="20" fill="#E8F6EE" />
+      {/* Mind / brain icon */}
       <path
-        d="M20 11.5c-3.2 0-5.5 2.1-5.5 5.2 0 2.4 1.3 4.1 3.2 5.1v1.4c0 .5.4.9.9.9h2.8c.5 0 .9-.4.9-.9v-1.4c1.9-1 3.2-2.7 3.2-5.1 0-3.1-2.3-5.2-5.5-5.2z"
+        d="M20 10.5c-2.6 0-4.4 1.5-5.1 3.5-.9-.5-2-.5-2.9.2-1.1.9-1.4 2.4-.8 3.7-.8.7-1.2 1.8-1 2.9.3 1.5 1.5 2.5 3 2.7v2.1c0 .7.6 1.3 1.3 1.3h2.2c.4 0 .7-.2.9-.5.5.7 1.4 1.2 2.4 1.2s1.9-.5 2.4-1.2c.2.3.5.5.9.5h2.2c.7 0 1.3-.6 1.3-1.3v-2.1c1.5-.2 2.7-1.2 3-2.7.2-1.1-.2-2.2-1-2.9.6-1.3.3-2.8-.8-3.7-.9-.7-2-.7-2.9-.2-.7-2-2.5-3.5-5.1-3.5z"
         fill="#16A34A"
-        opacity="0.9"
       />
       <path
-        d="M12 28.5l16-17"
-        stroke="#16A34A"
-        strokeWidth="2.2"
+        d="M20 14.2v10.2M16.8 16.5c1 .8 2.1 1.2 3.2 1.2s2.2-.4 3.2-1.2M16.8 20.2c1 .8 2.1 1.2 3.2 1.2s2.2-.4 3.2-1.2"
+        stroke="#E8F6EE"
+        strokeWidth="1.35"
         strokeLinecap="round"
-      />
-      <rect
-        x="24.5"
-        y="22"
-        width="6"
-        height="8"
-        rx="1.2"
-        stroke="#16A34A"
-        strokeWidth="1.6"
-        fill="none"
       />
     </svg>
   );
@@ -45,24 +36,24 @@ function ScreenFreeBadge({
 }) {
   return (
     <div
-      className={`flex items-center rounded-2xl bg-white/95 shadow-soft-lg backdrop-blur-sm ${
-        compact ? "gap-1.5 px-2.5 py-1.5" : "gap-2.5 px-3.5 py-2.5"
+      className={`flex items-center rounded-2xl bg-white shadow-soft-lg ${
+        compact ? "gap-2 px-3 py-2" : "gap-2.5 px-3.5 py-2.5"
       } ${className}`}
     >
       <ScreenFreeIcon
-        className={`shrink-0 ${compact ? "h-8 w-8" : "h-10 w-10"}`}
+        className={`shrink-0 ${compact ? "h-9 w-9" : "h-10 w-10"}`}
       />
       <div className="leading-tight">
         <p
-          className={`font-bold text-kobbo-black ${
-            compact ? "text-[11px]" : "text-sm"
+          className={`font-bold text-[#1A1A1A] ${
+            compact ? "text-xs" : "text-sm"
           }`}
         >
           {title}
         </p>
         <p
-          className={`font-medium text-kobbo-green ${
-            compact ? "text-[10px]" : "text-xs"
+          className={`font-semibold text-kobbo-green ${
+            compact ? "text-[11px]" : "text-xs"
           }`}
         >
           {subtitle}
@@ -87,11 +78,15 @@ export default function HeroSection() {
     imageAlt,
   } = heroContent;
 
+  const headlineWords = headline.trim().split(/\s+/);
+  const headlineLast = headlineWords.pop() ?? "";
+  const headlineFirst = headlineWords.join(" ");
+
   return (
     <section id="hero" className="relative overflow-hidden bg-kobbo-cream">
-      {/* ══════════ MOBILE ══════════ */}
-      <div className="relative h-[min(88svh,620px)] sm:hidden">
-        <div className="absolute inset-0">
+      {/* ══════════ MOBILE — text fade into image (reference feel) ══════════ */}
+      <div className="relative min-h-[100svh] overflow-hidden sm:hidden">
+        <div className="absolute inset-0 ">
           <Image
             src={imageMobile}
             alt={imageAlt}
@@ -99,75 +94,85 @@ export default function HeroSection() {
             priority
             quality={95}
             sizes="100vw"
-            className="object-cover object-[center_22%]"
-          />
-          {/* Light bottom wash only — keep photo crisp */}
-          <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-white via-white/80 to-transparent" />
-        </div>
-
-        <div className="pointer-events-none absolute right-3 top-[4.75rem] z-10">
-          <ScreenFreeBadge
-            title={imageBadgeTitle}
-            subtitle={imageBadgeSubtitle}
-            compact
+            className="object-cover object-left object-[center_32%] mt-40  "
           />
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-6 pt-10 text-center">
-          <div className="mx-auto inline-flex items-center gap-1.5 rounded-full bg-[#fff8e8]/95 px-3 py-1.5 shadow-soft backdrop-blur-sm">
+        <div className="relative z-10 px-6 pb-8 pt-[4.75rem]">
+          {/* Cream soft shadow — only behind text block (same feel as desktop) */}
+          <div
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#fffbf0_0%,#fffbf0_48%,rgba(255,251,240,0.94)_68%,rgba(255,251,240,0.72)_82%,rgba(255,251,240,0.28)_94%,transparent_100%)]"
+            aria-hidden
+          />
+
+          <div className="relative">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-kobbo-beige bg-white px-4 py-2 shadow-soft">
             <Star
-              className="h-3.5 w-3.5 fill-kobbo-yellow text-kobbo-yellow"
+              className="h-4 w-4 fill-kobbo-yellow text-kobbo-yellow"
               strokeWidth={0}
             />
-            <p className="text-[11px] font-semibold text-kobbo-black">
+            <p className="text-xs font-semibold text-[#1A1A1A]">
               <span className="font-bold">{ratingValue}</span>{" "}
-              <span className="font-medium text-kobbo-black/75">
-                {ratingLabel}
-              </span>
+              <span className="font-semibold">{ratingLabel}</span>
             </p>
           </div>
 
-          <h1 className="font-heading mx-auto mt-3 max-w-[15ch] text-[2.35rem] font-extrabold leading-[1.05] tracking-tight text-kobbo-black">
-            {headline}
-            <span className="text-kobbo-yellow">.</span>
-          </h1>
+          <div className="mt-5 flex items-start justify-between gap-3">
+            <h1 className="font-heading min-w-0 flex-1 text-[3rem] font-extrabold leading-[1.02] tracking-tight text-[#1A1A1A]">
+              {headlineFirst}
+              <br />
+              {headlineLast}
+              <span className="text-kobbo-yellow">.</span>
+            </h1>
 
-          <p className="mx-auto mt-2.5 max-w-[28ch] text-sm leading-relaxed text-kobbo-muted">
+            <ScreenFreeBadge
+              title={imageBadgeTitle}
+              subtitle={imageBadgeSubtitle}
+              compact
+              className="mt-1 shrink-0"
+            />
+          </div>
+
+          <p className="mt-4 max-w-[22rem] text-[15px] font-medium leading-relaxed text-[#3A3A3A]">
             {description}
           </p>
 
-          <div className="mt-4 flex justify-center">
+          <div className="mt-6">
             <Link
               href={primaryCta.href}
-              className="inline-flex min-h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-8 py-3 text-sm font-bold text-kobbo-black shadow-soft transition-transform active:scale-[0.98]"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-7 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-soft transition-transform active:scale-[0.98]"
             >
               {primaryCta.label}
               <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
             </Link>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-kobbo-muted">
-            {trustItems.map((item, index) => (
-              <div key={item.id} className="flex items-center gap-3">
-                {index > 0 && (
-                  <span aria-hidden className="h-3.5 w-px bg-kobbo-muted/30" />
+          <div className="mt-5 flex flex-col items-start gap-2">
+            {trustItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-1.5">
+                {item.icon === "shield" ? (
+                  <ShieldCheck
+                    className="h-3.5 w-3.5 shrink-0 text-[#1A1A1A]"
+                    strokeWidth={2}
+                  />
+                ) : (
+                  <Leaf
+                    className="h-3.5 w-3.5 shrink-0 text-[#1A1A1A]"
+                    strokeWidth={2}
+                  />
                 )}
-                <div className="flex items-center gap-1.5">
-                  {item.icon === "shield" ? (
-                    <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
-                  ) : (
-                    <Leaf className="h-3.5 w-3.5" strokeWidth={2} />
-                  )}
-                  <span className="text-[11px] font-medium">{item.label}</span>
-                </div>
+                <span className="whitespace-nowrap text-[11px] font-semibold leading-none text-[#1A1A1A]">
+                  {item.label}
+                </span>
               </div>
             ))}
+          </div>
           </div>
         </div>
       </div>
 
-      {/* ══════════ DESKTOP / TABLET — crisp immersive ══════════ */}
-      <div className="relative hidden min-h-[100svh] max-h-[900px] sm:block lg:min-h-[720px]">
+      {/* ══════════ DESKTOP / TABLET — cream gradient like mobile ══════════ */}
+      <div className="relative hidden min-h-[720px] sm:block lg:min-h-[min(88svh,860px)]">
         <div className="absolute inset-0">
           <Image
             src={imageDesktop}
@@ -176,66 +181,79 @@ export default function HeroSection() {
             priority
             quality={95}
             sizes="100vw"
-            className="object-cover object-[72%_center]"
+            className="object-cover object-[70%_22%] lg:object-[70%_18%] xl:object-[58%_15%]"
           />
-          {/* Soft left readability only — no heavy fade */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/20 via-40% to-transparent lg:from-white/45 lg:via-white/10" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[100svh] max-h-[900px] max-w-7xl items-center px-6 pb-16 pt-28 lg:min-h-[720px] lg:px-8 lg:pb-20 lg:pt-32">
+        {/* Soft cream fade from left — same feel as mobile opacity wash */}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 w-[68%] bg-[linear-gradient(90deg,#fffbf0_0%,#fffbf0_32%,rgba(255,251,240,0.94)_48%,rgba(255,251,240,0.72)_62%,rgba(255,251,240,0.28)_78%,transparent_100%)] lg:w-[62%]"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto flex min-h-[720px] max-w-7xl items-center px-6 pb-16 pt-28 lg:min-h-[min(88svh,860px)] lg:px-10 lg:pb-20 lg:pt-32">
           <div className="relative w-full max-w-xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#fff8e8]/95 px-3.5 py-1.5 shadow-soft backdrop-blur-sm">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-kobbo-beige bg-white px-4 py-2 shadow-soft">
               <Star
-                className="h-3.5 w-3.5 fill-kobbo-yellow text-kobbo-yellow"
+                className="h-4 w-4 fill-kobbo-yellow text-kobbo-yellow"
                 strokeWidth={0}
               />
-              <p className="text-sm font-semibold text-kobbo-black">
+              <p className="text-sm font-semibold text-[#1A1A1A]">
                 <span className="font-bold">{ratingValue}</span>{" "}
-                <span className="font-medium text-kobbo-black/80">
-                  {ratingLabel}
-                </span>
+                <span className="font-semibold">{ratingLabel}</span>
               </p>
             </div>
 
-            <h1 className="font-heading mt-5 text-5xl font-extrabold leading-[1.05] tracking-tight text-kobbo-black lg:mt-6 lg:text-6xl xl:text-[4.35rem]">
+            <h1 className="font-heading mt-5 text-5xl font-extrabold leading-[1.05] tracking-tight text-[#1A1A1A] lg:mt-6 lg:text-6xl xl:text-[4.5rem]">
               {headline}
               <span className="text-kobbo-yellow">.</span>
             </h1>
 
-            <p className="mt-4 max-w-md text-base leading-relaxed text-kobbo-muted lg:mt-5 lg:text-lg">
+            <p className="mt-5 max-w-md text-base font-medium leading-relaxed text-[#3A3A3A] lg:mt-6 lg:text-lg">
               {description}
             </p>
 
-            <div className="mt-7 lg:mt-8">
+            <div className="mt-8 lg:mt-9">
               <Link
                 href={primaryCta.href}
-                className="inline-flex min-h-[3.25rem] min-w-[200px] items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-10 py-3.5 text-base font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light hover:shadow-soft-lg"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-8 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light hover:shadow-soft-lg"
               >
                 {primaryCta.label}
                 <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
               </Link>
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 text-kobbo-muted lg:mt-8">
+            <div className="mt-6 flex items-center gap-3 lg:mt-7">
               {trustItems.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-4">
+                <Fragment key={item.id}>
                   {index > 0 && (
-                    <span aria-hidden className="h-4 w-px bg-kobbo-muted/30" />
+                    <span
+                      aria-hidden
+                      className="h-3.5 w-px shrink-0 bg-[#1A1A1A]/20"
+                    />
                   )}
                   <div className="flex items-center gap-1.5">
                     {item.icon === "shield" ? (
-                      <ShieldCheck className="h-4 w-4" strokeWidth={2} />
+                      <ShieldCheck
+                        className="h-4 w-4 shrink-0 text-[#1A1A1A]"
+                        strokeWidth={2}
+                      />
                     ) : (
-                      <Leaf className="h-4 w-4" strokeWidth={2} />
+                      <Leaf
+                        className="h-4 w-4 shrink-0 text-[#1A1A1A]"
+                        strokeWidth={2}
+                      />
                     )}
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className="whitespace-nowrap text-sm font-semibold leading-none text-[#1A1A1A]">
+                      {item.label}
+                    </span>
                   </div>
-                </div>
+                </Fragment>
               ))}
             </div>
           </div>
 
-          <div className="pointer-events-none absolute right-8 top-[48%] -translate-y-1/2 lg:right-14 xl:right-20">
+          <div className="pointer-events-none absolute right-6 top-[16%] lg:right-10 lg:top-[14%] xl:right-1">
             <div className="animate-[float_4s_ease-in-out_infinite]">
               <ScreenFreeBadge
                 title={imageBadgeTitle}

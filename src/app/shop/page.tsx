@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import SiteLayout from "@/components/SiteLayout";
-import Newsletter from "@/components/Newsletter";
 import ShopHeader from "@/components/shop/ShopHeader";
 import ShopFilters from "@/components/shop/ShopFilters";
 import ShopInfiniteGrid from "@/components/shop/ShopInfiniteGrid";
@@ -105,7 +104,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           )}
         </div>
       </section>
-      <Newsletter />
     </SiteLayout>
   );
 }

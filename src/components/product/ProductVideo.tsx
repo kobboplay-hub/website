@@ -2,11 +2,20 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink, Play, X } from "lucide-react";
+import { ExternalLink, Play } from "lucide-react";
+import AdaptiveProductVideoPlayer from "@/components/product/AdaptiveProductVideoPlayer";
 import type { ProductVideoItem } from "@/lib/productPageContent";
 
 interface ProductVideoProps {
   videos: ProductVideoItem[];
+}
+
+function isPortraitVideo(video: ProductVideoItem): boolean {
+  if (video.type === "instagram" || video.type === "mp4") return true;
+  if (video.type === "youtube") {
+    return /\/shorts\//i.test(video.url) || /youtube\.com\/shorts/i.test(video.url);
+  }
+  return false;
 }
 
 function VideoCard({
@@ -16,19 +25,22 @@ function VideoCard({
   video: ProductVideoItem;
   onPlay: () => void;
 }) {
+  const portrait = isPortraitVideo(video);
+  const aspectClass = portrait ? "aspect-[9/16]" : "aspect-video";
+
   if (video.type === "instagram") {
     return (
       <a
         href={video.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex aspect-video flex-col items-center justify-center overflow-hidden rounded-2xl bg-kobbo-black shadow-soft transition-transform hover:-translate-y-0.5"
+        className={`group relative mx-auto flex w-full max-w-[280px] flex-col items-center justify-center overflow-hidden rounded-2xl bg-kobbo-black shadow-soft transition-transform hover:-translate-y-0.5 ${aspectClass}`}
       >
         <Image
           src={video.thumbnail}
           alt={video.label ?? "Instagram video"}
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 768px) 100vw, 280px"
           className="object-cover opacity-80 transition-opacity group-hover:opacity-60"
         />
         <div className="absolute inset-0 bg-kobbo-black/30" />
@@ -59,7 +71,9 @@ function VideoCard({
     <button
       type="button"
       onClick={onPlay}
-      className="group relative aspect-video overflow-hidden rounded-2xl bg-kobbo-black shadow-soft transition-transform hover:-translate-y-0.5"
+      className={`group relative mx-auto w-full overflow-hidden rounded-2xl bg-kobbo-black shadow-soft transition-transform hover:-translate-y-0.5 ${
+        portrait ? "max-w-[280px] aspect-[9/16]" : "aspect-video"
+      }`}
     >
       <Image
         src={video.thumbnail}
@@ -83,49 +97,6 @@ function VideoCard({
   );
 }
 
-function VideoPlayer({
-  video,
-  onClose,
-}: {
-  video: ProductVideoItem;
-  onClose: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-kobbo-black/80 p-4">
-      <div className="relative w-full max-w-4xl">
-        <button
-          type="button"
-          aria-label="Close video"
-          onClick={onClose}
-          className="absolute -top-12 right-0 flex h-9 w-9 items-center justify-center rounded-full bg-kobbo-white text-kobbo-black shadow-soft transition-colors hover:bg-kobbo-yellow"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <div className="relative aspect-video overflow-hidden rounded-2xl bg-kobbo-black shadow-soft-lg">
-          {video.type === "youtube" || video.type === "external" ? (
-            <iframe
-              src={video.url}
-              title={video.label ?? "Product video"}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full"
-            />
-          ) : (
-            <video
-              src={video.url}
-              controls
-              autoPlay
-              className="absolute inset-0 h-full w-full object-contain"
-            >
-              <track kind="captions" />
-            </video>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function ProductVideo({ videos }: ProductVideoProps) {
   const [playingVideo, setPlayingVideo] = useState<ProductVideoItem | null>(
     null,
@@ -141,7 +112,7 @@ export default function ProductVideo({ videos }: ProductVideoProps) {
         : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2";
 
   return (
-    <section className="py-4 sm:py-5">
+    <section className="pt-1 pb-4 sm:pt-2 sm:pb-5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl bg-kobbo-beige shadow-soft">
           <div className="p-6 sm:p-8">
@@ -179,9 +150,10 @@ export default function ProductVideo({ videos }: ProductVideoProps) {
       </div>
 
       {playingVideo && (
-        <VideoPlayer
+        <AdaptiveProductVideoPlayer
           video={playingVideo}
           onClose={() => setPlayingVideo(null)}
+          autoplayEmbed={false}
         />
       )}
     </section>

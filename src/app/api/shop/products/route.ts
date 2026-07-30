@@ -38,11 +38,19 @@ export async function GET(request: Request) {
       after && after.length > 0 ? after : null,
     );
 
-    let reviewSummaries = {};
+    // Don't block product loading on slow Judge.me responses
+    let reviewSummaries: Record<string, unknown> = {};
     if (result.products.length > 0) {
-      reviewSummaries = await getProductReviewSummaries(
-        result.products.map((product) => product.id),
-      );
+      try {
+        reviewSummaries = await Promise.race([
+          getProductReviewSummaries(result.products.map((product) => product.id)),
+          new Promise<Record<string, never>>((resolve) => {
+            setTimeout(() => resolve({}), 2500);
+          }),
+        ]);
+      } catch {
+        reviewSummaries = {};
+      }
     }
 
     return NextResponse.json({

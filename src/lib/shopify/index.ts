@@ -4,6 +4,7 @@ import {
   GET_PRODUCTS_WITH_VIDEOS_QUERY,
   GET_RECENT_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_PAGINATED_QUERY,
+  PRODUCTS_SORTED_PAGINATED_QUERY,
   GET_PRODUCT_BY_HANDLE_QUERY,
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
@@ -171,12 +172,22 @@ interface ShopifyProductSortParams {
   reverse: boolean;
 }
 
-function toShopifySortParams(sort: ShopSortOption): ShopifyProductSortParams {
+function toShopifySortParams(
+  sort: ShopSortOption,
+  hasSearchQuery = false,
+): ShopifyProductSortParams {
   switch (sort) {
-    case "price-asc":  return { sortKey: "PRICE", reverse: false };
-    case "price-desc": return { sortKey: "PRICE", reverse: true };
-    case "alpha":      return { sortKey: "TITLE", reverse: false };
-    default:           return { sortKey: "RELEVANCE", reverse: false };
+    case "price-asc":
+      return { sortKey: "PRICE", reverse: false };
+    case "price-desc":
+      return { sortKey: "PRICE", reverse: true };
+    case "alpha":
+      return { sortKey: "TITLE", reverse: false };
+    default:
+      // RELEVANCE only works with a search query; otherwise pagination can skip products
+      return hasSearchQuery
+        ? { sortKey: "RELEVANCE", reverse: false }
+        : { sortKey: "BEST_SELLING", reverse: false };
   }
 }
 
@@ -211,33 +222,52 @@ export async function getShopProductsByCursor(
   sort: ShopSortOption = "featured",
   after: string | null = null,
 ): Promise<ShopProductsCursorResult> {
-  const { sortKey, reverse } = toShopifySortParams(sort);
-  const shopifyQuery = buildShopifyProductQuery(searchQuery);
+  const trimmedQuery = searchQuery.trim();
+  const shopifyQuery = buildShopifyProductQuery(trimmedQuery);
+  const hasSearch = shopifyQuery.length > 0;
+  const { sortKey, reverse } = toShopifySortParams(sort, hasSearch);
   const first = Math.min(50, Math.max(1, pageSize));
 
-  const data = await shopifyFetch<{
-    products: {
-      pageInfo: { hasNextPage: boolean; endCursor: string | null };
-      edges: { node: ShopifyProductNode }[];
-    };
-  }>({
-    query: SEARCH_PRODUCTS_PAGINATED_QUERY,
-    variables: {
-      query: shopifyQuery,
-      first,
-      after,
-      sortKey,
-      reverse,
-    },
-    revalidate: false,
-    cache: "no-store",
-  });
+  const data = hasSearch
+    ? await shopifyFetch<{
+        products: {
+          pageInfo: { hasNextPage: boolean; endCursor: string | null };
+          edges: { node: ShopifyProductNode }[];
+        };
+      }>({
+        query: SEARCH_PRODUCTS_PAGINATED_QUERY,
+        variables: {
+          query: shopifyQuery,
+          first,
+          after,
+          sortKey,
+          reverse,
+        },
+        revalidate: false,
+        cache: "no-store",
+      })
+    : await shopifyFetch<{
+        products: {
+          pageInfo: { hasNextPage: boolean; endCursor: string | null };
+          edges: { node: ShopifyProductNode }[];
+        };
+      }>({
+        query: PRODUCTS_SORTED_PAGINATED_QUERY,
+        variables: {
+          first,
+          after,
+          sortKey,
+          reverse,
+        },
+        revalidate: false,
+        cache: "no-store",
+      });
 
   return {
     products: data.products.edges.map((edge) => normalizeProduct(edge.node)),
     endCursor: data.products.pageInfo.endCursor,
     hasNextPage: data.products.pageInfo.hasNextPage,
-    searchQuery: searchQuery.trim(),
+    searchQuery: trimmedQuery,
     sort,
   };
 }
@@ -250,39 +280,26 @@ export async function getShopProductsPage(
 ): Promise<ShopProductsResult> {
   const safePage = Math.max(1, Math.floor(page) || 1);
   const targetCount = safePage * pageSize;
-  const { sortKey, reverse } = toShopifySortParams(sort);
-  const shopifyQuery = buildShopifyProductQuery(searchQuery);
 
-  let cursor: string | undefined;
+  let cursor: string | null = null;
   let hasNextPage = true;
   const collected: Product[] = [];
 
   while (collected.length < targetCount && hasNextPage) {
     const remaining = targetCount - collected.length;
     const batchSize = Math.min(50, remaining);
+    const batch = await getShopProductsByCursor(
+      batchSize,
+      searchQuery,
+      sort,
+      cursor,
+    );
 
-    const data = await shopifyFetch<{
-      products: {
-        pageInfo: { hasNextPage: boolean; endCursor: string | null };
-        edges: { node: ShopifyProductNode }[];
-      };
-    }>({
-      query: SEARCH_PRODUCTS_PAGINATED_QUERY,
-      variables: {
-        query: shopifyQuery,
-        first: batchSize,
-        after: cursor ?? null,
-        sortKey,
-        reverse,
-      },
-    });
+    collected.push(...batch.products);
+    hasNextPage = batch.hasNextPage;
+    cursor = batch.endCursor;
 
-    const batch = data.products.edges.map((edge) => normalizeProduct(edge.node));
-    collected.push(...batch);
-    hasNextPage = data.products.pageInfo.hasNextPage;
-    cursor = data.products.pageInfo.endCursor ?? undefined;
-
-    if (batch.length === 0) break;
+    if (batch.products.length === 0) break;
   }
 
   const start = (safePage - 1) * pageSize;

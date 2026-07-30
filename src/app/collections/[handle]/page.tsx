@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Sparkles } from "lucide-react";
 import SiteLayout from "@/components/SiteLayout";
-import Newsletter from "@/components/Newsletter";
 import ProductGrid from "@/components/shop/ProductGrid";
 import EmptyState from "@/components/ui/EmptyState";
 import { getCollectionProducts } from "@/lib/shopify";
@@ -118,7 +117,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
           )}
         </div>
       </section>
-      <Newsletter />
     </SiteLayout>
   );
 }

@@ -39,7 +39,7 @@ export const heroContent = {
   primaryCta: { label: "Shop Now", href: "/shop" },
   trustItems: [
     { id: "safe", label: "Safe Materials", icon: "shield" as const },
-    { id: "designed", label: "Thoughtfully Designed", icon: "leaf" as const },
+    { id: "designed", label: "Thoughtfully Curated", icon: "leaf" as const },
   ],
   imageBadgeTitle: "Screen-Free",
   imageBadgeSubtitle: "Learning Toys",
@@ -58,13 +58,6 @@ export const ganpatiCollection = {
   title: "Ganpati Collection",
 };
 
-export const newsletterSection = {
-  title: "Let's Keep the Fun Going!",
-  subtitle: "Join our newsletter for offers, new toys and parenting tips.",
-  placeholder: "Enter your email",
-  buttonLabel: "Subscribe",
-  successFallback: "Thank you for subscribing!",
-};
 
 export const instagramSection = {
   title: "Unboxing & Play Moments",

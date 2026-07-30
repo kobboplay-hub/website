@@ -7,7 +7,6 @@ import BrandStory from "@/components/BrandStory";
 import WhyParentsChooseUs from "@/components/WhyParentsChooseUs";
 import InstagramVideos from "@/components/InstagramVideos";
 import ParentReviews from "@/components/ParentReviews";
-import Newsletter from "@/components/Newsletter";
 import {
   getCollections,
   getProductsWithVideos,
@@ -56,11 +55,10 @@ export default async function Home() {
         reviewSummaries={reviewSummaries}
       />
       <CollectionsSection collections={collections} />
-      <BrandStory />
       <WhyParentsChooseUs />
       <InstagramVideos products={productsWithVideos} />
       <ParentReviews />
-      <Newsletter />
+      <BrandStory />
     </SiteLayout>
   );
 }

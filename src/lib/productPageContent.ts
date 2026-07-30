@@ -6,11 +6,6 @@ import type {
 } from "@/lib/shopify/types";
 import { productFaqs, type ProductFAQ } from "@/data/faqs";
 
-export interface ProductHighlight {
-  title: string;
-  description: string;
-}
-
 export interface ProductReview {
   id: string;
   name: string;
@@ -45,26 +40,7 @@ export interface ProductTabsContent {
   careInstructions: string[];
 }
 
-/** Static PDP content — highlights until Shopify metafields are wired */
-export const defaultHighlights = [
-  {
-    title: "Skill Development",
-    description: "Builds problem-solving and hand-eye coordination",
-  },
-  {
-    title: "Creative Learning",
-    description: "Encourages exploration through playful discovery",
-  },
-  {
-    title: "Interactive Play",
-    description: "Keeps little hands busy and minds curious",
-  },
-  {
-    title: "Parent Approved",
-    description: "Loved by families for quality and engagement",
-  },
-];
-
+/** Static PDP content — why parents love until Shopify metafields are wired */
 export const defaultWhyParentsLove = [
   {
     title: "Encourages Creativity",

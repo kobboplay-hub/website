@@ -178,7 +178,7 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
             <Link
               href="/"
               onClick={closeMobile}
-              className="flex h-10 items-center font-heading text-[1.75rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-2xl lg:text-[2.1rem]"
+              className="flex h-10 items-center font-heading text-[1.85rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-[2rem] lg:text-[2.5rem] xl:text-[2.65rem]"
             >
               kobbo
             </Link>
@@ -197,7 +197,7 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`relative text-sm font-medium transition-colors hover:text-kobbo-muted ${
+                    className={`relative text-sm font-medium transition-colors hover:text-kobbo-black/70 ${
                       isActive
                         ? "font-semibold text-kobbo-black after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-kobbo-yellow"
                         : "text-kobbo-black"

@@ -15,9 +15,12 @@ import { useCart } from "@/context/cart-context";
 import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductDescription from "@/components/product/ProductDescription";
+import ProductDetailRating from "@/components/product/ProductDetailRating";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 interface ProductInfoProps {
   product: Product;
+  reviewSummary?: JudgeMeProductSummary | null;
 }
 
 const trustItems = [
@@ -26,7 +29,7 @@ const trustItems = [
   { icon: Lock, label: "Secure Checkout" },
 ];
 
-export default function ProductInfo({ product }: ProductInfoProps) {
+export default function ProductInfo({ product, reviewSummary }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
   const { isWishlisted, toggleWishlist } = useWishlist();
   const wishlisted = isWishlisted(product.handle);
@@ -84,6 +87,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <h1 className="font-heading text-xl font-extrabold leading-tight text-kobbo-black sm:text-2xl lg:text-4xl">
             {product.title}
           </h1>
+
+          <ProductDetailRating summary={reviewSummary} />
 
           {product.vendor && (
             <p className="mt-1.5 text-xs text-kobbo-muted sm:text-sm">

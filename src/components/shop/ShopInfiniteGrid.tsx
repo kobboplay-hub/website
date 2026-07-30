@@ -37,13 +37,16 @@ export default function ShopInfiniteGrid({
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
+  const cursorRef = useRef(initialCursor);
+  const hasNextRef = useRef(initialHasNextPage);
 
-  // Reset when search/sort changes (server re-renders with new initial props)
   useEffect(() => {
     setProducts(initialProducts);
     setReviewSummaries(initialReviewSummaries);
     setCursor(initialCursor);
     setHasNextPage(initialHasNextPage);
+    cursorRef.current = initialCursor;
+    hasNextRef.current = initialHasNextPage;
     setError(null);
     setIsLoading(false);
     loadingRef.current = false;
@@ -57,7 +60,9 @@ export default function ShopInfiniteGrid({
   ]);
 
   const loadMore = useCallback(async () => {
-    if (loadingRef.current || !hasNextPage || !cursor) return;
+    if (loadingRef.current || !hasNextRef.current || !cursorRef.current) {
+      return;
+    }
 
     loadingRef.current = true;
     setIsLoading(true);
@@ -66,7 +71,7 @@ export default function ShopInfiniteGrid({
     try {
       const params = new URLSearchParams({
         first: String(PAGE_SIZE),
-        cursor,
+        cursor: cursorRef.current,
         sort,
       });
       if (searchQuery.trim()) params.set("q", searchQuery.trim());
@@ -96,8 +101,13 @@ export default function ShopInfiniteGrid({
         ...prev,
         ...(data.reviewSummaries ?? {}),
       }));
-      setCursor(data.endCursor ?? null);
-      setHasNextPage(Boolean(data.hasNextPage));
+
+      const nextCursor = data.endCursor ?? null;
+      const nextHasMore = Boolean(data.hasNextPage);
+      cursorRef.current = nextCursor;
+      hasNextRef.current = nextHasMore;
+      setCursor(nextCursor);
+      setHasNextPage(nextHasMore);
     } catch (err) {
       setError(
         err instanceof Error
@@ -108,7 +118,7 @@ export default function ShopInfiniteGrid({
       setIsLoading(false);
       loadingRef.current = false;
     }
-  }, [cursor, hasNextPage, searchQuery, sort]);
+  }, [searchQuery, sort]);
 
   useEffect(() => {
     const node = sentinelRef.current;
@@ -120,12 +130,12 @@ export default function ShopInfiniteGrid({
           void loadMore();
         }
       },
-      { rootMargin: "320px 0px" },
+      { rootMargin: "480px 0px" },
     );
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [hasNextPage, loadMore]);
+  }, [hasNextPage, loadMore, products.length]);
 
   return (
     <div>
@@ -159,6 +169,16 @@ export default function ShopInfiniteGrid({
               Try again
             </button>
           </div>
+        )}
+
+        {hasNextPage && !isLoading && !error && (
+          <button
+            type="button"
+            onClick={() => void loadMore()}
+            className="rounded-full border-2 border-kobbo-beige bg-kobbo-white px-5 py-2 text-sm font-semibold text-kobbo-black transition-colors hover:border-kobbo-yellow hover:bg-kobbo-yellow/10"
+          >
+            Load more products
+          </button>
         )}
 
         {!hasNextPage && products.length > 0 && !isLoading && (
