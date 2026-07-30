@@ -1,50 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
-import {
-  formatPrice,
-  getProductImageUrl,
-  type Product,
-} from "@/lib/shopify/types";
+import { formatPrice, type Product } from "@/lib/shopify/types";
 import ProductCardRating from "@/components/reviews/ProductCardRating";
+import {
+  getRecentlyViewedForDisplay,
+  trackRecentlyViewed,
+  type RecentlyViewedItem,
+} from "@/lib/recently-viewed";
 
 interface RecentlyViewedProps {
-  currentHandle: string;
-  productPool: Product[];
+  currentProduct: Product;
 }
 
-export default function RecentlyViewed({
-  currentHandle,
-  productPool,
-}: RecentlyViewedProps) {
-  const [handles, setHandles] = useState<string[]>([]);
+export default function RecentlyViewed({ currentProduct }: RecentlyViewedProps) {
+  const [items, setItems] = useState<RecentlyViewedItem[]>([]);
+  const [ready, setReady] = useState(false);
+  const trackRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("kobbo-recently-viewed");
-    const previous: string[] = stored ? JSON.parse(stored) : [];
-    const updated = [
-      currentHandle,
-      ...previous.filter((h) => h !== currentHandle),
-    ].slice(0, 6);
-    localStorage.setItem("kobbo-recently-viewed", JSON.stringify(updated));
-    setHandles(updated.filter((h) => h !== currentHandle).slice(0, 4));
-  }, [currentHandle]);
+    // 1) Read previous views first (before tracking current)
+    const previous = getRecentlyViewedForDisplay(currentProduct.handle);
 
-  const products = handles
-    .map((handle) => productPool.find((p) => p.handle === handle))
-    .filter((p): p is Product => Boolean(p));
+    // 2) Track current product visit
+    trackRecentlyViewed(currentProduct);
+
+    // 3) Show others only — never the product you're already on
+    setItems(previous);
+    setReady(true);
+  }, [currentProduct]);
 
   const scroll = (direction: "left" | "right") => {
-    const container = document.getElementById("recently-viewed-track");
+    const container = trackRef.current;
     if (!container) return;
-    const amount = direction === "left" ? -280 : 280;
+    const cardWidth =
+      container.querySelector<HTMLElement>("a")?.offsetWidth ?? 192;
+    const amount = direction === "left" ? -(cardWidth + 16) : cardWidth + 16;
     container.scrollBy({ left: amount, behavior: "smooth" });
   };
 
-  if (products.length === 0) return null;
+  if (!ready || items.length === 0) return null;
 
   return (
     <section className="bg-kobbo-cream py-4 sm:py-5">
@@ -53,65 +51,64 @@ export default function RecentlyViewed({
           <h2 className="font-heading text-xl font-extrabold text-kobbo-black sm:text-2xl">
             Recently Viewed
           </h2>
-          <div className="hidden gap-2 sm:flex">
-            <button
-              type="button"
-              aria-label="Scroll left"
-              onClick={() => scroll("left")}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-kobbo-white shadow-soft transition-colors hover:bg-kobbo-yellow"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              aria-label="Scroll right"
-              onClick={() => scroll("right")}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-kobbo-white shadow-soft transition-colors hover:bg-kobbo-yellow"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          {items.length > 2 && (
+            <div className="hidden gap-2 sm:flex">
+              <button
+                type="button"
+                aria-label="Scroll left"
+                onClick={() => scroll("left")}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-kobbo-white shadow-soft transition-colors hover:bg-kobbo-yellow"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="Scroll right"
+                onClick={() => scroll("right")}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-kobbo-white shadow-soft transition-colors hover:bg-kobbo-yellow"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         <div
-          id="recently-viewed-track"
-          className="mt-4 flex gap-3 overflow-x-auto pb-2 sm:gap-4"
+          ref={trackRef}
+          className="mt-4 flex gap-3 overflow-x-auto pb-2 scrollbar-none sm:gap-4"
         >
-          {products.map((product) => {
-            const imageUrl = getProductImageUrl(product);
-            return (
-              <Link
-                key={product.id}
-                href={`/products/${product.handle}`}
-                className="group w-40 shrink-0 overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg sm:w-48"
-              >
-                <div className="relative aspect-square bg-kobbo-beige">
-                  {imageUrl ? (
-                    <Image
-                      src={imageUrl}
-                      alt={product.title}
-                      fill
-                      sizes="192px"
-                      className="object-cover transition-transform group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-kobbo-muted">
-                      <ImageOff className="h-6 w-6" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-3">
-                  <p className="truncate text-sm font-bold text-kobbo-black">
-                    {product.title}
-                  </p>
-                  <ProductCardRating productId={product.id} />
-                  <p className="mt-0.5 text-sm font-semibold text-kobbo-black">
-                    {formatPrice(product.price, product.currencyCode)}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
+          {items.map((item) => (
+            <Link
+              key={item.handle}
+              href={`/products/${item.handle}`}
+              className="group w-40 shrink-0 overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg sm:w-48"
+            >
+              <div className="relative aspect-square bg-kobbo-beige">
+                {item.imageUrl ? (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fill
+                    sizes="192px"
+                    className="object-cover transition-transform group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-kobbo-muted">
+                    <ImageOff className="h-6 w-6" />
+                  </div>
+                )}
+              </div>
+              <div className="p-3">
+                <p className="truncate text-sm font-bold text-kobbo-black">
+                  {item.title}
+                </p>
+                <ProductCardRating productId={item.id} />
+                <p className="mt-0.5 text-sm font-semibold text-kobbo-black">
+                  {formatPrice(item.price, item.currencyCode)}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

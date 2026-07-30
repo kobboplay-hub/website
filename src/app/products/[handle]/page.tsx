@@ -137,10 +137,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         productTitle={product.title}
       />
       <FAQSection faqs={defaultFaqs} />
-      <RecentlyViewed
-        currentHandle={product.handle}
-        productPool={allProducts}
-      />
+      <RecentlyViewed currentProduct={product} />
     </SiteLayout>
   );
 }
