@@ -7,7 +7,7 @@ import {
   generateOAuthState,
   resolveCustomerAccountCallbackUrl,
 } from "@/lib/auth/customer-account-oauth";
-import { setOAuthSession } from "@/lib/auth/session";
+import { setOAuthSession, clearCustomerToken } from "@/lib/auth/session";
 
 function safeRedirectPath(value: string | null): string {
   if (!value || !value.startsWith("/") || value.startsWith("//")) {
@@ -21,6 +21,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const redirectTo = safeRedirectPath(searchParams.get("redirect"));
     const callbackUri = resolveCustomerAccountCallbackUrl(request);
+
+    // Clear any existing Kobbo session so login/sign-up always starts fresh
+    await clearCustomerToken();
 
     const state = generateOAuthState();
     const verifier = generateCodeVerifier();

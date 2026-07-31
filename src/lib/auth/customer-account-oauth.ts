@@ -155,6 +155,8 @@ function getShopDomain(): string {
 
 /**
  * Redirect to Shopify hosted Customer Account OAuth (Google available on Shopify UI).
+ * prompt=select_account asks the identity provider to show the account chooser
+ * (all Google accounts signed in on the device) instead of silently reusing the last one.
  */
 export async function buildShopifyHostedLoginUrl(options: {
   state: string;
@@ -173,6 +175,8 @@ export async function buildShopifyHostedLoginUrl(options: {
   authUrl.searchParams.set("code_challenge", options.codeChallenge);
   authUrl.searchParams.set("code_challenge_method", "S256");
   authUrl.searchParams.set("region_country", "IN");
+  // Force account picker on login / sign-up (Google multi-account chooser)
+  authUrl.searchParams.set("prompt", "select_account");
 
   return authUrl.toString();
 }
