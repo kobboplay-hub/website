@@ -36,24 +36,26 @@ function ScreenFreeBadge({
 }) {
   return (
     <div
-      className={`flex items-center rounded-2xl bg-white shadow-soft-lg ${
-        compact ? "gap-2 px-3 py-2" : "gap-2.5 px-3.5 py-2.5"
+      className={`flex items-center border border-kobbo-beige/80 bg-white shadow-soft-lg ${
+        compact
+          ? "gap-1.5 rounded-full px-2.5 py-1.5"
+          : "gap-2.5 rounded-2xl px-3.5 py-2.5"
       } ${className}`}
     >
       <ScreenFreeIcon
-        className={`shrink-0 ${compact ? "h-9 w-9" : "h-10 w-10"}`}
+        className={`shrink-0 ${compact ? "h-7 w-7" : "h-10 w-10"}`}
       />
       <div className="leading-tight">
         <p
           className={`font-bold text-[#1A1A1A] ${
-            compact ? "text-xs" : "text-sm"
+            compact ? "text-[11px]" : "text-sm"
           }`}
         >
           {title}
         </p>
         <p
           className={`font-semibold text-kobbo-green ${
-            compact ? "text-[11px]" : "text-xs"
+            compact ? "text-[10px]" : "text-xs"
           }`}
         >
           {subtitle}
@@ -129,7 +131,7 @@ export default function HeroSection() {
               title={imageBadgeTitle}
               subtitle={imageBadgeSubtitle}
               compact
-              className="mt-1 shrink-0"
+              className="mt-4 shrink-0"
             />
           </div>
 
