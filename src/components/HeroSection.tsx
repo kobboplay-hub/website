@@ -94,14 +94,14 @@ export default function HeroSection() {
             priority
             quality={95}
             sizes="100vw"
-            className="object-cover object-left object-[center_32%] mt-40  "
+            className="object-cover object-left object-[center_32%] mt-  "
           />
         </div>
 
         <div className="relative z-10 px-6 pb-8 pt-[4.75rem]">
           {/* Cream soft shadow — only behind text block (same feel as desktop) */}
           <div
-            className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#fffbf0_0%,#fffbf0_48%,rgba(255,251,240,0.94)_68%,rgba(255,251,240,0.72)_82%,rgba(255,251,240,0.28)_94%,transparent_100%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[78%] bg-[linear-gradient(180deg,rgba(255,251,240,0.8)_0%,rgba(255,251,240,0.8)_38%,rgba(255,251,240,0.7)_55%,rgba(255,251,240,0.45)_72%,rgba(255,251,240,0.15)_88%,transparent_100%)]"
             aria-hidden
           />
 
@@ -118,8 +118,8 @@ export default function HeroSection() {
           </div>
 
           <div className="mt-5 flex items-start justify-between gap-3">
-            <h1 className="font-heading min-w-0 flex-1 text-[3rem] font-extrabold leading-[1.02] tracking-tight text-[#1A1A1A]">
-              {headlineFirst}
+            <h1 className="font-heading min-w-0 flex-1 text-[2.4rem] font-extrabold leading-[1.05] tracking-tight text-[#1A1A1A]">
+              <span className="whitespace-nowrap">{headlineFirst}</span>
               <br />
               {headlineLast}
               <span className="text-kobbo-yellow">.</span>
@@ -133,17 +133,17 @@ export default function HeroSection() {
             />
           </div>
 
-          <p className="mt-4 max-w-[22rem] text-[15px] font-medium leading-relaxed text-[#3A3A3A]">
+          <p className="mt-4 max-w-[16.5rem] text-[13px] font-medium leading-snug text-[#3A3A3A]">
             {description}
           </p>
 
           <div className="mt-6">
             <Link
               href={primaryCta.href}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-7 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-soft transition-transform active:scale-[0.98]"
+              className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full bg-kobbo-yellow px-5 py-2 text-xs font-bold text-[#1A1A1A] shadow-soft transition-transform active:scale-[0.98]"
             >
               {primaryCta.label}
-              <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} />
             </Link>
           </div>
 
