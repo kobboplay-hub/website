@@ -6,7 +6,6 @@ import {
   Heart,
   Minus,
   Plus,
-  Truck,
   ShieldCheck,
   Lock,
   Loader2,
@@ -18,11 +17,23 @@ import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductDescription from "@/components/product/ProductDescription";
 import ProductDetailRating from "@/components/product/ProductDetailRating";
+import ProductShareButton from "@/components/product/ProductShareButton";
 import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 interface ProductInfoProps {
   product: Product;
   reviewSummary?: JudgeMeProductSummary | null;
+}
+
+/** Shopify product tag that shows the "7 days Replacement" badge. Add/remove this tag to toggle. */
+export const ELECTRONICS_TAG = "electronics";
+
+function isElectronicToy(product: Product): boolean {
+  const tags = product.tags.map((tag) => tag.trim().toLowerCase());
+  if (tags.includes(ELECTRONICS_TAG)) return true;
+  // Fallback: Product type set to Electronics / Electronic Toy in Shopify Admin
+  const type = product.productType.trim().toLowerCase();
+  return type.includes("electronic");
 }
 
 /** Amazon-style box + return arrow icon */
@@ -50,26 +61,33 @@ function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
   );
 }
 
-const trustItems = [
-  {
-    icon: ReplacementIcon,
-    label: "7 days Replacement",
-    href: "/return-policy",
-  },
-  {
-    icon: Truck,
-    label: "Free Delivery",
-    href: "/shipping-policy",
-  },
-  {
-    icon: ShieldCheck,
-    label: "Secure transaction",
-  },
-  {
-    icon: Lock,
-    label: "Safe Checkout",
-  },
-] as const;
+type TrustItem = {
+  icon: typeof ReplacementIcon | typeof ShieldCheck | typeof Lock;
+  label: string;
+  href?: string;
+};
+
+function getTrustItems(showReplacement: boolean): TrustItem[] {
+  const items: TrustItem[] = [];
+  if (showReplacement) {
+    items.push({
+      icon: ReplacementIcon,
+      label: "7 days Replacement",
+      href: "/return-policy",
+    });
+  }
+  items.push(
+    {
+      icon: ShieldCheck,
+      label: "Secure transaction",
+    },
+    {
+      icon: Lock,
+      label: "Safe Checkout",
+    },
+  );
+  return items;
+}
 
 export default function ProductInfo({ product, reviewSummary }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
@@ -81,6 +99,7 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
       "",
   );
   const { buyNow, isBuyNowLoading } = useCart();
+  const trustItems = getTrustItems(isElectronicToy(product));
 
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ??
@@ -123,12 +142,21 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
 
   return (
     <>
-      <div className="flex flex-col lg:py-2">
+      <div className="flex min-w-0 flex-col lg:py-2">
         {/* Title block */}
         <div className="border-b border-kobbo-beige/80 pb-4 lg:border-none lg:pb-0">
-          <h1 className="font-heading text-xl font-extrabold leading-tight text-kobbo-black sm:text-2xl lg:text-4xl">
-            {product.title}
-          </h1>
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="font-heading min-w-0 flex-1 break-words text-xl font-extrabold leading-tight text-kobbo-black sm:text-2xl lg:text-4xl">
+              {product.title}
+            </h1>
+            <div className="hidden shrink-0 pt-1 lg:block">
+              <ProductShareButton
+                productTitle={product.title}
+                productHandle={product.handle}
+                variant="inline"
+              />
+            </div>
+          </div>
 
           <ProductDetailRating summary={reviewSummary} />
 
@@ -241,10 +269,9 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
         </div>
 
         {/* Amazon-style service badges */}
-        <div className="mt-6 flex flex-wrap items-start justify-between gap-x-2 gap-y-4 border-t border-kobbo-beige/80 pt-5 sm:justify-start sm:gap-x-6">
+        <div className="mt-6 flex flex-wrap items-start justify-start gap-x-5 gap-y-4 border-t border-kobbo-beige/80 pt-5 sm:gap-x-6">
           {trustItems.map((item) => {
             const Icon = item.icon;
-            const href = "href" in item ? item.href : undefined;
             const content = (
               <>
                 <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f0ad4e]/70 bg-[#fff8ef]">
@@ -253,24 +280,18 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
                     strokeWidth={1.75}
                   />
                 </span>
-                <span
-                  className={`max-w-[4.75rem] text-center text-[11px] font-medium leading-snug sm:max-w-[5.5rem] sm:text-xs ${
-                    href
-                      ? "text-[#2162a1] underline-offset-2 group-hover:underline"
-                      : "text-kobbo-muted"
-                  }`}
-                >
+                <span className="max-w-[5.25rem] text-center text-[11px] font-medium leading-snug text-kobbo-muted sm:text-xs">
                   {item.label}
                 </span>
               </>
             );
 
-            if (href) {
+            if (item.href) {
               return (
                 <Link
                   key={item.label}
-                  href={href}
-                  className="group flex w-[22%] min-w-[4.5rem] flex-col items-center gap-1.5 sm:w-auto sm:min-w-[5.5rem]"
+                  href={item.href}
+                  className="group flex w-[30%] max-w-[6rem] flex-col items-center gap-1.5 sm:w-auto sm:max-w-none sm:min-w-[5.5rem]"
                 >
                   {content}
                 </Link>
@@ -280,7 +301,7 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
             return (
               <div
                 key={item.label}
-                className="flex w-[22%] min-w-[4.5rem] flex-col items-center gap-1.5 sm:w-auto sm:min-w-[5.5rem]"
+                className="flex w-[30%] max-w-[6rem] flex-col items-center gap-1.5 sm:w-auto sm:max-w-none sm:min-w-[5.5rem]"
               >
                 {content}
               </div>

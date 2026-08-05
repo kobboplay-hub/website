@@ -3,16 +3,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import ProductShareButton from "@/components/product/ProductShareButton";
 
 interface ProductGalleryProps {
   images: string[];
   productName: string;
+  productHandle?: string;
   altTexts?: (string | null)[];
 }
 
 export default function ProductGallery({
   images,
   productName,
+  productHandle,
   altTexts = [],
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -42,7 +45,15 @@ export default function ProductGallery({
 
   return (
     <div className="w-full lg:sticky lg:top-24 lg:self-start">
-      <div className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-kobbo-beige shadow-soft sm:rounded-3xl">
+      <div className="relative">
+        {productHandle ? (
+          <ProductShareButton
+            productTitle={productName}
+            productHandle={productHandle}
+            variant="overlay"
+          />
+        ) : null}
+        <div className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-kobbo-beige shadow-soft sm:rounded-3xl">
         {hasImages ? (
           <Image
             src={images[activeIndex]}
@@ -82,6 +93,7 @@ export default function ProductGallery({
             </button>
           </>
         )}
+        </div>
       </div>
 
       {hasMultiple && (

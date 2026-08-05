@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import AdaptiveProductVideoPlayer from "@/components/product/AdaptiveProductVideoPlayer";
 import type { ProductVideoItem } from "@/lib/productPageContent";
 
@@ -134,17 +134,6 @@ export default function ProductVideo({ videos }: ProductVideoProps) {
                 />
               ))}
             </div>
-
-            {videos.some((v) => v.id === "placeholder") && (
-              <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-kobbo-muted">
-                <ExternalLink className="h-3.5 w-3.5" />
-                Add videos via Shopify product media or{" "}
-                <code className="rounded bg-kobbo-white px-1.5 py-0.5 text-[10px]">
-                  custom.product_videos
-                </code>{" "}
-                metafield
-              </p>
-            )}
           </div>
         </div>
       </div>

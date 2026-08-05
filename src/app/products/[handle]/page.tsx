@@ -99,45 +99,50 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
-      <ProductBreadcrumb productName={product.title} />
+      <div className="min-w-0 overflow-x-hidden">
+        <ProductBreadcrumb productName={product.title} />
 
-      <section className="pb-14 sm:pb-16 lg:pb-6">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-5 sm:gap-8 lg:grid-cols-2 lg:gap-12 lg:items-start">
+        <section className="pb-14 sm:pb-16 lg:pb-6">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid min-w-0 grid-cols-1 gap-5 sm:gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
             <ProductGallery
               images={images}
               productName={product.title}
+              productHandle={product.handle}
               altTexts={imageAltTexts}
             />
-            <ProductInfo
-              product={product}
-              reviewSummary={productReviewSummary}
-            />
+              <div className="min-w-0">
+                <ProductInfo
+                  product={product}
+                  reviewSummary={productReviewSummary}
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {primaryVideo && (
-        <ProductFloatingVideoWidget
-          video={primaryVideo}
-          productHandle={product.handle}
+        {primaryVideo && (
+          <ProductFloatingVideoWidget
+            video={primaryVideo}
+            productHandle={product.handle}
+          />
+        )}
+
+        <ProductVideo videos={videos} />
+        <ProductTabs content={tabsContent} />
+        <WhyParentsLoveIt items={defaultWhyParentsLove} />
+        <RelatedProducts
+          products={relatedProducts}
+          reviewSummaries={reviewSummaries}
         />
-      )}
-
-      <ProductVideo videos={videos} />
-      <ProductTabs content={tabsContent} />
-      <WhyParentsLoveIt items={defaultWhyParentsLove} />
-      <RelatedProducts
-        products={relatedProducts}
-        reviewSummaries={reviewSummaries}
-      />
-      <ProductReviews
-        productId={product.id}
-        productHandle={product.handle}
-        productTitle={product.title}
-      />
-      <FAQSection faqs={defaultFaqs} />
-      <RecentlyViewed currentProduct={product} />
+        <ProductReviews
+          productId={product.id}
+          productHandle={product.handle}
+          productTitle={product.title}
+        />
+        <FAQSection faqs={defaultFaqs} />
+        <RecentlyViewed currentProduct={product} />
+      </div>
     </SiteLayout>
   );
 }

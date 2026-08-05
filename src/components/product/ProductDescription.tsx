@@ -23,8 +23,8 @@ export default function ProductDescription({
       : trimmed.slice(0, TRUNCATE_LENGTH).trimEnd();
 
   return (
-    <div className="mt-3 sm:mt-4">
-      <p className="text-sm leading-relaxed text-kobbo-muted sm:text-base">
+    <div className="mt-3 min-w-0 sm:mt-4">
+      <p className="break-words text-sm leading-relaxed text-kobbo-muted sm:text-base">
         {displayText}
         {!expanded && needsTruncate ? "…" : ""}
       </p>

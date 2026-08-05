@@ -23,10 +23,9 @@ export const footerCustomerCare = [
   { label: "Privacy Policy", href: "/privacy-policy" },
 ] as const;
 
-/** PLACEHOLDER: Update social URLs when client profiles are ready */
+/** Social profile URLs */
 export const footerSocialLinks = [
-  { label: "Facebook", href: "#" },
+  { label: "Facebook", href: "https://www.facebook.com/kobboplay" },
   { label: "Instagram", href: "https://www.instagram.com/kobboplay" },
-  { label: "Twitter", href: "#" },
-  { label: "YouTube", href: "#" },
+  { label: "YouTube", href: "https://youtube.com/@kobboplay" },
 ] as const;

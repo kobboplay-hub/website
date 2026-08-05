@@ -84,6 +84,10 @@ export const contactPageContent: PolicyPageContent = {
       blocks: [{ type: "paragraph", text: "support@kobbo.in" }],
     },
     {
+      title: "Phone",
+      blocks: [{ type: "paragraph", text: "+91 8329195232" }],
+    },
+    {
       title: "Website",
       blocks: [{ type: "paragraph", text: "www.kobbo.in" }],
     },

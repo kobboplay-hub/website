@@ -6,6 +6,9 @@ export const SITE_TAGLINE = "More Than Toys.";
 export const DEFAULT_DESCRIPTION =
   "Educational toys, creative kits and games designed for growing children. Shop premium toys at Kobbo.";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.kobbo.in";
+
 export function buildPageTitle(page?: string): string {
   if (page) return `${page} | ${SITE_NAME} | ${SITE_TAGLINE}`;
   return `${SITE_NAME} | ${SITE_TAGLINE}`;
@@ -16,13 +19,39 @@ export function buildMetadata(
   description = DEFAULT_DESCRIPTION,
 ): Metadata {
   return {
+    metadataBase: new URL(siteUrl),
     title,
     description,
+    applicationName: SITE_NAME,
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/kobbo-icon.png", type: "image/png", sizes: "1024x1024" },
+      ],
+      apple: [{ url: "/kobbo-icon.png", sizes: "180x180", type: "image/png" }],
+      shortcut: ["/favicon.ico"],
+    },
     openGraph: {
       title,
       description,
       siteName: SITE_NAME,
       type: "website",
+      locale: "en_IN",
+      url: siteUrl,
+      images: [
+        {
+          url: "/kobbo-icon.png",
+          width: 1024,
+          height: 1024,
+          alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+      images: ["/kobbo-icon.png"],
     },
   };
 }

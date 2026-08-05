@@ -437,21 +437,11 @@ export function hasTabContent(
  * A) Shopify product media (Video / ExternalVideo)
  * B) Metafield custom.product_video / custom.product_videos (file or URL)
  * C) Legacy metafield custom.video_url
- * D) Placeholder fallback
+ * Returns empty when none are configured (section stays hidden).
  */
 export function getProductVideos(product: Product): ProductVideoItem[] {
-  const fallbackThumb =
-    product.featuredImage?.url ??
-    product.images[0]?.url ??
-    placeholderVideo.thumbnail;
-
   const videos = collectProductVideos(product);
-
-  if (videos.length > 0) {
-    return videos.slice(0, 4);
-  }
-
-  return [{ ...placeholderVideo, thumbnail: fallbackThumb }];
+  return videos.slice(0, 4);
 }
 
 /** First real product video for gallery preview — null when none configured */
