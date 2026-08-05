@@ -25,7 +25,7 @@ import SearchOverlay from "@/components/search/SearchOverlay";
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Shop Toys", href: "/shop", icon: Store },
-  { label: "About Us", href: "/#about", icon: Info },
+  { label: "About Us", href: "/about", icon: Info },
   { label: "Reviews", href: "/#reviews", icon: Star },
 ];
 

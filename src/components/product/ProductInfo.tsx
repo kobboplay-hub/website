@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Heart,
   Minus,
   Plus,
   Truck,
-  RotateCcw,
+  ShieldCheck,
   Lock,
   Loader2,
+  type LucideProps,
 } from "lucide-react";
 import { formatPrice, type Product } from "@/lib/shopify/types";
 import { useCart } from "@/context/cart-context";
@@ -23,11 +25,51 @@ interface ProductInfoProps {
   reviewSummary?: JudgeMeProductSummary | null;
 }
 
+/** Amazon-style box + return arrow icon */
+function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      {/* Return arrow */}
+      <path d="M7 7H4a1 1 0 0 0-1 1v3" />
+      <path d="M4 8c2.5-3 6-4.5 9.5-4 4.5.6 7.5 4 8 8" />
+      <path d="m5.5 4.5-2 3.5 3.8.2" />
+      {/* Package */}
+      <path d="M7.5 12.5 12 10l4.5 2.5v5.5L12 20.5 7.5 18z" />
+      <path d="M12 10v10.5" />
+      <path d="m7.5 12.5 4.5 2.5 4.5-2.5" />
+    </svg>
+  );
+}
+
 const trustItems = [
-  { icon: Truck, label: "Fast Shipping" },
-  { icon: RotateCcw, label: "Easy Returns" },
-  { icon: Lock, label: "Secure Checkout" },
-];
+  {
+    icon: ReplacementIcon,
+    label: "7 days Replacement",
+    href: "/return-policy",
+  },
+  {
+    icon: Truck,
+    label: "Free Delivery",
+    href: "/shipping-policy",
+  },
+  {
+    icon: ShieldCheck,
+    label: "Secure transaction",
+  },
+  {
+    icon: Lock,
+    label: "Safe Checkout",
+  },
+] as const;
 
 export default function ProductInfo({ product, reviewSummary }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
@@ -198,19 +240,52 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
           </button>
         </div>
 
-        {/* Trust row */}
-        <div className="mt-5 grid grid-cols-3 gap-1.5 rounded-2xl bg-kobbo-cream p-3 sm:gap-2 sm:p-4">
-          {trustItems.map(({ icon: Icon, label }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-1 text-center"
-            >
-              <Icon className="h-4 w-4 text-kobbo-black" strokeWidth={2} />
-              <span className="text-[10px] font-semibold leading-tight text-kobbo-black sm:text-xs">
-                {label}
-              </span>
-            </div>
-          ))}
+        {/* Amazon-style service badges */}
+        <div className="mt-6 flex flex-wrap items-start justify-between gap-x-2 gap-y-4 border-t border-kobbo-beige/80 pt-5 sm:justify-start sm:gap-x-6">
+          {trustItems.map((item) => {
+            const Icon = item.icon;
+            const href = "href" in item ? item.href : undefined;
+            const content = (
+              <>
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f0ad4e]/70 bg-[#fff8ef]">
+                  <Icon
+                    className="h-5 w-5 text-[#e67e22]"
+                    strokeWidth={1.75}
+                  />
+                </span>
+                <span
+                  className={`max-w-[4.75rem] text-center text-[11px] font-medium leading-snug sm:max-w-[5.5rem] sm:text-xs ${
+                    href
+                      ? "text-[#2162a1] underline-offset-2 group-hover:underline"
+                      : "text-kobbo-muted"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </>
+            );
+
+            if (href) {
+              return (
+                <Link
+                  key={item.label}
+                  href={href}
+                  className="group flex w-[22%] min-w-[4.5rem] flex-col items-center gap-1.5 sm:w-auto sm:min-w-[5.5rem]"
+                >
+                  {content}
+                </Link>
+              );
+            }
+
+            return (
+              <div
+                key={item.label}
+                className="flex w-[22%] min-w-[4.5rem] flex-col items-center gap-1.5 sm:w-auto sm:min-w-[5.5rem]"
+              >
+                {content}
+              </div>
+            );
+          })}
         </div>
       </div>
 

@@ -11,7 +11,7 @@ export const footerBrand = {
 
 export const footerQuickLinks = [
   { label: "Shop", href: "/shop" },
-  { label: "About Us", href: "/#about" },
+  { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
   { label: "FAQs", href: "/faqs" },
 ] as const;
