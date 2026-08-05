@@ -14,14 +14,13 @@ interface PolicyPageLayoutProps {
 const relatedPolicies = [
   { label: "Shipping", href: "/shipping-policy", titles: ["Shipping Policy"] },
   {
-    label: "Returns",
+    label: "Returns & Refunds",
     href: "/return-policy",
-    titles: ["Return Policy", "Return, Refund & Replacement Policy"],
-  },
-  {
-    label: "Cancellation",
-    href: "/cancellation-policy",
-    titles: ["Cancellation Policy"],
+    titles: [
+      "Returns & Refunds",
+      "Return Policy",
+      "Return, Refund & Replacement Policy",
+    ],
   },
   { label: "Privacy", href: "/privacy-policy", titles: ["Privacy Policy"] },
   {

@@ -50,7 +50,7 @@ export const faqsPageContent: PolicyPageContent = {
       blocks: [
         {
           type: "paragraph",
-          text: "Yes. Eligible items can be returned within 7 calendar days of delivery if unused and in original packaging. See our Return Policy for full conditions.",
+          text: "Yes. Eligible items can be returned within 7 calendar days of delivery if unused and in original packaging. See our Returns & Refunds policy for full conditions.",
         },
       ],
     },
@@ -191,7 +191,7 @@ export const shippingPolicyContent: PolicyPageContent = {
     {
       title: "11. Order Cancellation Before Dispatch",
       blocks: [
-          { type: "paragraph", text: "Orders may be cancelled before dispatch by contacting our support team. Once shipped, the order cannot be cancelled and will be governed by our Return Policy." }
+          { type: "paragraph", text: "Orders may be cancelled before dispatch by contacting our support team. Once shipped, the order cannot be cancelled and will be governed by our Returns & Refunds policy." }
       ],
     },
     {
@@ -203,146 +203,276 @@ export const shippingPolicyContent: PolicyPageContent = {
   ],
 };
 
-export const cancellationPolicyContent: PolicyPageContent = {
-  title: "Cancellation Policy",
-  description: "When you can cancel a Kobbo order, and when cancellations are handled by us.",
-  sections: [
-    {
-      title: "Before Dispatch",
-      blocks: [
-          { type: "paragraph", text: "Orders may be cancelled without any cancellation charges before dispatch." }
-      ],
-    },
-    {
-      title: "After Dispatch",
-      blocks: [
-          { type: "paragraph", text: "Once dispatched, orders cannot be cancelled. Customers may initiate a return after delivery if the product is eligible under our Return Policy." }
-      ],
-    },
-    {
-      title: "Cancellation by Kobbo",
-      blocks: [
-          { type: "paragraph", text: "Kobbo reserves the right to cancel any order in circumstances including but not limited to:" },
-          { type: "bullet", text: "incorrect pricing due to technical error" },
-          { type: "bullet", text: "suspected fraudulent transactions" },
-          { type: "bullet", text: "product unavailability" },
-          { type: "bullet", text: "payment verification failure" },
-          { type: "bullet", text: "force majeure events" },
-          { type: "paragraph", text: "In such cases, customers will receive a full refund." }
-      ],
-    },
-    {
-      title: "COD Orders",
-      blocks: [
-          { type: "paragraph", text: "Kobbo reserves the right to restrict or refuse Cash on Delivery (COD) services for customers with repeated order refusals or unsuccessful delivery attempts." }
-      ],
-    }
-  ],
-};
-
 export const returnPolicyContent: PolicyPageContent = {
-  title: "Return, Refund & Replacement Policy",
-  description: "7-day easy returns, free replacements for eligible issues, and how refunds work.",
+  title: "Returns & Refunds",
+  description:
+    "Returns, replacements, refunds and cancellations for Kobbo orders.",
   lastUpdated: "04-08-2026",
-  intro: "At Kobbo, customer satisfaction is important to us. If you are not completely satisfied with your purchase, please review the following policy.",
+  intro:
+    "At Kobbo, we strive to ensure every order reaches you in perfect condition. If you are not completely satisfied with your purchase, please review our policy below.",
   sections: [
     {
-      title: "1. 7-Day Easy Returns",
+      title: "1. 7-Day Returns",
       blocks: [
-          { type: "paragraph", text: "Eligible products may be returned within 7 calendar days from the date of delivery. To qualify for a return, the product must:" },
-          { type: "bullet", text: "be unused" },
-          { type: "bullet", text: "be in its original condition" },
-          { type: "bullet", text: "include original packaging" },
-          { type: "bullet", text: "include all accessories, manuals and tags" },
-          { type: "bullet", text: "include proof of purchase" },
-          { type: "paragraph", text: "Kobbo reserves the right to inspect returned products before approving a refund." }
+        {
+          type: "paragraph",
+          text: "Eligible products may be returned within 7 calendar days from the date of delivery. To qualify for a return, the product must:",
+        },
+        { type: "bullet", text: "Be unused and unplayed with." },
+        { type: "bullet", text: "Be in its original condition." },
+        { type: "bullet", text: "Be returned with its original packaging." },
+        {
+          type: "bullet",
+          text: "Include all accessories, manuals and tags.",
+        },
+        { type: "bullet", text: "Be accompanied by proof of purchase." },
+        { type: "bullet", text: "Be in a condition suitable for resale." },
+        {
+          type: "paragraph",
+          text: "Kobbo reserves the right to inspect returned products before approving a refund.",
+        },
       ],
     },
     {
       title: "2. Items Eligible for Free Replacement",
       blocks: [
-          { type: "paragraph", text: "We will gladly replace a product if:" },
-          { type: "bullet", text: "the wrong product was delivered" },
-          { type: "bullet", text: "the product arrived damaged" },
-          { type: "bullet", text: "there is a verified manufacturing defect" },
-          { type: "bullet", text: "essential components are missing" },
-          { type: "paragraph", text: "Customers must notify us within 48 hours of delivery." }
+        { type: "paragraph", text: "We will gladly replace a product if:" },
+        { type: "bullet", text: "The wrong product was delivered." },
+        {
+          type: "bullet",
+          text: "The product arrived damaged during transit.",
+        },
+        {
+          type: "bullet",
+          text: "There is a verified manufacturing defect.",
+        },
+        {
+          type: "bullet",
+          text: "Essential components or accessories are missing.",
+        },
+        {
+          type: "paragraph",
+          text: "Customers must notify us within 48 hours of delivery.",
+        },
       ],
     },
     {
-      title: "3. Unboxing Video Requirement",
+      title: "3. Electronic Toys",
       blocks: [
-          { type: "paragraph", text: "To help us resolve issues quickly and fairly, customers are strongly encouraged to record an uninterrupted video while opening the package. This may be required for claims involving:" },
-          { type: "bullet", text: "damaged items" },
-          { type: "bullet", text: "incorrect products" },
-          { type: "bullet", text: "missing components" },
-          { type: "paragraph", text: "Failure to provide an unboxing video may affect our ability to process certain claims." }
+        {
+          type: "paragraph",
+          text: "Electronic toys are not eligible for return or refund once delivered. However, if an electronic toy:",
+        },
+        { type: "bullet", text: "arrives damaged," },
+        { type: "bullet", text: "has a verified manufacturing defect, or" },
+        {
+          type: "bullet",
+          text: "is not functioning as intended upon first use,",
+        },
+        {
+          type: "paragraph",
+          text: "Kobbo will provide a free replacement, subject to verification. Customers must report such issues within 48 hours of delivery along with photographs or videos, and may be requested to provide an uninterrupted unboxing video.",
+        },
       ],
     },
     {
-      title: "4. Non-Returnable Items",
+      title: "4. Unboxing Video Requirement",
       blocks: [
-          { type: "paragraph", text: "Returns will not be accepted if:" },
-          { type: "bullet", text: "the product has been used" },
-          { type: "bullet", text: "the product has been intentionally damaged" },
-          { type: "bullet", text: "the product has been altered" },
-          { type: "bullet", text: "original packaging is missing" },
-          { type: "bullet", text: "accessories are missing" },
-          { type: "bullet", text: "personalised/customised products" },
-          { type: "bullet", text: "products damaged due to misuse" },
-          { type: "bullet", text: "products showing excessive wear" }
+        {
+          type: "paragraph",
+          text: "To help us resolve issues fairly and efficiently, customers are strongly encouraged to record a continuous, uninterrupted video while opening their package. This may be required for claims involving:",
+        },
+        { type: "bullet", text: "Damaged products" },
+        { type: "bullet", text: "Incorrect products" },
+        { type: "bullet", text: "Missing components" },
+        {
+          type: "bullet",
+          text: "Electronic products not functioning upon delivery",
+        },
+        {
+          type: "paragraph",
+          text: "Failure to provide an unboxing video may affect our ability to process certain claims.",
+        },
       ],
     },
     {
-      title: "5. Natural Variations",
+      title: "5. Non-Returnable Items",
       blocks: [
-          { type: "paragraph", text: "Certain toys may exhibit slight variations in:" },
-          { type: "bullet", text: "wood grain" },
-          { type: "bullet", text: "colour" },
-          { type: "bullet", text: "texture" },
-          { type: "bullet", text: "finish" },
-          { type: "paragraph", text: "These are natural characteristics and shall not be treated as manufacturing defects." }
+        { type: "paragraph", text: "Returns will not be accepted if:" },
+        {
+          type: "bullet",
+          text: "The product has been used or played with.",
+        },
+        {
+          type: "bullet",
+          text: "The product has been intentionally damaged.",
+        },
+        {
+          type: "bullet",
+          text: "The product has been altered or repaired.",
+        },
+        {
+          type: "bullet",
+          text: "The original packaging is missing or significantly damaged.",
+        },
+        {
+          type: "bullet",
+          text: "Accessories, manuals or tags are missing.",
+        },
+        {
+          type: "bullet",
+          text: "The product has been damaged due to misuse, negligence or improper handling.",
+        },
+        { type: "bullet", text: "The product shows excessive wear." },
+        {
+          type: "bullet",
+          text: "The product has been personalised or customised.",
+        },
+        {
+          type: "bullet",
+          text: "The return request is made after the applicable return period.",
+        },
+        {
+          type: "bullet",
+          text: "The item is an electronic toy (except for eligible replacement cases described above).",
+        },
       ],
     },
     {
-      title: "6. Colour Accuracy",
+      title: "6. Natural Variations",
       blocks: [
-          { type: "paragraph", text: "Product colours may vary slightly due to:" },
-          { type: "bullet", text: "lighting" },
-          { type: "bullet", text: "photography" },
-          { type: "bullet", text: "monitor settings" },
-          { type: "bullet", text: "mobile displays" },
-          { type: "paragraph", text: "Minor colour differences do not qualify as defects." }
+        {
+          type: "paragraph",
+          text: "Products made from natural materials may exhibit slight variations in:",
+        },
+        { type: "bullet", text: "Wood grain" },
+        { type: "bullet", text: "Colour" },
+        { type: "bullet", text: "Texture" },
+        { type: "bullet", text: "Finish" },
+        {
+          type: "paragraph",
+          text: "These are natural characteristics and shall not be treated as manufacturing defects.",
+        },
       ],
     },
     {
-      title: "7. Refund Process",
+      title: "7. Colour Accuracy",
       blocks: [
-          { type: "paragraph", text: "Once your returned product has been received and inspected:" },
-          { type: "bullet", text: "approved refunds will be processed within 7–10 business days" },
-          { type: "bullet", text: "refunds will be issued to the original payment method" },
-          { type: "paragraph", text: "Banks and payment providers may require additional processing time." }
+        {
+          type: "paragraph",
+          text: "Actual product colours may vary slightly due to:",
+        },
+        { type: "bullet", text: "Studio lighting" },
+        { type: "bullet", text: "Product photography" },
+        { type: "bullet", text: "Device or monitor settings" },
+        { type: "bullet", text: "Mobile screen display" },
+        {
+          type: "paragraph",
+          text: "Minor colour variations do not qualify as defects.",
+        },
       ],
     },
     {
-      title: "8. Return Shipping",
+      title: "8. Refund Process",
       blocks: [
-          { type: "paragraph", text: "For approved returns due to:" },
-          { type: "bullet", text: "manufacturing defects" },
-          { type: "bullet", text: "damaged delivery" },
-          { type: "bullet", text: "incorrect product shipped" },
-          { type: "paragraph", text: "Kobbo will bear the return shipping cost. For all other approved returns, Kobbo will arrange the return pickup where feasible. If pickup is unavailable, customers may be asked to ship the product to us, and reimbursement of reasonable return shipping costs will be considered on a case-by-case basis, subject to prior approval." }
+        {
+          type: "paragraph",
+          text: "Once the returned product has been received and successfully inspected:",
+        },
+        {
+          type: "bullet",
+          text: "Approved refunds will be processed within 7–10 business days.",
+        },
+        {
+          type: "bullet",
+          text: "Refunds will be issued to the original payment method used at checkout.",
+        },
+        {
+          type: "paragraph",
+          text: "The time taken for the refund to reflect in your account may vary depending on your bank or payment provider.",
+        },
       ],
     },
     {
-      title: "9. Right to Reject Returns",
+      title: "9. Return Shipping",
       blocks: [
-          { type: "paragraph", text: "Kobbo reserves the right to decline any return request if:" },
-          { type: "bullet", text: "return conditions are not met," },
-          { type: "bullet", text: "the product is found to be used or damaged due to customer handling," },
-          { type: "bullet", text: "fraudulent or abusive return behaviour is suspected." }
+        { type: "paragraph", text: "For approved returns due to:" },
+        { type: "bullet", text: "Manufacturing defects" },
+        { type: "bullet", text: "Transit damage" },
+        { type: "bullet", text: "Incorrect product delivered" },
+        {
+          type: "paragraph",
+          text: "Kobbo will bear the return shipping cost. For approved returns due to change of mind (where eligible), customers may be required to bear the return shipping charges or arrange the return shipment, unless otherwise agreed by Kobbo.",
+        },
       ],
-    }
+    },
+    {
+      title: "10. Right to Reject Returns",
+      blocks: [
+        {
+          type: "paragraph",
+          text: "Kobbo reserves the right to decline any return or replacement request if:",
+        },
+        { type: "bullet", text: "The return conditions are not met." },
+        {
+          type: "bullet",
+          text: "The product is found to be used, damaged or not in resalable condition.",
+        },
+        {
+          type: "bullet",
+          text: "Required accessories or packaging are missing.",
+        },
+        {
+          type: "bullet",
+          text: "The claim is found to be fraudulent or abusive.",
+        },
+        {
+          type: "bullet",
+          text: "The product fails inspection upon receipt.",
+        },
+      ],
+    },
+    {
+      title: "11. Cancellation Policy",
+      blocks: [
+        { type: "subtitle", text: "Before Dispatch" },
+        {
+          type: "paragraph",
+          text: "Orders may be cancelled free of charge any time before they have been dispatched from our warehouse.",
+        },
+        { type: "subtitle", text: "After Dispatch" },
+        {
+          type: "paragraph",
+          text: "Once an order has been dispatched, it cannot be cancelled. If eligible, customers may request a return or replacement in accordance with this policy after the order has been delivered.",
+        },
+        { type: "subtitle", text: "Cancellation by Kobbo" },
+        {
+          type: "paragraph",
+          text: "Kobbo reserves the right to cancel any order under circumstances including, but not limited to:",
+        },
+        { type: "bullet", text: "Product unavailability" },
+        {
+          type: "bullet",
+          text: "Incorrect pricing due to technical or human error",
+        },
+        { type: "bullet", text: "Payment verification failure" },
+        { type: "bullet", text: "Suspected fraudulent activity" },
+        { type: "bullet", text: "Duplicate or suspicious orders" },
+        {
+          type: "bullet",
+          text: "Force majeure events or circumstances beyond our reasonable control",
+        },
+        {
+          type: "paragraph",
+          text: "In such cases, any amount paid by the customer will be refunded in full to the original payment method.",
+        },
+        { type: "subtitle", text: "Cash on Delivery (COD)" },
+        {
+          type: "paragraph",
+          text: "Kobbo reserves the right to refuse or restrict Cash on Delivery (COD) services for customers who repeatedly refuse deliveries, fail to accept orders, or misuse the COD facility.",
+        },
+      ],
+    },
   ],
 };
 
@@ -567,7 +697,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "1. Introduction",
       blocks: [
-          { type: "paragraph", text: "Welcome to Kobbo (\"Kobbo\", \"Company\", \"we\", \"our\", or \"us\"), a brand owned and operated by Unisphere. These Terms & Conditions (\"Terms\") govern your access to and use of www.kobbo.in (\"Website\"), including all purchases, services, features and content made available through the Website. By accessing, browsing or purchasing from our Website, you acknowledge that you have read, understood and agree to be legally bound by these Terms, together with our Privacy Policy, Shipping Policy, Return & Refund Policy and all other policies published on our Website. If you do not agree with these Terms, please discontinue the use of this Website immediately." }
+          { type: "paragraph", text: "Welcome to Kobbo (\"Kobbo\", \"Company\", \"we\", \"our\", or \"us\"), a brand owned and operated by Unisphere. These Terms & Conditions (\"Terms\") govern your access to and use of www.kobbo.in (\"Website\"), including all purchases, services, features and content made available through the Website. By accessing, browsing or purchasing from our Website, you acknowledge that you have read, understood and agree to be legally bound by these Terms, together with our Privacy Policy, Shipping Policy, Returns & Refunds policy and all other policies published on our Website. If you do not agree with these Terms, please discontinue the use of this Website immediately." }
       ],
     },
     {
@@ -753,9 +883,9 @@ export const termsPolicyContent: PolicyPageContent = {
       ],
     },
     {
-      title: "19. Return & Refund Policy",
+      title: "19. Returns & Refunds",
       blocks: [
-          { type: "paragraph", text: "Returns, refunds and replacements shall be governed by the Kobbo Return & Refund Policy available on the Website. Customers agree that acceptance of a return request shall be subject to compliance with the conditions specified therein. Submission of a return request does not automatically guarantee approval." }
+          { type: "paragraph", text: "Returns, refunds, replacements and cancellations shall be governed by the Kobbo Returns & Refunds policy available on the Website. Customers agree that acceptance of a return request shall be subject to compliance with the conditions specified therein. Submission of a return request does not automatically guarantee approval." }
       ],
     },
     {
@@ -1032,7 +1162,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "43. Entire Agreement",
       blocks: [
-          { type: "paragraph", text: "These Terms, together with the Privacy Policy, Shipping Policy, Return & Refund Policy and any other policies published on the Website, constitute the entire agreement between you and Kobbo regarding the use of the Website and supersede all prior communications or understandings relating to the subject matter herein." }
+          { type: "paragraph", text: "These Terms, together with the Privacy Policy, Shipping Policy, Returns & Refunds policy and any other policies published on the Website, constitute the entire agreement between you and Kobbo regarding the use of the Website and supersede all prior communications or understandings relating to the subject matter herein." }
       ],
     },
     {

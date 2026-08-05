@@ -18,8 +18,7 @@ export const footerQuickLinks = [
 
 export const footerCustomerCare = [
   { label: "Shipping Policy", href: "/shipping-policy" },
-  { label: "Return Policy", href: "/return-policy" },
-  { label: "Cancellation Policy", href: "/cancellation-policy" },
+  { label: "Returns & Refunds", href: "/return-policy" },
   { label: "Terms & Conditions", href: "/terms-and-conditions" },
   { label: "Privacy Policy", href: "/privacy-policy" },
 ] as const;
