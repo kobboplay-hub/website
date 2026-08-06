@@ -15,70 +15,89 @@ function GanpatiIcon({ className }: { className?: string }) {
   );
 }
 
-export default function AnnouncementBar() {
+function AnnouncementItem({
+  item,
+}: {
+  item: (typeof announcementBar.items)[number];
+}) {
+  const isAccent = "accent" in item && Boolean(item.accent);
+  const href = "href" in item ? item.href : undefined;
+
+  const content = (
+    <>
+      {item.icon === "truck" && (
+        <Truck className="h-3.5 w-3.5 shrink-0 text-kobbo-muted" strokeWidth={2} />
+      )}
+      {item.icon === "returns" && (
+        <RefreshCw
+          className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
+          strokeWidth={2}
+        />
+      )}
+      {item.icon === "ganpati" && (
+        <GanpatiIcon className="h-4 w-4 shrink-0 text-[#e07a2f]" />
+      )}
+      {item.icon === "shield" && (
+        <ShieldCheck
+          className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
+          strokeWidth={2}
+        />
+      )}
+      <span
+        className={`whitespace-nowrap text-[11px] font-medium tracking-wide sm:text-xs ${
+          isAccent ? "font-semibold text-[#e07a2f]" : "text-kobbo-black/80"
+        }`}
+      >
+        {item.label}
+      </span>
+    </>
+  );
+
   return (
-    <div className="relative z-[60] border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">
-      <div className="mx-auto max-w-7xl px-3 py-2 sm:px-6 lg:px-8">
-        <ul className="flex items-center gap-x-4 overflow-x-auto scrollbar-none sm:grid sm:grid-cols-4 sm:gap-0 sm:overflow-visible">
-          {announcementBar.items.map((item, index) => {
-            const isAccent = "accent" in item && Boolean(item.accent);
-            const href = "href" in item ? item.href : undefined;
+    <li className="flex shrink-0 items-center gap-6 sm:gap-10">
+      {href ? (
+        <Link
+          href={href}
+          className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-80"
+        >
+          {content}
+        </Link>
+      ) : (
+        <div className="inline-flex items-center gap-1.5">{content}</div>
+      )}
+      <span
+        className="h-1 w-1 shrink-0 rounded-full bg-kobbo-muted/35"
+        aria-hidden
+      />
+    </li>
+  );
+}
 
-            const content = (
-              <>
-                {item.icon === "truck" && (
-                  <Truck
-                    className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
-                    strokeWidth={2}
-                  />
-                )}
-                {item.icon === "returns" && (
-                  <RefreshCw
-                    className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
-                    strokeWidth={2}
-                  />
-                )}
-                {item.icon === "ganpati" && (
-                  <GanpatiIcon className="h-4 w-4 shrink-0 text-[#e07a2f]" />
-                )}
-                {item.icon === "shield" && (
-                  <ShieldCheck
-                    className="h-3.5 w-3.5 shrink-0 text-kobbo-muted"
-                    strokeWidth={2}
-                  />
-                )}
-                <span
-                  className={`whitespace-nowrap text-[11px] font-medium tracking-wide sm:text-xs ${
-                    isAccent
-                      ? "font-semibold text-[#e07a2f]"
-                      : "text-kobbo-black/80"
-                  }`}
-                >
-                  {item.label}
-                </span>
-              </>
-            );
+export default function AnnouncementBar() {
+  // Duplicate track for seamless infinite scroll
+  const track = [...announcementBar.items, ...announcementBar.items];
 
-            return (
-              <li
-                key={item.id}
-                className={`flex shrink-0 items-center justify-center gap-1.5 sm:px-3 ${
-                  index > 0 ? "sm:border-l sm:border-kobbo-muted/20" : ""
-                }`}
-              >
-                {href ? (
-                  <Link
-                    href={href}
-                    className="inline-flex items-center gap-1.5 transition-opacity hover:opacity-80"
-                  >
-                    {content}
-                  </Link>
-                ) : (
-                  <div className="inline-flex items-center gap-1.5">{content}</div>
-                )}
-              </li>
-            );
-          })}
+  return (
+    <div className="relative z-[60] overflow-hidden border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">
+      <div className="flex overflow-hidden py-2">
+        <ul className="announcement-marquee flex w-max items-center gap-6 sm:gap-10">
+          {track.map((item, index) => (
+            <AnnouncementItem
+              key={`${item.id}-${index}`}
+              item={item}
+            />
+          ))}
+        </ul>
+        <ul
+          className="announcement-marquee flex w-max items-center gap-6 sm:gap-10"
+          aria-hidden
+        >
+          {track.map((item, index) => (
+            <AnnouncementItem
+              key={`${item.id}-dup-${index}`}
+              item={item}
+            />
+          ))}
         </ul>
       </div>
     </div>
