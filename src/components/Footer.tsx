@@ -122,9 +122,14 @@ export default function Footer() {
         </div>
 
         <div className="mt-5 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:flex-row sm:pt-5">
-          <p className="text-center text-xs text-white/50 sm:text-left">
-            © {new Date().getFullYear()} Kobbo. All rights reserved.
-          </p>
+          <div className="text-center sm:text-left">
+            <p className="text-xs text-white/50">
+              © {new Date().getFullYear()} Kobbo. All rights reserved.
+            </p>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-white/40 sm:text-xs">
+              Kobbo is a brand owned and operated by Unisphere.
+            </p>
+          </div>
           <div className="flex flex-wrap items-center justify-center gap-2">
             {footerBrand.paymentMethods.map((method) => (
               <span

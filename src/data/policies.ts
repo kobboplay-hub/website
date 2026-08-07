@@ -96,7 +96,7 @@ export const contactPageContent: PolicyPageContent = {
       blocks: [
         {
           type: "paragraph",
-          text: "Kobbo is a brand owned and operated by Ruchi Ashok Shah, trading as Unisphere.",
+          text: "Kobbo is a brand owned and operated by Unisphere.",
         },
         {
           type: "paragraph",
