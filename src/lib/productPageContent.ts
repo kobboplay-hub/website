@@ -361,13 +361,69 @@ function collectProductVideos(product: Product): ProductVideoItem[] {
 }
 
 /**
+ * Format metafield values for display (boolean / list / plain text).
+ */
+function formatSpecMetafieldValue(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+
+  const lower = trimmed.toLowerCase();
+  if (lower === "true" || lower === "yes") return "Yes";
+  if (lower === "false" || lower === "no") return "No";
+
+  if (trimmed.startsWith("[")) {
+    const items = parseListMetafield(trimmed);
+    if (items.length > 0) return items.join(", ");
+  }
+
+  return trimmed;
+}
+
+const SPEC_METAFIELD_ROWS: { key: string; label: string }[] = [
+  { key: "material", label: "Material" },
+  { key: "recommended_age", label: "Recommended Age" },
+  { key: "dimensions", label: "Dimensions" },
+  { key: "weight", label: "Weight" },
+  { key: "battery_required", label: "Battery Required" },
+  { key: "battery_type", label: "Battery Type" },
+  { key: "country_of_origin", label: "Country of Origin" },
+  { key: "package_contents", label: "Package Contents" },
+];
+
+function buildProductSpecifications(
+  product: Product,
+): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = [];
+
+  if (product.vendor?.trim()) {
+    rows.push({ label: "Brand", value: product.vendor.trim() });
+  }
+
+  for (const { key, label } of SPEC_METAFIELD_ROWS) {
+    const raw = getMetafieldValue(product, key);
+    if (!raw) continue;
+    const value = formatSpecMetafieldValue(raw);
+    if (!value) continue;
+    rows.push({ label, value });
+  }
+
+  rows.push({
+    label: "Availability",
+    value: product.availableForSale ? "In Stock" : "Out of Stock",
+  });
+
+  return rows;
+}
+
+/**
  * Product tabs — content from Shopify description + metafields.
- * Metafields: custom.features, custom.specifications, custom.care_instructions
+ * Specs: custom.material, recommended_age, dimensions, weight,
+ * battery_required, battery_type, country_of_origin, package_contents
+ * (+ Brand from vendor, Availability from stock status).
  */
 export function getProductTabsContent(product: Product): ProductTabsContent {
   const featuresValue = getMetafieldValue(product, "features");
   const careValue = getMetafieldValue(product, "care_instructions");
-  const specsValue = getMetafieldValue(product, "specifications");
 
   const features = featuresValue
     ? parseListMetafield(featuresValue.replace(/\n/g, ","))
@@ -379,37 +435,10 @@ export function getProductTabsContent(product: Product): ProductTabsContent {
     ? parseListMetafield(careValue.replace(/\n/g, ","))
     : [];
 
-  const specifications = specsValue
-    ? specsValue
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const colonIndex = line.indexOf(":");
-          if (colonIndex === -1) return { label: line, value: "" };
-          return {
-            label: line.slice(0, colonIndex).trim(),
-            value: line.slice(colonIndex + 1).trim(),
-          };
-        })
-        .filter((s) => s.label && s.value)
-    : [
-        ...(product.vendor
-          ? [{ label: "Brand", value: product.vendor }]
-          : []),
-        ...(product.productType
-          ? [{ label: "Type", value: product.productType }]
-          : []),
-        {
-          label: "Availability",
-          value: product.availableForSale ? "In Stock" : "Out of Stock",
-        },
-      ].filter((s) => s.value);
-
   return {
     descriptionHtml: product.descriptionHtml || product.description,
     features,
-    specifications,
+    specifications: buildProductSpecifications(product),
     careInstructions,
   };
 }

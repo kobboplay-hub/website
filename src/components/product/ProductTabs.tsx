@@ -82,12 +82,14 @@ export default function ProductTabs({ content }: ProductTabsProps) {
                 {content.specifications.map((spec) => (
                   <div
                     key={spec.label}
-                    className="flex justify-between gap-4 px-4 py-3 text-sm"
+                    className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
                   >
-                    <dt className="font-semibold text-kobbo-black">
+                    <dt className="shrink-0 font-semibold text-kobbo-black">
                       {spec.label}
                     </dt>
-                    <dd className="text-right text-kobbo-muted">{spec.value}</dd>
+                    <dd className="break-words text-kobbo-muted sm:max-w-[65%] sm:text-right">
+                      {spec.value}
+                    </dd>
                   </div>
                 ))}
               </dl>
