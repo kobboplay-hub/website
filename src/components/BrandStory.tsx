@@ -3,7 +3,7 @@ import Link from "next/link";
 import { aboutContent } from "@/data/about";
 
 export default function BrandStory() {
-  const { teaser } = aboutContent;
+  const { teaser, image, imageAlt } = aboutContent;
 
   return (
     <section id="about" className="py-4 sm:py-5 lg:py-6">
@@ -12,8 +12,8 @@ export default function BrandStory() {
           <div className="grid lg:grid-cols-2 lg:items-stretch">
             <div className="relative order-1 aspect-[16/10] min-h-[180px] sm:min-h-[220px] lg:order-2 lg:aspect-auto lg:min-h-[300px]">
               <Image
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&h=500&fit=crop"
-                alt="Child playing with colorful toys"
+                src={image}
+                alt={imageAlt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center"

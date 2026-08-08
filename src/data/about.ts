@@ -22,4 +22,6 @@ export const aboutContent = {
     body: "We carefully curate toys that spark creativity, build skills, and make play more meaningful—never just screen time fillers.",
     cta: "Our Story",
   },
+  image: "/our-story.png",
+  imageAlt: "Thoughtfully curated wooden toys, books and play essentials",
 } as const;

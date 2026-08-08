@@ -11,7 +11,8 @@ export const metadata: Metadata = buildMetadata(
 );
 
 export default function AboutPage() {
-  const { eyebrow, headline, paragraphs, purpose, closing } = aboutContent;
+  const { eyebrow, headline, paragraphs, purpose, closing, image, imageAlt } =
+    aboutContent;
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
@@ -41,8 +42,8 @@ export default function AboutPage() {
 
             <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-soft sm:aspect-[16/11] lg:aspect-auto lg:min-h-[320px]">
               <Image
-                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1000&h=750&fit=crop"
-                alt="Child playing and discovering with toys"
+                src={image}
+                alt={imageAlt}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 45vw"

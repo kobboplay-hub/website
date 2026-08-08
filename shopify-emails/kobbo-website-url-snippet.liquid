@@ -1,0 +1,29 @@
+{% comment %}
+  Add this line near the TOP of your Order confirmation email template
+  (Shopify Admin → Settings → Notifications → Order confirmation)
+{% endcomment %}
+{% assign kobbo_website_url = 'https://www.kobbo.in' %}
+
+{% comment %}
+  Then Find & Replace in the same template:
+
+  Find:    {{shop.url}}
+  Replace: {{ kobbo_website_url }}
+
+  Find:    {{ shop.url }}
+  Replace: {{ kobbo_website_url }}
+
+  Keep these UNCHANGED:
+  - {{ order_status_url }}
+  - {{ shop_app_tracking_url }}
+  - mailto:{{ shop.email }}
+{% endcomment %}
+
+{% comment %} Optional footer — replace the disclaimer paragraph with this: {% endcomment %}
+{% comment %}
+<p class="disclaimer__subtext">
+  If you have any questions, reply to this email or contact us at
+  <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>.
+  Visit our store: <a href="{{ kobbo_website_url }}">www.kobbo.in</a>
+</p>
+{% endcomment %}
