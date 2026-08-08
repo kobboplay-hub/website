@@ -8,20 +8,20 @@ export interface Review {
 export const reviews: Review[] = [
   {
     id: "1",
-    name: "Priya M.",
+    name: "Sreepriya D.",
     rating: 5,
-    text: "Beautiful quality toys! My daughter loves the stacking rings. Fast delivery too.",
+    text: "My son didn't even realize he was learning while playing. That's exactly what I was looking for.",
   },
   {
     id: "2",
-    name: "Rahul K.",
+    name: "Krunal M.",
     rating: 5,
-    text: "Finally found a store with thoughtful, skill-building toys. The busy board is a hit!",
+    text: "Such a fun activity to do together, it kept my little one happily engaged for a long time.",
   },
   {
     id: "3",
-    name: "Ananya S.",
-    rating: 5,
-    text: "Premium packaging and great selection. Already ordered again for a birthday gift.",
+    name: "Verified Buyer",
+    rating: 4,
+    text: "Delivery took a day longer than expected but the toy quality made up for it.",
   },
 ];

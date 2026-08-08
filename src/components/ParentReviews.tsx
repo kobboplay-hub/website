@@ -15,11 +15,18 @@ export default function ParentReviews() {
               key={review.id}
               className="flex flex-col rounded-2xl bg-kobbo-cream p-4 shadow-soft sm:p-5"
             >
-              <div className="flex gap-0.5">
-                {Array.from({ length: review.rating }).map((_, i) => (
+              <div
+                className="flex gap-0.5"
+                aria-label={`${review.rating} out of 5 stars`}
+              >
+                {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className="h-4 w-4 fill-kobbo-yellow text-kobbo-yellow"
+                    className={`h-4 w-4 ${
+                      i < review.rating
+                        ? "fill-kobbo-yellow text-kobbo-yellow"
+                        : "fill-transparent text-kobbo-beige"
+                    }`}
                   />
                 ))}
               </div>
@@ -27,7 +34,7 @@ export default function ParentReviews() {
                 &ldquo;{review.text}&rdquo;
               </p>
               <p className="mt-3 text-sm font-bold text-kobbo-black">
-                {review.name}
+                — {review.name}
               </p>
             </div>
           ))}
