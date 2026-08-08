@@ -20,7 +20,7 @@ export const reviews: Review[] = [
   },
   {
     id: "3",
-    name: "Verified Buyer",
+    name: "Neha R.",
     rating: 4,
     text: "Delivery took a day longer than expected but the toy quality made up for it.",
   },
