@@ -16,8 +16,8 @@ import { getProductByHandle, getProducts } from "@/lib/shopify";
 import { getProductImageUrls } from "@/lib/shopify/types";
 import { getProductReviewSummaries, getProductReviewSummary } from "@/lib/judgeme";
 import {
-  defaultFaqs,
   defaultWhyParentsLove,
+  getProductFaqs,
   getProductTabsContent,
   getProductVideos,
   getPrimaryProductVideo,
@@ -96,6 +96,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const tabsContent = getProductTabsContent(product);
   const videos = getProductVideos(product);
   const primaryVideo = getPrimaryProductVideo(product);
+  const productFaqs = getProductFaqs(product);
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
@@ -140,7 +141,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           productHandle={product.handle}
           productTitle={product.title}
         />
-        <FAQSection faqs={defaultFaqs} />
+        <FAQSection faqs={productFaqs} />
         <RecentlyViewed currentProduct={product} />
       </div>
     </SiteLayout>

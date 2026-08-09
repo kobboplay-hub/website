@@ -4,7 +4,7 @@ import type {
   ShopifyMetafield,
   ShopifyMetafieldReference,
 } from "@/lib/shopify/types";
-import { productFaqs, type ProductFAQ } from "@/data/faqs";
+import type { ProductFAQ } from "@/data/faqs";
 
 export interface ProductReview {
   id: string;
@@ -59,8 +59,6 @@ export const defaultWhyParentsLove = [
   },
 ];
 
-/** @deprecated Import from @/data/faqs — kept for backward compatibility */
-export const defaultFaqs = productFaqs;
 export type { ProductFAQ };
 
 export const defaultReviews = [
@@ -409,6 +407,77 @@ export function parseSpecificationsMetafield(
   }
 
   return rows;
+}
+
+/**
+ * Parse custom.product_faqs multi-line text:
+ *
+ *   Q: Question text?
+ *   A: Answer text.
+ *
+ * - Lines starting with Q: begin a new question
+ * - Lines starting with A: begin the paired answer
+ * - Continuation lines append to the current Q or A
+ * - Empty lines are ignored
+ * - Incomplete pairs (missing answer) are dropped
+ */
+export function parseProductFaqsMetafield(
+  raw: string | null | undefined,
+): ProductFAQ[] {
+  if (!raw?.trim()) return [];
+
+  const text = sanitizeSpecificationsText(raw);
+  const faqs: ProductFAQ[] = [];
+
+  let question: string | null = null;
+  let answer: string | null = null;
+  let mode: "q" | "a" | null = null;
+
+  const flush = () => {
+    const q = question?.trim();
+    const a = answer?.trim();
+    if (q && a) {
+      faqs.push({ question: q, answer: a });
+    }
+    question = null;
+    answer = null;
+    mode = null;
+  };
+
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    const qMatch = /^Q:\s*(.*)$/i.exec(trimmed);
+    if (qMatch) {
+      flush();
+      question = qMatch[1].trim();
+      answer = null;
+      mode = "q";
+      continue;
+    }
+
+    const aMatch = /^A:\s*(.*)$/i.exec(trimmed);
+    if (aMatch) {
+      answer = aMatch[1].trim();
+      mode = "a";
+      continue;
+    }
+
+    if (mode === "q" && question !== null) {
+      question = `${question} ${trimmed}`.trim();
+    } else if (mode === "a" && answer !== null) {
+      answer = `${answer} ${trimmed}`.trim();
+    }
+  }
+
+  flush();
+  return faqs;
+}
+
+/** Product-specific FAQs from metafield custom.product_faqs */
+export function getProductFaqs(product: Product): ProductFAQ[] {
+  return parseProductFaqsMetafield(getMetafieldValue(product, "product_faqs"));
 }
 
 function buildProductSpecifications(

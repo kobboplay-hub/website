@@ -113,6 +113,7 @@ export const PRODUCT_DETAIL_FRAGMENT = `
         { namespace: "custom", key: "product_video" }
         { namespace: "custom", key: "product_videos" }
         { namespace: "custom", key: "specifications" }
+        { namespace: "custom", key: "product_faqs" }
       ]
     ) {
       namespace
