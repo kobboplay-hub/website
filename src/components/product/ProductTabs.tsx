@@ -78,21 +78,25 @@ export default function ProductTabs({ content }: ProductTabsProps) {
             )}
 
             {activeTab === "specifications" && (
-              <dl className="divide-y divide-kobbo-beige rounded-xl bg-kobbo-cream/50">
-                {content.specifications.map((spec) => (
-                  <div
-                    key={spec.label}
-                    className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
-                  >
-                    <dt className="shrink-0 font-semibold text-kobbo-black">
-                      {spec.label}
-                    </dt>
-                    <dd className="break-words text-kobbo-muted sm:max-w-[65%] sm:text-right">
-                      {spec.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              <div className="overflow-hidden rounded-xl border border-kobbo-beige/80 bg-kobbo-white">
+                <dl>
+                  {content.specifications.map((spec, index) => (
+                    <div
+                      key={`${spec.label}-${index}`}
+                      className={`grid grid-cols-1 gap-1 border-b border-kobbo-beige/70 px-4 py-3 last:border-b-0 sm:grid-cols-[minmax(9rem,38%)_1fr] sm:items-start sm:gap-6 sm:px-5 sm:py-3.5 ${
+                        index % 2 === 0 ? "bg-kobbo-cream/60" : "bg-kobbo-white"
+                      }`}
+                    >
+                      <dt className="min-w-0 text-sm font-semibold text-kobbo-black">
+                        {spec.label}
+                      </dt>
+                      <dd className="min-w-0 break-words text-sm leading-relaxed text-kobbo-muted sm:text-right">
+                        {spec.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
             )}
 
             {activeTab === "care" && (

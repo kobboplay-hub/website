@@ -361,34 +361,55 @@ function collectProductVideos(product: Product): ProductVideoItem[] {
 }
 
 /**
- * Format metafield values for display (boolean / list / plain text).
+ * Strip any HTML/tags from metafield text so we never render markup.
+ * Preserves line breaks from common block tags.
  */
-function formatSpecMetafieldValue(raw: string): string {
-  const trimmed = raw.trim();
-  if (!trimmed) return "";
-
-  const lower = trimmed.toLowerCase();
-  if (lower === "true" || lower === "yes") return "Yes";
-  if (lower === "false" || lower === "no") return "No";
-
-  if (trimmed.startsWith("[")) {
-    const items = parseListMetafield(trimmed);
-    if (items.length > 0) return items.join(", ");
-  }
-
-  return trimmed;
+function sanitizeSpecificationsText(raw: string): string {
+  return raw
+    .replace(/<\s*br\s*\/?>/gi, "\n")
+    .replace(/<\s*\/\s*p\s*>/gi, "\n")
+    .replace(/<\s*\/\s*tr\s*>/gi, "\n")
+    .replace(/<\s*\/\s*li\s*>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
 }
 
-const SPEC_METAFIELD_ROWS: { key: string; label: string }[] = [
-  { key: "material", label: "Material" },
-  { key: "recommended_age", label: "Recommended Age" },
-  { key: "dimensions", label: "Dimensions" },
-  { key: "weight", label: "Weight" },
-  { key: "battery_required", label: "Battery Required" },
-  { key: "battery_type", label: "Battery Type" },
-  { key: "country_of_origin", label: "Country of Origin" },
-  { key: "package_contents", label: "Package Contents" },
-];
+/**
+ * Parse custom.specifications multi-line text:
+ * "Label: Value" → { label, value }
+ * Splits only on the first colon; skips blank/malformed lines.
+ */
+export function parseSpecificationsMetafield(
+  raw: string | null | undefined,
+): { label: string; value: string }[] {
+  if (!raw?.trim()) return [];
+
+  const text = sanitizeSpecificationsText(raw);
+  const rows: { label: string; value: string }[] = [];
+
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    const colonIndex = trimmed.indexOf(":");
+    if (colonIndex <= 0) continue;
+
+    const label = trimmed.slice(0, colonIndex).trim();
+    const value = trimmed.slice(colonIndex + 1).trim();
+    if (!label || !value) continue;
+
+    rows.push({ label, value });
+  }
+
+  return rows;
+}
 
 function buildProductSpecifications(
   product: Product,
@@ -399,13 +420,9 @@ function buildProductSpecifications(
     rows.push({ label: "Brand", value: product.vendor.trim() });
   }
 
-  for (const { key, label } of SPEC_METAFIELD_ROWS) {
-    const raw = getMetafieldValue(product, key);
-    if (!raw) continue;
-    const value = formatSpecMetafieldValue(raw);
-    if (!value) continue;
-    rows.push({ label, value });
-  }
+  rows.push(
+    ...parseSpecificationsMetafield(getMetafieldValue(product, "specifications")),
+  );
 
   rows.push({
     label: "Availability",
@@ -417,8 +434,7 @@ function buildProductSpecifications(
 
 /**
  * Product tabs — content from Shopify description + metafields.
- * Specs: custom.material, recommended_age, dimensions, weight,
- * battery_required, battery_type, country_of_origin, package_contents
+ * Specs from a single multi-line metafield: custom.specifications
  * (+ Brand from vendor, Availability from stock status).
  */
 export function getProductTabsContent(product: Product): ProductTabsContent {

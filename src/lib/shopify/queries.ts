@@ -113,14 +113,6 @@ export const PRODUCT_DETAIL_FRAGMENT = `
         { namespace: "custom", key: "product_video" }
         { namespace: "custom", key: "product_videos" }
         { namespace: "custom", key: "specifications" }
-        { namespace: "custom", key: "material" }
-        { namespace: "custom", key: "recommended_age" }
-        { namespace: "custom", key: "dimensions" }
-        { namespace: "custom", key: "weight" }
-        { namespace: "custom", key: "battery_required" }
-        { namespace: "custom", key: "battery_type" }
-        { namespace: "custom", key: "country_of_origin" }
-        { namespace: "custom", key: "package_contents" }
       ]
     ) {
       namespace
