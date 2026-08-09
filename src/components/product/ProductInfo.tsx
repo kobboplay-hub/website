@@ -6,6 +6,7 @@ import {
   Heart,
   Minus,
   Plus,
+  Truck,
   ShieldCheck,
   Lock,
   Loader2,
@@ -62,7 +63,11 @@ function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
 }
 
 type TrustItem = {
-  icon: typeof ReplacementIcon | typeof ShieldCheck | typeof Lock;
+  icon:
+    | typeof ReplacementIcon
+    | typeof Truck
+    | typeof ShieldCheck
+    | typeof Lock;
   label: string;
   href?: string;
 };
@@ -77,6 +82,11 @@ function getTrustItems(showReplacement: boolean): TrustItem[] {
     });
   }
   items.push(
+    {
+      icon: Truck,
+      label: "Free Delivery",
+      href: "/shipping-policy",
+    },
     {
       icon: ShieldCheck,
       label: "Secure transaction",
