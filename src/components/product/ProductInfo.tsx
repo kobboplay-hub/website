@@ -278,30 +278,33 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
           </button>
         </div>
 
-        {/* Amazon-style service badges */}
-        <div className="mt-6 flex flex-wrap items-start justify-start gap-x-5 gap-y-4 border-t border-kobbo-beige/80 pt-5 sm:gap-x-6">
+        {/* Amazon-style service badges — single row on mobile */}
+        <div className="mt-6 flex flex-nowrap items-start justify-between gap-1 border-t border-kobbo-beige/80 pt-5 sm:justify-start sm:gap-x-6">
           {trustItems.map((item) => {
             const Icon = item.icon;
             const content = (
               <>
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#f0ad4e]/70 bg-[#fff8ef]">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#f0ad4e]/70 bg-[#fff8ef] sm:h-11 sm:w-11">
                   <Icon
-                    className="h-5 w-5 text-[#e67e22]"
+                    className="h-3.5 w-3.5 text-[#e67e22] sm:h-5 sm:w-5"
                     strokeWidth={1.75}
                   />
                 </span>
-                <span className="max-w-[5.25rem] text-center text-[11px] font-medium leading-snug text-kobbo-muted sm:text-xs">
+                <span className="w-full text-center text-[9px] font-medium leading-tight text-kobbo-muted sm:max-w-[5.5rem] sm:text-xs sm:leading-snug">
                   {item.label}
                 </span>
               </>
             );
+
+            const itemClassName =
+              "group flex min-w-0 flex-1 flex-col items-center gap-1 sm:flex-none sm:min-w-[5.5rem] sm:max-w-[6.5rem] sm:gap-1.5";
 
             if (item.href) {
               return (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="group flex w-[30%] max-w-[6rem] flex-col items-center gap-1.5 sm:w-auto sm:max-w-none sm:min-w-[5.5rem]"
+                  className={itemClassName}
                 >
                   {content}
                 </Link>
@@ -309,10 +312,7 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
             }
 
             return (
-              <div
-                key={item.label}
-                className="flex w-[30%] max-w-[6rem] flex-col items-center gap-1.5 sm:w-auto sm:max-w-none sm:min-w-[5.5rem]"
-              >
+              <div key={item.label} className={itemClassName}>
                 {content}
               </div>
             );
