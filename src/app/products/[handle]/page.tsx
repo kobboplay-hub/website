@@ -100,7 +100,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
-      <div className="min-w-0 overflow-x-hidden">
+      <div className="min-w-0 overflow-x-hidden pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
         <ProductBreadcrumb productName={product.title} />
 
         <section className="pb-14 sm:pb-16 lg:pb-6">
