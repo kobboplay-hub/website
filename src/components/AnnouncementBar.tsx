@@ -79,6 +79,14 @@ export default function AnnouncementBar() {
 
   return (
     <div className="relative z-[60] overflow-hidden border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-[#f7f1e8] to-transparent sm:w-12"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-[#f7f1e8] to-transparent sm:w-12"
+        aria-hidden
+      />
       <div className="flex overflow-hidden py-2">
         <ul className="announcement-marquee flex w-max items-center gap-6 sm:gap-10">
           {track.map((item, index) => (
