@@ -101,7 +101,7 @@ export default function HeroSection() {
 
         {/* Cream wash keeps copy readable; child stays in lower half */}
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[62%] bg-[linear-gradient(180deg,rgba(255,251,240,0.92)_0%,rgba(255,251,240,0.88)_42%,rgba(255,251,240,0.55)_68%,rgba(255,251,240,0.18)_86%,transparent_100%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[40%] bg-[linear-gradient(180deg,rgba(255,251,240,0.92)_0%,rgba(255,251,240,0.88)_42%,rgba(255,251,240,0.55)_68%,rgba(255,251,240,0.18)_86%,transparent_100%)]"
           aria-hidden
         />
 
