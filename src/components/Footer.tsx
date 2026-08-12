@@ -4,7 +4,6 @@ import {
   footerQuickLinks,
   footerCustomerCare,
   footerSocialLinks,
-  legalEntity,
 } from "@/data/footer";
 
 const socialIcons: Record<string, React.ReactNode> = {
@@ -126,9 +125,6 @@ export default function Footer() {
           <div className="text-center sm:text-left">
             <p className="text-xs text-white/50">
               © {new Date().getFullYear()} Kobbo. All rights reserved.
-            </p>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-white/40 sm:text-xs">
-              {legalEntity.ownershipLine}
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2">
