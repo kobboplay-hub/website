@@ -9,6 +9,12 @@ export const footerBrand = {
   paymentMethods: ["VISA", "Mastercard", "UPI"] as const,
 };
 
+/** Legal entity shown in footer, contact page, and policies */
+export const legalEntity = {
+  name: "Heena Ashok Shah",
+  ownershipLine: "Kobbo is a brand owned and operated by Heena Ashok Shah.",
+} as const;
+
 export const footerQuickLinks = [
   { label: "Shop", href: "/shop" },
   { label: "About Us", href: "/about" },

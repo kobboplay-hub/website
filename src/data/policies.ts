@@ -2,6 +2,8 @@
  * Policy & FAQ page content — sourced from Kobbo legal PDFs (updated 04-08-2026).
  */
 
+import { legalEntity } from "./footer";
+
 export type PolicyBlock =
   | { type: "paragraph"; text: string }
   | { type: "bullet"; text: string }
@@ -96,15 +98,11 @@ export const contactPageContent: PolicyPageContent = {
       blocks: [
         {
           type: "paragraph",
-          text: "Kobbo is a brand owned and operated by Unisphere.",
+          text: legalEntity.ownershipLine,
         },
         {
           type: "paragraph",
-          text: "Trade name: Unisphere",
-        },
-        {
-          type: "paragraph",
-          text: "Legal name: Ruchi Ashok Shah",
+          text: `Legal name: ${legalEntity.name}`,
         },
       ],
     },
@@ -116,7 +114,7 @@ export const shippingPolicyContent: PolicyPageContent = {
   title: "Shipping Policy",
   description: "How Kobbo packs and delivers orders across India — free shipping, timelines, and tracking.",
   lastUpdated: "04-08-2026",
-  intro: "Welcome to Kobbo, a brand owned and operated by Ruchi Ashok Shah, trading as Unisphere. We are committed to delivering your order safely and efficiently. Please read our Shipping Policy carefully before placing an order.",
+  intro: `Welcome to Kobbo, a brand owned and operated by ${legalEntity.name}. We are committed to delivering your order safely and efficiently. Please read our Shipping Policy carefully before placing an order.`,
   sections: [
     {
       title: "1. Shipping Locations",
@@ -490,13 +488,13 @@ export const returnPolicyContent: PolicyPageContent = {
 
 export const privacyPolicyContent: PolicyPageContent = {
   title: "Privacy Policy",
-  description: "How Kobbo (Unisphere / Ruchi Ashok Shah) collects, uses, and protects your personal information.",
+  description: `How Kobbo (${legalEntity.name}) collects, uses, and protects your personal information.`,
   lastUpdated: "04-08-2026",
   sections: [
     {
       title: "1. Introduction",
       blocks: [
-          { type: "paragraph", text: "Welcome to Kobbo, a brand owned and operated by Ruchi Ashok Shah, trading as Unisphere (\"Kobbo\", \"we\", \"our\" or \"us\"). Your privacy matters to us. This Privacy Policy explains how we collect, use, store, process, share and protect your personal information when you visit www.kobbo.in, place an order, communicate with us or otherwise interact with our Website. By accessing or using our Website, you consent to the practices described in this Privacy Policy. If you do not agree with this Policy, please discontinue the use of our Website." }
+          { type: "paragraph", text: "Welcome to Kobbo, a brand owned and operated by Heena Ashok Shah (\"Kobbo\", \"we\", \"our\" or \"us\"). Your privacy matters to us. This Privacy Policy explains how we collect, use, store, process, share and protect your personal information when you visit www.kobbo.in, place an order, communicate with us or otherwise interact with our Website. By accessing or using our Website, you consent to the practices described in this Privacy Policy. If you do not agree with this Policy, please discontinue the use of our Website." }
       ],
     },
     {
@@ -695,7 +693,7 @@ export const privacyPolicyContent: PolicyPageContent = {
     {
       title: "18. Contact Us",
       blocks: [
-          { type: "paragraph", text: "If you have any questions about this Privacy Policy or how we handle your information, please contact: Kobbo — a brand owned by Ruchi Ashok Shah, trading as Unisphere. Trade name: Unisphere. Legal name: Ruchi Ashok Shah. Website: www.kobbo.in Email: support@kobbo.in" }
+          { type: "paragraph", text: `If you have any questions about this Privacy Policy or how we handle your information, please contact: Kobbo — ${legalEntity.ownershipLine} Legal name: ${legalEntity.name}. Website: www.kobbo.in Email: support@kobbo.in` }
       ],
     }
   ],
@@ -709,7 +707,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "1. Introduction",
       blocks: [
-          { type: "paragraph", text: "Welcome to Kobbo (\"Kobbo\", \"Company\", \"we\", \"our\", or \"us\"), a brand owned and operated by Ruchi Ashok Shah, trading as Unisphere. These Terms & Conditions (\"Terms\") govern your access to and use of www.kobbo.in (\"Website\"), including all purchases, services, features and content made available through the Website. By accessing, browsing or purchasing from our Website, you acknowledge that you have read, understood and agree to be legally bound by these Terms, together with our Privacy Policy, Shipping Policy, Returns & Refunds policy and all other policies published on our Website. If you do not agree with these Terms, please discontinue the use of this Website immediately." }
+          { type: "paragraph", text: "Welcome to Kobbo (\"Kobbo\", \"Company\", \"we\", \"our\", or \"us\"), a brand owned and operated by Heena Ashok Shah. These Terms & Conditions (\"Terms\") govern your access to and use of www.kobbo.in (\"Website\"), including all purchases, services, features and content made available through the Website. By accessing, browsing or purchasing from our Website, you acknowledge that you have read, understood and agree to be legally bound by these Terms, together with our Privacy Policy, Shipping Policy, Returns & Refunds policy and all other policies published on our Website. If you do not agree with these Terms, please discontinue the use of this Website immediately." }
       ],
     },
     {
@@ -725,7 +723,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "3. About Kobbo",
       blocks: [
-          { type: "paragraph", text: "Kobbo is a children's toy brand operated by Ruchi Ashok Shah, trading as Unisphere, committed to designing and curating safe, engaging and thoughtfully crafted toys that inspire curiosity, creativity and joyful learning. While we strive to provide accurate product descriptions, all purchases remain subject to these Terms." }
+          { type: "paragraph", text: "Kobbo is a children's toy brand operated by Heena Ashok Shah, committed to designing and curating safe, engaging and thoughtfully crafted toys that inspire curiosity, creativity and joyful learning. While we strive to provide accurate product descriptions, all purchases remain subject to these Terms." }
       ],
     },
     {
@@ -953,7 +951,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "25. Intellectual Property",
       blocks: [
-          { type: "paragraph", text: "Unless otherwise stated, all intellectual property rights relating to the Website remain the exclusive property of Ruchi Ashok Shah, trading as Unisphere. This includes:" },
+          { type: "paragraph", text: "Unless otherwise stated, all intellectual property rights relating to the Website remain the exclusive property of Heena Ashok Shah. This includes:" },
           { type: "bullet", text: "Kobbo name" },
           { type: "bullet", text: "logo" },
           { type: "bullet", text: "product designs" },
@@ -973,7 +971,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "26. Trademarks",
       blocks: [
-          { type: "paragraph", text: "\"Kobbo\", associated logos, brand names, slogans and visual identity elements are proprietary trademarks belonging to Ruchi Ashok Shah, trading as Unisphere. Unauthorised use is strictly prohibited." }
+          { type: "paragraph", text: "\"Kobbo\", associated logos, brand names, slogans and visual identity elements are proprietary trademarks belonging to Heena Ashok Shah. Unauthorised use is strictly prohibited." }
       ],
     },
     {
@@ -1062,7 +1060,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "34. Limitation Of Liability",
       blocks: [
-          { type: "paragraph", text: "To the maximum extent permitted by law, Kobbo, Unisphere (Ruchi Ashok Shah), its directors, partners, employees, consultants, suppliers, service providers and affiliates shall not be liable for:" },
+          { type: "paragraph", text: "To the maximum extent permitted by law, Kobbo (Heena Ashok Shah), its directors, partners, employees, consultants, suppliers, service providers and affiliates shall not be liable for:" },
           { type: "bullet", text: "indirect losses," },
           { type: "bullet", text: "incidental damages," },
           { type: "bullet", text: "consequential damages," },
@@ -1126,7 +1124,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "38. Indemnity",
       blocks: [
-          { type: "paragraph", text: "You agree to indemnify, defend and hold harmless Ruchi Ashok Shah (trading as Unisphere), Kobbo, its directors, employees, affiliates, service providers and representatives against any claims, losses, damages, liabilities, costs and expenses (including reasonable legal fees) arising from:" },
+          { type: "paragraph", text: "You agree to indemnify, defend and hold harmless Heena Ashok Shah, Kobbo, its directors, employees, affiliates, service providers and representatives against any claims, losses, damages, liabilities, costs and expenses (including reasonable legal fees) arising from:" },
           { type: "bullet", text: "your breach of these Terms;" },
           { type: "bullet", text: "your misuse of the Website;" },
           { type: "bullet", text: "your violation of any applicable law;" },
@@ -1192,7 +1190,7 @@ export const termsPolicyContent: PolicyPageContent = {
     {
       title: "46. Jurisdiction",
       blocks: [
-          { type: "paragraph", text: "Any dispute arising out of or relating to these Terms, the Website or any transaction with Kobbo shall be subject to the exclusive jurisdiction of the competent courts at the place where the registered office of Ruchi Ashok Shah, trading as Unisphere, is situated, unless otherwise required by applicable consumer protection laws." }
+          { type: "paragraph", text: "Any dispute arising out of or relating to these Terms, the Website or any transaction with Kobbo shall be subject to the exclusive jurisdiction of the competent courts at the place where the registered office of Heena Ashok Shah, is situated, unless otherwise required by applicable consumer protection laws." }
       ],
     },
     {
@@ -1205,8 +1203,7 @@ export const termsPolicyContent: PolicyPageContent = {
       title: "48. Contact Information",
       blocks: [
           { type: "paragraph", text: "Brand: Kobbo" },
-          { type: "paragraph", text: "Trade Name: Unisphere" },
-          { type: "paragraph", text: "Legal Name: Ruchi Ashok Shah" },
+          { type: "paragraph", text: `Legal Name: ${legalEntity.name}` },
           { type: "paragraph", text: "Website: www.kobbo.in" },
           { type: "paragraph", text: "Customer Support: support@kobbo.in" },
       ],
