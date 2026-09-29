@@ -78,7 +78,7 @@ export default function AnnouncementBar() {
   const track = [...announcementBar.items, ...announcementBar.items];
 
   return (
-    <div className="relative z-[60] overflow-hidden border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">
+    <div className="relative z-30 overflow-hidden border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">
       <div
         className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-[#f7f1e8] to-transparent sm:w-12"
         aria-hidden

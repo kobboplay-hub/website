@@ -255,8 +255,14 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
           </div>
 
           {/* Footer */}
-          <div className="mt-4 flex flex-col-reverse items-center justify-between gap-3 border-t border-kobbo-beige/80 pt-4 sm:flex-row">
-            <p className="text-[11px] text-kobbo-muted sm:text-xs">
+          <div
+            className={`mt-4 flex flex-col-reverse items-center justify-between gap-3 ${
+              hasQuery
+                ? "border-t border-kobbo-beige/80 pt-4"
+                : "hidden sm:flex sm:border-t sm:border-kobbo-beige/80 sm:pt-4"
+            } sm:flex-row`}
+          >
+            <p className="hidden text-[11px] text-kobbo-muted sm:block sm:text-xs">
               Press <kbd className="rounded bg-kobbo-cream px-1.5 py-0.5 font-mono text-[10px] text-kobbo-black">Esc</kbd> to close
             </p>
             {hasQuery && !loading && (

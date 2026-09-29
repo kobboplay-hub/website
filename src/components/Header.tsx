@@ -12,13 +12,15 @@ import {
   Home,
   Store,
   Info,
-  Star,
   ChevronRight,
+  Package,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 import AccountMenu from "@/components/account/AccountMenu";
 import SearchOverlay from "@/components/search/SearchOverlay";
 
@@ -26,7 +28,6 @@ const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Shop Toys", href: "/shop", icon: Store },
   { label: "About Us", href: "/about", icon: Info },
-  { label: "Reviews", href: "/#reviews", icon: Star },
 ];
 
 function MobileMenuRow({
@@ -36,6 +37,7 @@ function MobileMenuRow({
   href,
   iconVariant = "cream",
   badge,
+  active = false,
 }: {
   icon: LucideIcon;
   label: string;
@@ -43,34 +45,49 @@ function MobileMenuRow({
   href?: string;
   iconVariant?: "cream" | "yellow";
   badge?: number;
+  active?: boolean;
 }) {
-  const iconBg =
-    iconVariant === "yellow" ? "bg-kobbo-yellow/25" : "bg-kobbo-cream";
+  const iconBg = active
+    ? "bg-kobbo-yellow text-kobbo-black"
+    : iconVariant === "yellow"
+      ? "bg-kobbo-yellow/25 text-kobbo-black"
+      : "bg-kobbo-cream text-kobbo-black";
 
   const inner = (
     <>
       <span
-        className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
+        className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${iconBg}`}
       >
-        <Icon className="h-[18px] w-[18px] text-kobbo-black" strokeWidth={2} />
+        <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
         {badge !== undefined && badge > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-kobbo-yellow px-0.5 text-[9px] font-bold leading-none text-kobbo-black">
+          <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-kobbo-yellow px-0.5 text-[9px] font-bold leading-none text-kobbo-black ring-1 ring-white">
             {badge > 99 ? "99+" : badge}
           </span>
         )}
       </span>
-      <span className="min-w-0 flex-1 text-sm font-semibold leading-tight text-kobbo-black">
+      <span
+        className={`min-w-0 flex-1 text-sm leading-tight transition-colors ${
+          active
+            ? "font-bold text-kobbo-black"
+            : "font-semibold text-kobbo-black/90 hover:text-kobbo-black"
+        }`}
+      >
         {label}
       </span>
       <ChevronRight
-        className="h-4 w-4 shrink-0 text-kobbo-muted/80"
+        className={`h-4 w-4 shrink-0 transition-colors ${
+          active ? "text-kobbo-black" : "text-kobbo-muted/70"
+        }`}
         strokeWidth={2}
       />
     </>
   );
 
-  const className =
-    "flex w-full items-center gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-kobbo-cream/80 active:bg-kobbo-beige";
+  const className = `flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 transition-colors ${
+    active
+      ? "bg-kobbo-cream font-bold"
+      : "hover:bg-kobbo-cream/80 active:bg-kobbo-beige"
+  }`;
 
   if (href) {
     return (
@@ -93,23 +110,54 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { cartCount, openCart } = useCart();
-  const { isLoggedIn } = useAuth();
+  const { count: wishlistCount } = useWishlist();
+  const { isLoggedIn, logout } = useAuth();
 
   const accountHref = isLoggedIn ? "/account" : "/login";
-  const wishlistHref = isLoggedIn ? "/account/wishlist" : "/login";
+  const wishlistHref = isLoggedIn
+    ? "/account/wishlist"
+    : "/login?redirect=/account/wishlist";
 
-  const closeMobile = () => setMobileOpen(false);
+  const closeMobile = () => {
+    setMobileOpen(false);
+    document.body.style.overflow = "";
+  };
+
+  const handleNavClick = (href: string) => {
+    closeMobile();
+    if (href === "/" && pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
     return () => {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
 
   useEffect(() => {
+    setMobileOpen(false);
+    document.body.style.overflow = "";
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMobile();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
+
+  useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth >= 1024) setMobileOpen(false);
+      if (window.innerWidth >= 1024) closeMobile();
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -137,8 +185,15 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
     return () => observer.disconnect();
   }, [immersive]);
 
+
+  const isFixed = mobileOpen || (immersive && scrolled);
   const solidNav = !immersive || scrolled || mobileOpen;
-  const stickySolid = immersive && scrolled;
+
+  const headerPositionClass = isFixed
+    ? "fixed inset-x-0 top-0"
+    : immersive
+      ? "absolute inset-x-0 top-0"
+      : "sticky top-0";
 
   const iconBtn = solidNav
     ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-kobbo-black transition-colors hover:bg-kobbo-cream active:bg-kobbo-beige"
@@ -150,22 +205,16 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
         <button
           type="button"
           aria-label="Close menu backdrop"
-          className="fixed inset-0 z-40 bg-kobbo-black/20 backdrop-blur-[1px] lg:hidden"
+          className="fixed inset-0 z-40 bg-kobbo-black/30 backdrop-blur-[2px] lg:hidden"
           onClick={closeMobile}
         />
       )}
 
       <header
-        className={`z-50 transition-all duration-300 ${
-          immersive
-            ? stickySolid
-              ? "fixed inset-x-0 top-0"
-              : "absolute inset-x-0 top-0"
-            : "sticky top-0"
-        } ${
+        className={`z-50 transition-all duration-300 ${headerPositionClass} ${
           solidNav
             ? `border-b border-kobbo-beige bg-kobbo-white ${
-                mobileOpen || stickySolid
+                mobileOpen || (immersive && scrolled)
                   ? "shadow-soft-lg"
                   : "shadow-soft"
               }`
@@ -173,12 +222,17 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Top bar — logo & icons perfectly center-aligned */}
-          <div className="flex h-14 items-center justify-between gap-3 lg:h-16">
+          {/* Top bar — logo & icons center-aligned */}
+          <div className="flex h-14 items-center justify-between gap-2 sm:gap-3 lg:h-16">
             <Link
               href="/"
-              onClick={closeMobile}
-              className="flex h-10 items-center font-heading text-[1.85rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-[2rem] lg:text-[2.5rem] xl:text-[2.65rem]"
+              onClick={() => {
+                closeMobile();
+                if (pathname === "/") {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+              className="flex h-10 items-center font-heading text-[1.75rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-[2rem] lg:text-[2.5rem] xl:text-[2.65rem]"
             >
               kobbo
             </Link>
@@ -197,6 +251,12 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
                   <Link
                     key={link.label}
                     href={link.href}
+                    onClick={(e) => {
+                      if (link.href === "/" && pathname === "/") {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
                     className={`relative text-sm font-medium transition-colors hover:text-kobbo-black/70 ${
                       isActive
                         ? "font-semibold text-kobbo-black after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-kobbo-yellow"
@@ -210,42 +270,58 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
             </nav>
 
             <div className="flex h-10 items-center gap-0.5 sm:gap-1">
-              {!mobileOpen && (
-                <>
-                  <button
-                    type="button"
-                    aria-label="Search toys"
-                    onClick={() => setSearchOpen(true)}
-                    className={iconBtn}
-                  >
-                    <Search className="h-5 w-5" strokeWidth={2} />
-                  </button>
-                  <div className="hidden sm:block">
-                    <AccountMenu />
-                  </div>
-                  <Link
-                    href={wishlistHref}
-                    aria-label="Wishlist"
-                    className={iconBtn}
-                  >
-                    <Heart className="h-5 w-5" strokeWidth={2} />
-                  </Link>
-                  <button
-                    type="button"
-                    aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
-                    onClick={openCart}
-                    className={`relative ${iconBtn}`}
-                  >
-                    <ShoppingCart className="h-5 w-5" strokeWidth={2} />
-                    {cartCount > 0 && (
-                      <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] translate-x-0.5 -translate-y-0.5 items-center justify-center rounded-full bg-kobbo-yellow px-1 text-[10px] font-bold leading-none text-kobbo-black">
-                        {cartCount > 99 ? "99+" : cartCount}
-                      </span>
-                    )}
-                  </button>
-                </>
-              )}
+              {/* Search button: always accessible on mobile and desktop */}
+              <button
+                type="button"
+                aria-label="Search toys"
+                onClick={() => {
+                  closeMobile();
+                  setSearchOpen(true);
+                }}
+                className={iconBtn}
+              >
+                <Search className="h-5 w-5" strokeWidth={2} />
+              </button>
 
+              {/* Account menu on tablet/desktop */}
+              <div className="hidden sm:block">
+                <AccountMenu />
+              </div>
+
+              {/* Wishlist icon: always accessible, with active badge */}
+              <Link
+                href={wishlistHref}
+                aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}
+                onClick={closeMobile}
+                className={`relative ${iconBtn}`}
+              >
+                <Heart className="h-5 w-5" strokeWidth={2} />
+                {wishlistCount > 0 && (
+                  <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] translate-x-0.5 -translate-y-0.5 items-center justify-center rounded-full bg-kobbo-yellow px-1 text-[10px] font-bold leading-none text-kobbo-black shadow-xs">
+                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Shopping cart button: always accessible, with count badge */}
+              <button
+                type="button"
+                aria-label={`Cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+                onClick={() => {
+                  closeMobile();
+                  openCart();
+                }}
+                className={`relative ${iconBtn}`}
+              >
+                <ShoppingCart className="h-5 w-5" strokeWidth={2} />
+                {cartCount > 0 && (
+                  <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] translate-x-0.5 -translate-y-0.5 items-center justify-center rounded-full bg-kobbo-yellow px-1 text-[10px] font-bold leading-none text-kobbo-black shadow-xs">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Mobile hamburger / close toggle */}
               <button
                 type="button"
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -262,40 +338,72 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
             </div>
           </div>
 
-          {/* Mobile menu — attached to header, no overlap */}
+          {/* Mobile menu drawer — attached to header, scrolls if viewport is short */}
           {mobileOpen && (
             <nav
-              className="border-t border-kobbo-beige pb-4 pt-2 lg:hidden"
+              className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain border-t border-kobbo-beige px-1 pb-6 pt-3 lg:hidden"
               aria-label="Mobile navigation"
             >
               <div className="space-y-0.5">
-                {navLinks.map((link) => (
-                  <MobileMenuRow
-                    key={link.label}
-                    icon={link.icon}
-                    label={link.label}
-                    href={link.href}
-                    iconVariant="yellow"
-                    onClick={closeMobile}
-                  />
-                ))}
+                {navLinks.map((link) => {
+                  const isActive =
+                    link.href === "/"
+                      ? pathname === "/"
+                      : pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+                  return (
+                    <MobileMenuRow
+                      key={link.label}
+                      icon={link.icon}
+                      label={link.label}
+                      href={link.href}
+                      iconVariant="yellow"
+                      active={isActive}
+                      onClick={() => handleNavClick(link.href)}
+                    />
+                  );
+                })}
               </div>
 
-              <div className="my-2 border-t border-kobbo-beige" />
+              <div className="my-2.5 border-t border-kobbo-beige/80" />
 
               <div className="space-y-0.5">
-                <MobileMenuRow
-                  icon={User}
-                  label={isLoggedIn ? "My Account" : "Login"}
-                  href={accountHref}
-                  onClick={closeMobile}
-                />
+                {isLoggedIn ? (
+                  <>
+                    <MobileMenuRow
+                      icon={User}
+                      label="My Account"
+                      href="/account"
+                      active={pathname === "/account"}
+                      onClick={closeMobile}
+                    />
+                    <MobileMenuRow
+                      icon={Package}
+                      label="My Orders"
+                      href="/account/orders"
+                      active={pathname === "/account/orders"}
+                      onClick={closeMobile}
+                    />
+                  </>
+                ) : (
+                  <MobileMenuRow
+                    icon={User}
+                    label="Login / Sign In"
+                    href="/login"
+                    active={pathname === "/login"}
+                    onClick={closeMobile}
+                  />
+                )}
+
                 <MobileMenuRow
                   icon={Heart}
                   label="Wishlist"
                   href={wishlistHref}
+                  badge={wishlistCount}
+                  active={pathname === "/account/wishlist"}
                   onClick={closeMobile}
                 />
+
                 <MobileMenuRow
                   icon={ShoppingCart}
                   label={
@@ -309,6 +417,17 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
                     openCart();
                   }}
                 />
+
+                {isLoggedIn && (
+                  <MobileMenuRow
+                    icon={LogOut}
+                    label="Logout"
+                    onClick={async () => {
+                      closeMobile();
+                      await logout("/");
+                    }}
+                  />
+                )}
               </div>
 
               <button
@@ -317,7 +436,7 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
                   closeMobile();
                   setSearchOpen(true);
                 }}
-                className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-full border border-kobbo-beige bg-kobbo-cream text-sm font-semibold text-kobbo-black transition-colors hover:border-kobbo-yellow hover:bg-kobbo-yellow/10"
+                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-full border border-kobbo-beige bg-kobbo-cream text-sm font-semibold text-kobbo-black transition-colors hover:border-kobbo-yellow hover:bg-kobbo-yellow/10 active:bg-kobbo-yellow/20"
               >
                 <Search className="h-4 w-4" strokeWidth={2} />
                 Search toys
