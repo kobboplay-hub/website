@@ -260,6 +260,37 @@ function buildShopifyProductQuery(searchQuery: string): string {
   return `title:*${trimmed}* OR product_type:*${trimmed}*`;
 }
 
+const OFFSET_CURSOR_PREFIX = "offset:";
+
+/**
+ * "Featured" sort: products flagged `custom.featured_product` first, then the
+ * rest in best-selling order. Storefront can't sort by a metafield, so the
+ * full catalogue is ordered here and paged with an offset cursor.
+ */
+async function getFeaturedFirstPage(
+  first: number,
+  after: string | null,
+): Promise<{ products: Product[]; endCursor: string | null; hasNextPage: boolean }> {
+  const all = await getAllProducts("featured");
+  const ordered = [
+    ...all.filter((product) => product.merchandising.featured),
+    ...all.filter((product) => !product.merchandising.featured),
+  ];
+
+  const parsed = after?.startsWith(OFFSET_CURSOR_PREFIX)
+    ? Number.parseInt(after.slice(OFFSET_CURSOR_PREFIX.length), 10)
+    : 0;
+  const start = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  const end = start + first;
+  const hasNextPage = end < ordered.length;
+
+  return {
+    products: ordered.slice(start, end),
+    endCursor: hasNextPage ? `${OFFSET_CURSOR_PREFIX}${end}` : null,
+    hasNextPage,
+  };
+}
+
 export async function getShopProductsByCursor(
   pageSize = SHOP_PRODUCTS_PER_PAGE,
   searchQuery = "",
@@ -271,6 +302,11 @@ export async function getShopProductsByCursor(
   const hasSearch = shopifyQuery.length > 0;
   const { sortKey, reverse } = toShopifySortParams(sort, hasSearch);
   const first = Math.min(50, Math.max(1, pageSize));
+
+  if (sort === "featured" && !hasSearch) {
+    const page = await getFeaturedFirstPage(first, after);
+    return { ...page, searchQuery: trimmedQuery, sort };
+  }
 
   const data = hasSearch
     ? await shopifyFetch<{

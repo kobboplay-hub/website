@@ -19,6 +19,7 @@ export default function ProductGrid({
           key={product.id}
           product={product}
           reviewSummary={reviewSummaries[parseShopifyProductId(product.id)] ?? null}
+          badge={product.merchandising.featured ? "Featured" : undefined}
         />
       ))}
     </div>

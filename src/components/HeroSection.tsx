@@ -1,8 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { ArrowRight, Leaf, ShieldCheck, Star, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
+import HeroButterflyFlight from "@/components/home/HeroButterflyFlight";
 
 function ScreenFreeIcon({ className }: { className?: string }) {
   return (
@@ -35,14 +38,16 @@ function ScreenFreeBadge({
 }) {
   return (
     <div
-      className={`flex items-center border border-kobbo-beige/80 bg-white shadow-soft-lg ${
+      className={`flex items-center border border-kobbo-beige/80 bg-white/95 backdrop-blur-xs shadow-soft-lg transition-all duration-300 ${
         compact
           ? "gap-1.5 rounded-full px-2.5 py-1.5"
-          : "gap-2.5 rounded-2xl px-3.5 py-2.5"
+          : "gap-2.5 rounded-2xl px-3.5 py-2.5 hover:shadow-xl"
       } ${className}`}
     >
       <ScreenFreeIcon
-        className={`shrink-0 ${compact ? "h-7 w-7" : "h-10 w-10"}`}
+        className={`shrink-0 transition-transform duration-500 group-hover:scale-105 ${
+          compact ? "h-7 w-7" : "h-10 w-10"
+        }`}
       />
       <div className="min-w-0 leading-tight">
         <p
@@ -64,6 +69,69 @@ function ScreenFreeBadge({
   );
 }
 
+/** Subtle floating decorative elements */
+function HeroStar({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`pointer-events-none select-none transition-transform duration-500 ease-out will-change-transform ${className}`}
+      aria-hidden
+    >
+      <div className="animate-float-sparkle">
+        <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 drop-shadow-xs sm:h-6 sm:w-6">
+          <path
+            d="M12 2C12.5 7.5 16.5 11.5 22 12C16.5 12.5 12.5 16.5 12 22C11.5 16.5 7.5 12.5 2 12C7.5 11.5 11.5 7.5 12 2Z"
+            fill="#FFC700"
+          />
+          <circle cx="12" cy="12" r="2.2" fill="#FFFFFF" fillOpacity="0.85" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function HeroLeaf({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`pointer-events-none select-none transition-transform duration-500 ease-out will-change-transform ${className}`}
+      aria-hidden
+    >
+      <div className="animate-drift-leaf">
+        <svg viewBox="0 0 28 28" fill="none" className="h-5 w-5 drop-shadow-xs sm:h-6 sm:w-6">
+          <path
+            d="M4 24C8 20 12 18 24 4C24 16 22 20 4 24Z"
+            fill="#16A34A"
+            fillOpacity="0.75"
+          />
+          <path
+            d="M4 24C10 18 16 13 24 4"
+            stroke="#FFFFFF"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeOpacity="0.6"
+          />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function HeroBlock({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`pointer-events-none select-none transition-transform duration-500 ease-out will-change-transform ${className}`}
+      aria-hidden
+    >
+      <div className="animate-float-block">
+        <svg viewBox="0 0 32 36" fill="none" className="h-6 w-6 drop-shadow-xs sm:h-7 sm:w-7">
+          <path d="M16 2L30 10L16 18L2 10L16 2Z" fill="#FFE58F" />
+          <path d="M2 10L16 18V34L2 26V10Z" fill="#E8B923" />
+          <path d="M16 18L30 10V26L16 34V18Z" fill="#C69412" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export default function HeroSection() {
   const {
     ratingValue,
@@ -79,15 +147,71 @@ export default function HeroSection() {
     imageAlt,
   } = heroContent;
 
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Smooth desktop mouse parallax effect (disabled on touch/mobile)
+  useEffect(() => {
+    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+    if (!media.matches) return;
+
+    const el = heroRef.current;
+    if (!el) return;
+
+    let rafId: number | null = null;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      targetX = x * 2;
+      targetY = y * 2;
+    };
+
+    const onMouseLeave = () => {
+      targetX = 0;
+      targetY = 0;
+    };
+
+    const animate = () => {
+      currentX += (targetX - currentX) * 0.05;
+      currentY += (targetY - currentY) * 0.05;
+
+      el.style.setProperty("--px", currentX.toFixed(4));
+      el.style.setProperty("--py", currentY.toFixed(4));
+
+      rafId = requestAnimationFrame(animate);
+    };
+
+    el.addEventListener("mousemove", onMouseMove, { passive: true });
+    el.addEventListener("mouseleave", onMouseLeave, { passive: true });
+    rafId = requestAnimationFrame(animate);
+
+    return () => {
+      el.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("mouseleave", onMouseLeave);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   const headlineWords = headline.trim().split(/\s+/);
   const headlineLast = headlineWords.pop() ?? "";
   const headlineFirst = headlineWords.join(" ");
 
   return (
-    <section id="hero" className="relative overflow-hidden bg-kobbo-cream">
+    <section
+      id="hero"
+      ref={heroRef}
+      style={{ "--px": "0", "--py": "0" } as React.CSSProperties}
+      className="relative overflow-hidden bg-kobbo-cream"
+    >
       {/* ══════════ MOBILE — stable across all phone widths / aspect ratios ══════════ */}
-      <div className="relative isolate min-h-[100svh] overflow-hidden sm:hidden ">
-        <div className="absolute inset-0 top-8 ">
+      <div className="relative isolate min-h-[100svh] overflow-hidden sm:hidden">
+        <div className="absolute inset-0 top-8 overflow-hidden">
           <Image
             src={imageMobile}
             alt={imageAlt}
@@ -95,7 +219,7 @@ export default function HeroSection() {
             priority
             quality={95}
             sizes="100vw"
-            className="object-cover object-[center_15%]"
+            className="animate-hero-image object-cover object-[center_15%]"
           />
         </div>
 
@@ -105,9 +229,17 @@ export default function HeroSection() {
           aria-hidden
         />
 
+        {/* Animated Traveling Butterfly with Sparkling Trail */}
+        <HeroButterflyFlight variant="mobile" />
+
+        {/* Subtle mobile floating decor */}
+        <HeroStar className="absolute left-4 top-16 z-10" />
+        <HeroLeaf className="absolute right-5 top-[44%] z-10" />
+
         <div className="relative z-10 px-6 pb-8 pt-[4.5rem]">
           <div className="relative w-full">
-            <div className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-kobbo-beige bg-white px-3 py-1.5 shadow-soft">
+            {/* Staggered Layer 0: Review Pill */}
+            <div className="hero-enter-pill inline-flex max-w-full items-center gap-1.5 rounded-full border border-kobbo-beige bg-white/95 px-3 py-1.5 shadow-soft backdrop-blur-xs">
               <Star
                 className="h-3.5 w-3.5 shrink-0 fill-kobbo-yellow text-kobbo-yellow"
                 strokeWidth={0}
@@ -118,8 +250,9 @@ export default function HeroSection() {
               </p>
             </div>
 
+            {/* Staggered Layer 1: Headline & Floating Badge */}
             <div className="mt-4 flex w-full items-start justify-between gap-3">
-              <h1 className="font-heading min-w-0 flex-1 text-[clamp(1.85rem,8.2vw,2.35rem)] font-extrabold leading-[1.08] tracking-tight text-[#1A1A1A]">
+              <h1 className="hero-enter-headline font-heading min-w-0 flex-1 text-[clamp(1.85rem,8.2vw,2.35rem)] font-extrabold leading-[1.08] tracking-tight text-[#1A1A1A]">
                 <span className="block">{headlineFirst}</span>
                 <span className="block">
                   {headlineLast}
@@ -127,29 +260,40 @@ export default function HeroSection() {
                 </span>
               </h1>
 
-              <ScreenFreeBadge
-                title={imageBadgeTitle}
-                subtitle={imageBadgeSubtitle}
-                compact
-                className="mt-4 shrink-0"
-              />
+              <div className="animate-badge-bob mt-4 shrink-0">
+                <ScreenFreeBadge
+                  title={imageBadgeTitle}
+                  subtitle={imageBadgeSubtitle}
+                  compact
+                />
+              </div>
             </div>
 
-            <p className="mt-3 max-w-[17rem] text-[clamp(0.8125rem,3.4vw,0.875rem)] font-medium leading-snug text-[#3A3A3A]">
+            {/* Staggered Layer 2: Description */}
+            <p className="hero-enter-desc mt-3 max-w-[17rem] text-[clamp(0.8125rem,3.4vw,0.875rem)] font-medium leading-snug text-[#3A3A3A]">
               {description}
             </p>
 
-            <div className="mt-5">
+            {/* Staggered Layer 3: CTA Button with light sweep shimmer */}
+            <div className="hero-enter-cta mt-5">
               <Link
                 href={primaryCta.href}
-                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-kobbo-yellow px-5 py-2 text-xs font-bold text-[#1A1A1A] shadow-soft transition-transform active:scale-[0.98]"
+                className="group relative inline-flex min-h-10 items-center justify-center gap-1.5 overflow-hidden rounded-full bg-kobbo-yellow px-5 py-2 text-xs font-bold text-[#1A1A1A] shadow-soft transition-transform active:scale-[0.98]"
               >
-                {primaryCta.label}
-                <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} />
+                <span
+                  aria-hidden
+                  className="animate-shimmer-sweep pointer-events-none absolute inset-0 -top-1/2 -bottom-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/45 to-transparent"
+                />
+                <span className="relative z-10">{primaryCta.label}</span>
+                <ArrowRight
+                  className="relative z-10 h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1"
+                  strokeWidth={2.5}
+                />
               </Link>
             </div>
 
-            <div className="mt-4 flex flex-col items-start gap-2">
+            {/* Staggered Layer 4: Trust Items */}
+            <div className="hero-enter-trust mt-4 flex flex-col items-start gap-2">
               {trustItems.map((item) => (
                 <div key={item.id} className="flex items-center gap-1.5">
                   {(item.icon as string) === "shield" ? (
@@ -180,7 +324,24 @@ export default function HeroSection() {
 
       {/* ══════════ DESKTOP / TABLET ══════════ */}
       <div className="relative hidden min-h-[720px] sm:block lg:min-h-[min(88svh,860px)]">
-        <div className="absolute inset-0">
+        {/* Soft Ambient Background Blur Glows */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-[8%] top-[12%] h-80 w-80 rounded-full bg-amber-200/20 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-[15%] bottom-[16%] h-96 w-96 rounded-full bg-emerald-100/25 blur-3xl"
+        />
+
+        {/* Parallax Image Layer: moves opposite to cursor for subtle 3D depth */}
+        <div
+          className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform"
+          style={{
+            transform:
+              "translate3d(calc(var(--px, 0) * -10px), calc(var(--py, 0) * -8px), 0)",
+          }}
+        >
           <Image
             src={imageDesktop}
             alt={imageAlt}
@@ -188,18 +349,50 @@ export default function HeroSection() {
             priority
             quality={95}
             sizes="100vw"
-            className="object-cover object-[70%_22%] lg:object-[70%_18%] xl:object-[58%_15%]"
+            className="animate-hero-image object-cover object-[70%_22%] lg:object-[70%_18%] xl:object-[58%_15%]"
           />
         </div>
 
+        {/* Soft gradient cream wash keeping text highly legible */}
         <div
           className="pointer-events-none absolute inset-y-0 left-0 w-[68%] bg-[linear-gradient(90deg,#fffbf0_0%,#fffbf0_32%,rgba(255,251,240,0.94)_48%,rgba(255,251,240,0.72)_62%,rgba(255,251,240,0.28)_78%,transparent_100%)] lg:w-[62%]"
           aria-hidden
         />
 
+        {/* Animated Traveling Butterflies with Sparkling Stardust Trail */}
+        <HeroButterflyFlight variant="desktop" />
+
+        {/* Floating Decorative Elements Layer: subtle parallax depth */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 transition-transform duration-500 ease-out will-change-transform"
+          style={{
+            transform:
+              "translate3d(calc(var(--px, 0) * 20px), calc(var(--py, 0) * 16px), 0)",
+          }}
+          aria-hidden
+        >
+          {/* Golden Sparkle Star near headline top-left */}
+          <HeroStar className="absolute left-[7%] top-[18%]" />
+
+          {/* Gentle Botanical Leaf near trust badges */}
+          <HeroLeaf className="absolute left-[44%] bottom-[14%] lg:left-[47%]" />
+
+          {/* Pastel Montessori Wooden Block on right */}
+          <HeroBlock className="absolute right-[6%] top-[38%] lg:right-[8%]" />
+        </div>
+
+        {/* Parallax Content Container */}
         <div className="relative mx-auto flex min-h-[720px] max-w-7xl items-center px-6 pb-16 pt-28 lg:min-h-[min(88svh,860px)] lg:px-10 lg:pb-20 lg:pt-32">
-          <div className="relative w-full max-w-xl">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-kobbo-beige bg-white px-4 py-2 shadow-soft">
+          {/* Left Text Column: moves subtly with mouse */}
+          <div
+            className="relative z-20 w-full max-w-xl transition-transform duration-500 ease-out will-change-transform"
+            style={{
+              transform:
+                "translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 6px), 0)",
+            }}
+          >
+            {/* Staggered Layer 0: Review Pill */}
+            <div className="hero-enter-pill inline-flex w-fit items-center gap-2 rounded-full border border-kobbo-beige bg-white/95 px-4 py-2 shadow-soft backdrop-blur-xs transition-transform duration-300 hover:scale-[1.02]">
               <Star
                 className="h-4 w-4 fill-kobbo-yellow text-kobbo-yellow"
                 strokeWidth={0}
@@ -210,26 +403,38 @@ export default function HeroSection() {
               </p>
             </div>
 
-            <h1 className="font-heading mt-5 text-5xl font-extrabold leading-[1.05] tracking-tight text-[#1A1A1A] lg:mt-6 lg:text-6xl xl:text-[4.5rem]">
+            {/* Staggered Layer 1: Headline */}
+            <h1 className="hero-enter-headline font-heading mt-5 text-5xl font-extrabold leading-[1.05] tracking-tight text-[#1A1A1A] lg:mt-6 lg:text-6xl xl:text-[4.5rem]">
               {headline}
               <span className="text-kobbo-yellow">.</span>
             </h1>
 
-            <p className="mt-5 max-w-md text-base font-medium leading-relaxed text-[#3A3A3A] lg:mt-6 lg:text-lg">
+            {/* Staggered Layer 2: Description */}
+            <p className="hero-enter-desc mt-5 max-w-md text-base font-medium leading-relaxed text-[#3A3A3A] lg:mt-6 lg:text-lg">
               {description}
             </p>
 
-            <div className="mt-8 lg:mt-9">
+            {/* Staggered Layer 3: CTA Button with light sweep shimmer & polished hover */}
+            <div className="hero-enter-cta mt-8 lg:mt-9">
               <Link
                 href={primaryCta.href}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-8 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light hover:shadow-soft-lg"
+                className="group relative inline-flex min-h-11 items-center justify-center gap-2 overflow-hidden rounded-full bg-kobbo-yellow px-8 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-kobbo-yellow-light hover:shadow-[0_12px_28px_-6px_rgba(255,199,0,0.55)] active:scale-[0.98]"
               >
-                {primaryCta.label}
-                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+                {/* Light sweep reflection */}
+                <span
+                  aria-hidden
+                  className="animate-shimmer-sweep pointer-events-none absolute inset-0 -top-1/2 -bottom-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                />
+                <span className="relative z-10">{primaryCta.label}</span>
+                <ArrowRight
+                  className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
+                  strokeWidth={2.5}
+                />
               </Link>
             </div>
 
-            <div className="mt-6 flex items-center gap-3 lg:mt-7">
+            {/* Staggered Layer 4: Trust Items */}
+            <div className="hero-enter-trust mt-6 flex items-center gap-3 lg:mt-7">
               {trustItems.map((item, index) => (
                 <Fragment key={item.id}>
                   {index > 0 && (
@@ -264,8 +469,15 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute right-6 top-[16%] lg:right-10 lg:top-[14%] xl:right-1">
-            <div className="animate-[float_4s_ease-in-out_infinite]">
+          {/* Floating Top-Right Badge: moves with independent parallax & soft bobbing */}
+          <div
+            className="pointer-events-none absolute right-6 top-[16%] z-20 transition-transform duration-500 ease-out will-change-transform lg:right-10 lg:top-[14%] xl:right-1"
+            style={{
+              transform:
+                "translate3d(calc(var(--px, 0) * 16px), calc(var(--py, 0) * 14px), 0)",
+            }}
+          >
+            <div className="animate-badge-bob">
               <ScreenFreeBadge
                 title={imageBadgeTitle}
                 subtitle={imageBadgeSubtitle}

@@ -30,7 +30,7 @@ export const heroContent = {
   headline: "More than toys",
   description:
     "Thoughtfully put-together developmental play kits for 2–3 and 3–5 year olds, with toys selected for their stage of development.",
-  primaryCta: { label: "Explore The Kits", href: "#kits" },
+  primaryCta: { label: "Explore The Kits", href: "/shop" },
   trustItems: [
     { id: "age-kits", label: "Age-based kits", icon: "sparkles" as const },
     { id: "learn-play", label: "Learn through play", icon: "leaf" as const },
