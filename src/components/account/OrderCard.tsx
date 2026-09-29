@@ -7,6 +7,7 @@ import { parseShopifyProductId } from "@/lib/judgeme";
 import { formatOrderDate } from "@/data/account";
 import OrderStatusPanel from "@/components/account/OrderStatusPanel";
 import OrderLineItemReview from "@/components/account/OrderLineItemReview";
+import type { LucideIcon } from "lucide-react";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
 
 interface OrderCardProps {
@@ -132,22 +133,41 @@ interface SummaryCardProps {
   title: string;
   value: string;
   href: string;
-  linkLabel: string;
+  linkLabel?: string;
+  icon?: LucideIcon;
 }
 
-export function SummaryCard({ title, value, href, linkLabel }: SummaryCardProps) {
+export function SummaryCard({
+  title,
+  value,
+  href,
+  linkLabel = "View",
+  icon: Icon,
+}: SummaryCardProps) {
   return (
-    <div className="rounded-2xl bg-kobbo-white p-5 shadow-soft">
-      <p className="text-sm text-kobbo-muted">{title}</p>
-      <p className="font-heading mt-1 text-2xl font-extrabold text-kobbo-black">
-        {value}
-      </p>
-      <Link
-        href={href}
-        className="mt-3 inline-block text-sm font-semibold text-kobbo-black hover:underline"
-      >
-        {linkLabel} →
-      </Link>
-    </div>
+    <Link
+      href={href}
+      className="group relative flex flex-col justify-between rounded-2xl border border-kobbo-beige/70 bg-kobbo-white p-3 shadow-soft transition-all hover:border-kobbo-yellow hover:shadow-soft-lg active:scale-[0.98] sm:p-5"
+    >
+      <div className="flex items-center justify-between gap-1">
+        {Icon ? (
+          <span className="flex h-7 w-7 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-kobbo-yellow/20 text-kobbo-black transition-colors group-hover:bg-kobbo-yellow">
+            <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2.2} />
+          </span>
+        ) : <span />}
+        <span className="flex items-center gap-0.5 text-[10px] font-bold text-kobbo-muted transition-colors group-hover:text-kobbo-black sm:text-xs">
+          <span>{linkLabel}</span>
+          <span className="transition-transform group-hover:translate-x-0.5">→</span>
+        </span>
+      </div>
+      <div className="mt-2.5 sm:mt-3">
+        <p className="font-heading text-lg font-extrabold text-kobbo-black sm:text-2xl lg:text-3xl">
+          {value}
+        </p>
+        <p className="mt-0.5 text-[11px] font-semibold text-kobbo-muted sm:text-sm">
+          {title}
+        </p>
+      </div>
+    </Link>
   );
 }

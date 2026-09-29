@@ -17,15 +17,15 @@ export default function AccountLayoutShell({
   const { logout } = useAuth();
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[240px_1fr] lg:gap-8">
-      <AccountSidebar activePath={pathname} onLogout={logout} />
-      <div>
+    <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-[240px_1fr] lg:gap-8">
+      <AccountSidebar activePath={pathname} onLogout={() => logout("/")} />
+      <div className="min-w-0 flex-1">
         {title && (
-          <h1 className="font-heading text-2xl font-extrabold text-kobbo-black sm:text-3xl">
+          <h1 className="mb-4 font-heading text-xl font-extrabold text-kobbo-black sm:mb-6 sm:text-2xl lg:text-3xl">
             {title}
           </h1>
         )}
-        <div className={title ? "mt-6" : ""}>{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );
