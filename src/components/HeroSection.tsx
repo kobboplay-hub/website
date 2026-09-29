@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
-import { ArrowRight, Leaf, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, Leaf, ShieldCheck, Star, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
 
 function ScreenFreeIcon({ className }: { className?: string }) {
@@ -86,8 +86,8 @@ export default function HeroSection() {
   return (
     <section id="hero" className="relative overflow-hidden bg-kobbo-cream">
       {/* ══════════ MOBILE — stable across all phone widths / aspect ratios ══════════ */}
-      <div className="relative isolate min-h-[100svh] overflow-hidden sm:hidden">
-        <div className="absolute inset-0">
+      <div className="relative isolate min-h-[100svh] overflow-hidden sm:hidden ">
+        <div className="absolute inset-0 top-8 ">
           <Image
             src={imageMobile}
             alt={imageAlt}
@@ -101,7 +101,7 @@ export default function HeroSection() {
 
         {/* Cream wash keeps copy readable; child stays in lower half */}
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[40%] bg-[linear-gradient(180deg,rgba(255,251,240,0.92)_0%,rgba(255,251,240,0.88)_42%,rgba(255,251,240,0.55)_68%,rgba(255,251,240,0.18)_86%,transparent_100%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[50%] bg-[linear-gradient(180deg,rgba(255,251,240,0.92)_0%,rgba(255,251,240,0.88)_42%,rgba(255,251,240,0.55)_68%,rgba(255,251,240,0.18)_86%,transparent_100%)]"
           aria-hidden
         />
 
@@ -152,14 +152,19 @@ export default function HeroSection() {
             <div className="mt-4 flex flex-col items-start gap-2">
               {trustItems.map((item) => (
                 <div key={item.id} className="flex items-center gap-1.5">
-                  {item.icon === "shield" ? (
+                  {(item.icon as string) === "shield" ? (
                     <ShieldCheck
-                      className="h-3.5 w-3.5 shrink-0 text-[#1A1A1A]"
+                      className="h-3.5 w-3.5 shrink-0 text-kobbo-black"
+                      strokeWidth={2}
+                    />
+                  ) : (item.icon as string) === "sparkles" ? (
+                    <Sparkles
+                      className="h-3.5 w-3.5 shrink-0 text-kobbo-black"
                       strokeWidth={2}
                     />
                   ) : (
                     <Leaf
-                      className="h-3.5 w-3.5 shrink-0 text-[#1A1A1A]"
+                      className="h-3.5 w-3.5 shrink-0 text-kobbo-green"
                       strokeWidth={2}
                     />
                   )}
@@ -234,14 +239,19 @@ export default function HeroSection() {
                     />
                   )}
                   <div className="flex items-center gap-1.5">
-                    {item.icon === "shield" ? (
+                    {(item.icon as string) === "shield" ? (
                       <ShieldCheck
-                        className="h-4 w-4 shrink-0 text-[#1A1A1A]"
+                        className="h-4 w-4 shrink-0 text-kobbo-black"
+                        strokeWidth={2}
+                      />
+                    ) : (item.icon as string) === "sparkles" ? (
+                      <Sparkles
+                        className="h-4 w-4 shrink-0 text-kobbo-black"
                         strokeWidth={2}
                       />
                     ) : (
                       <Leaf
-                        className="h-4 w-4 shrink-0 text-[#1A1A1A]"
+                        className="h-4 w-4 shrink-0 text-kobbo-green"
                         strokeWidth={2}
                       />
                     )}

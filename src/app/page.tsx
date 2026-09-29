@@ -1,37 +1,63 @@
 import SiteLayout from "@/components/SiteLayout";
 import HeroSection from "@/components/HeroSection";
 import TrustBadges from "@/components/TrustBadges";
-import BestSellers from "@/components/BestSellers";
-import CollectionsSection from "@/components/CollectionsSection";
-import BrandStory from "@/components/BrandStory";
+import ShopByCategories from "@/components/home/ShopByCategories";
+import ToyTrainTrack from "@/components/common/ToyTrainTrack";
+import BestSellingToys from "@/components/home/BestSellingToys";
+import ResearchStatBanner from "@/components/home/ResearchStatBanner";
 import WhyParentsChooseUs from "@/components/WhyParentsChooseUs";
 import InstagramVideos from "@/components/InstagramVideos";
 import ParentReviews from "@/components/ParentReviews";
+import FounderNote from "@/components/home/FounderNote";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
 import {
-  getCollections,
   getProductsWithVideos,
-  getRecentProducts,
+  getBestSellingProducts,
+  getCollections,
+  getFeaturedProducts,
 } from "@/lib/shopify";
-import { getProductReviewSummaries } from "@/lib/judgeme";
-import type { Collection, Product } from "@/lib/shopify/types";
+import {
+  getProductReviewSummaries,
+  type JudgeMeProductSummary,
+} from "@/lib/judgeme";
+import type { Product, Collection } from "@/lib/shopify/types";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  let recentProducts: Product[] = [];
-  let productsWithVideos: Product[] = [];
   let collections: Collection[] = [];
-  let reviewSummaries = {};
+  let bestSellingProducts: Product[] = [];
+  let productsWithVideos: Product[] = [];
+  let bestSellingReviewSummaries: Record<string, JudgeMeProductSummary> = {};
+  let featuredProducts: Product[] = [];
+  let featuredReviewSummaries: Record<string, JudgeMeProductSummary> = {};
 
   try {
-    recentProducts = await getRecentProducts(5);
-    if (recentProducts.length > 0) {
-      reviewSummaries = await getProductReviewSummaries(
-        recentProducts.map((product) => product.id),
+    collections = await getCollections(12);
+  } catch (error) {
+    console.error("Failed to fetch Shopify collections:", error);
+  }
+
+  try {
+    bestSellingProducts = await getBestSellingProducts();
+    if (bestSellingProducts.length > 0) {
+      bestSellingReviewSummaries = await getProductReviewSummaries(
+        bestSellingProducts.map((product) => product.id),
       );
     }
   } catch (error) {
-    console.error("Failed to fetch recent products:", error);
+    console.error("Failed to fetch best-selling products:", error);
+  }
+
+  try {
+    featuredProducts = await getFeaturedProducts();
+    if (featuredProducts.length > 0) {
+      featuredReviewSummaries = await getProductReviewSummaries(
+        featuredProducts.map((product) => product.id),
+      );
+    }
+  } catch (error) {
+    console.error("Failed to fetch featured products:", error);
   }
 
   try {
@@ -40,25 +66,25 @@ export default async function Home() {
     console.error("Failed to fetch Shopify products:", error);
   }
 
-  try {
-    collections = await getCollections(20);
-  } catch (error) {
-    console.error("Failed to fetch Shopify collections:", error);
-  }
-
   return (
     <SiteLayout immersiveHero>
       <HeroSection />
       <TrustBadges />
-      <BestSellers
-        products={recentProducts}
-        reviewSummaries={reviewSummaries}
+      <ShopByCategories collections={collections} />
+      <ToyTrainTrack />
+      <BestSellingToys
+        products={bestSellingProducts}
+        reviewSummaries={bestSellingReviewSummaries}
       />
-      <CollectionsSection collections={collections} />
+      <ResearchStatBanner />
+      <FeaturedProducts
+        products={featuredProducts}
+        reviewSummaries={featuredReviewSummaries}
+      />
       <WhyParentsChooseUs />
       <InstagramVideos products={productsWithVideos} />
       <ParentReviews />
-      <BrandStory />
+      <FounderNote />
     </SiteLayout>
   );
 }

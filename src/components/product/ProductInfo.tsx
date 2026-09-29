@@ -19,6 +19,7 @@ import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductDescription from "@/components/product/ProductDescription";
 import ProductDetailRating from "@/components/product/ProductDetailRating";
 import ProductShareButton from "@/components/product/ProductShareButton";
+import ProductHighlights from "@/components/product/ProductHighlights";
 import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 interface ProductInfoProps {
@@ -155,6 +156,7 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
       <div className="flex min-w-0 flex-col lg:py-2">
         {/* Title block */}
         <div className="border-b border-kobbo-beige/80 pb-4 lg:border-none lg:pb-0">
+          <ProductHighlights product={product} />
           <div className="flex items-start justify-between gap-3">
             <h1 className="font-heading min-w-0 flex-1 break-words text-xl font-extrabold leading-tight text-kobbo-black sm:text-2xl lg:text-4xl">
               {product.title}

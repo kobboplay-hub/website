@@ -1,8 +1,9 @@
 /**
- * Policy & FAQ page content — sourced from Kobbo legal PDFs (updated 04-08-2026).
+ * Policy & FAQ page content — Official Kobbo brand policies.
+ * Purged of any former legal entities. 100% Kobbo.
  */
 
-import { legalEntity } from "./footer";
+import { legalEntity, footerBrand } from "./footer";
 
 export type PolicyBlock =
   | { type: "paragraph"; text: string }
@@ -27,14 +28,14 @@ export interface PolicyPageContent {
 
 export const faqsPageContent: PolicyPageContent = {
   title: "Frequently Asked Questions",
-  description: "Quick answers about shopping, delivery and returns at Kobbo.",
+  description: "Quick answers about Kobbo developmental play kits, shipping, and order support.",
   sections: [
     {
-      title: "What age group are Kobbo toys suitable for?",
+      title: "What age groups are Kobbo Play Kits designed for?",
       blocks: [
         {
           type: "paragraph",
-          text: "Each product page lists recommended age ranges. Always supervise younger children during play.",
+          text: "Kobbo Play Kits are specifically tailored for two crucial developmental windows: Year 2 (24–36 Months) with The Little Explorer Kit, and Year 3–5 (36–60 Months) with The Tinker Kit. Each kit is matched to child development milestones.",
         },
       ],
     },
@@ -43,34 +44,43 @@ export const faqsPageContent: PolicyPageContent = {
       blocks: [
         {
           type: "paragraph",
-          text: "Metro cities typically take 2–5 business days; most other locations 3–7 business days. Remote areas may take 5–10 business days. See our Shipping Policy for details.",
+          text: "Orders are usually dispatched within 5 business days from our warehouse. Domestic shipping across India typically takes 7–15 days from dispatch. You will receive a tracking link once your kit ships.",
         },
       ],
     },
     {
-      title: "Can I return a product?",
+      title: "What is your return and refund policy?",
       blocks: [
         {
           type: "paragraph",
-          text: "Yes. Eligible items can be returned within 7 calendar days of delivery if unused and in original packaging. See our Returns & Refunds policy for full conditions.",
+          text: "As opened or used products cannot be resold, we do not accept returns or exchanges once an order has been delivered. However, if any product reaches you damaged, broken, or with missing parts, Kobbo provides full replacement or refund support when reported within 24–48 hours with an unboxing video.",
         },
       ],
     },
     {
-      title: "Is cash on delivery available?",
+      title: "Can I cancel my order?",
       blocks: [
         {
           type: "paragraph",
-          text: "COD availability depends on your pin code and is shown at checkout. Kobbo may restrict COD for repeated refusals or failed delivery attempts.",
+          text: "Yes, you can request cancellation within 5–6 hours of placing the order before dispatch. For prepaid orders, eligible refunds are returned to the original payment method within 15 days.",
         },
       ],
     },
     {
-      title: "How do I contact customer care?",
+      title: "Are shipping charges applicable?",
       blocks: [
         {
           type: "paragraph",
-          text: "Email support@kobbo.in. We aim to respond within a reasonable timeframe on business days.",
+          text: "We provide free shipping across India on all orders.",
+        },
+      ],
+    },
+    {
+      title: "How do I contact Kobbo customer support?",
+      blocks: [
+        {
+          type: "paragraph",
+          text: "You can reach us at hello@kobbo.in or call/WhatsApp our customer care team at +91 8329195232.",
         },
       ],
     },
@@ -78,16 +88,16 @@ export const faqsPageContent: PolicyPageContent = {
 };
 
 export const contactPageContent: PolicyPageContent = {
-  title: "Customer Care",
-  description: "We're here to help with orders, products and returns.",
+  title: "Contact Us",
+  description: "Have a question about our play kits or your order? We're here to help.",
   sections: [
     {
-      title: "Email",
-      blocks: [{ type: "paragraph", text: "support@kobbo.in" }],
+      title: "Email Support",
+      blocks: [{ type: "paragraph", text: footerBrand.email }],
     },
     {
-      title: "Phone",
-      blocks: [{ type: "paragraph", text: "+91 8329195232" }],
+      title: "Customer Care Phone",
+      blocks: [{ type: "paragraph", text: footerBrand.phone }],
     },
     {
       title: "Website",
@@ -100,387 +110,161 @@ export const contactPageContent: PolicyPageContent = {
           type: "paragraph",
           text: legalEntity.ownershipLine,
         },
-        {
-          type: "paragraph",
-          text: `Legal name: ${legalEntity.name}`,
-        },
       ],
     },
   ],
 };
 
-
 export const shippingPolicyContent: PolicyPageContent = {
   title: "Shipping Policy",
-  description: "How Kobbo packs and delivers orders across India — free shipping, timelines, and tracking.",
-  lastUpdated: "04-08-2026",
-  intro: `Welcome to Kobbo, a brand owned and operated by ${legalEntity.name}. We are committed to delivering your order safely and efficiently. Please read our Shipping Policy carefully before placing an order.`,
+  description: "We provide free shipping across India on all orders. Learn about dispatch times and tracking.",
+  intro: "We want your Kobbo order to reach you safely and on time. Please find our shipping details below.",
   sections: [
     {
-      title: "1. Shipping Locations",
+      title: "Shipping Costs",
       blocks: [
-          { type: "paragraph", text: "Currently, Kobbo ships only within India. We do not offer international shipping at this time." }
+          { type: "paragraph", text: "We provide free shipping across India on all orders." },
       ],
     },
     {
-      title: "2. Order Processing",
+      title: "Domestic Shipping",
       blocks: [
-          { type: "bullet", text: "Orders are usually processed within 1–2 business days after successful payment confirmation." },
-          { type: "bullet", text: "Orders placed on Sundays or public holidays will be processed on the next working day." },
-          { type: "bullet", text: "During festive periods, promotional sales or unforeseen circumstances, processing may take slightly longer." }
+          { type: "paragraph", text: "Orders are generally delivered within 7–15 days from the date of dispatch." },
       ],
     },
     {
-      title: "3. Shipping Time",
+      title: "Dispatch Time",
       blocks: [
-          { type: "paragraph", text: "Estimated delivery timelines:" },
-          { type: "bullet", text: "Metro Cities: 2–5 business days" },
-          { type: "bullet", text: "Tier 2 & Tier 3 Cities: 3–7 business days" },
-          { type: "bullet", text: "Remote Locations: 5–10 business days" },
-          { type: "paragraph", text: "These are estimated timelines only and are not guaranteed delivery dates." }
+          { type: "paragraph", text: "Orders are usually dispatched within 5 business days of placing the order, subject to product availability." },
+          { type: "paragraph", text: "Our warehouse operates Monday to Friday during standard business hours, excluding holidays. We make every effort to keep delays to a minimum." },
       ],
     },
     {
-      title: "4. Free Shipping",
+      title: "Change of Delivery Address",
       blocks: [
-          { type: "paragraph", text: "At Kobbo, we are pleased to offer FREE shipping on all orders across India. There are no hidden shipping charges. The price displayed at checkout is the final amount payable (excluding any applicable taxes or charges displayed during checkout, if any). In the event of any future changes to our shipping policy, the updated policy will be published on this page." }
+          { type: "paragraph", text: "If you need to change your delivery address, please contact us before your order is shipped. Once an order has been dispatched, we will not be able to change the delivery address." },
       ],
     },
     {
-      title: "5. Order Tracking",
+      title: "Out of Stock Items",
       blocks: [
-          { type: "paragraph", text: "Once your order has been dispatched, you will receive an email and/or SMS containing your tracking details. Customers are responsible for monitoring their shipment using the tracking link provided." }
+          { type: "paragraph", text: "In case an item is out of stock, we will get in touch with you regarding the order and the expected availability." },
       ],
     },
     {
-      title: "6. Delivery Attempts",
+      title: "Delivery Delays",
       blocks: [
-          { type: "paragraph", text: "Our courier partners generally make 2–3 delivery attempts. If delivery cannot be completed due to:" },
-          { type: "bullet", text: "incorrect address" },
-          { type: "bullet", text: "recipient unavailable" },
-          { type: "bullet", text: "refusal to accept delivery" },
-          { type: "paragraph", text: "the shipment may be returned to Kobbo. Re-shipping charges may apply." }
+          { type: "paragraph", text: "If your order has taken longer than the expected delivery time, please contact us so that we can check the status of your shipment with the courier partner." },
       ],
     },
     {
-      title: "7. Incorrect Shipping Address",
+      title: "Tracking Your Order",
       blocks: [
-          { type: "paragraph", text: "Customers are responsible for providing an accurate shipping address. Kobbo shall not be responsible for delays or failed deliveries resulting from incorrect or incomplete address details." }
+          { type: "paragraph", text: "Once your order has been dispatched, you will receive a tracking link to follow your shipment and view the latest delivery updates." },
       ],
     },
     {
-      title: "8. Delays",
+      title: "Damaged Parcels",
       blocks: [
-          { type: "paragraph", text: "While we strive to deliver every order on time, delays may occur due to:" },
-          { type: "bullet", text: "weather conditions" },
-          { type: "bullet", text: "strikes" },
-          { type: "bullet", text: "courier delays" },
-          { type: "bullet", text: "natural disasters" },
-          { type: "bullet", text: "government restrictions" },
-          { type: "bullet", text: "public holidays" },
-          { type: "bullet", text: "force majeure events" },
-          { type: "paragraph", text: "Such delays shall not make Kobbo liable for compensation." }
+          { type: "paragraph", text: "If your package appears damaged or tampered with at the time of delivery, we kindly request you to refuse the package, if possible, and contact us." },
+          { type: "paragraph", text: "If the package has already been delivered, please get in touch with us at the earliest. We will assist you after the courier partner has completed the necessary investigation." },
       ],
     },
     {
-      title: "9. Damaged Packages",
+      title: "Lost Parcels",
       blocks: [
-          { type: "paragraph", text: "If your package appears visibly damaged during delivery, we recommend:" },
-          { type: "bullet", text: "taking photographs before opening the package," },
-          { type: "bullet", text: "recording a continuous unboxing video," },
-          { type: "bullet", text: "contacting us immediately." },
-          { type: "paragraph", text: "Claims without supporting evidence may not be accepted." }
+          { type: "paragraph", text: "In the event that a parcel is lost in transit, we will assist with a resolution once the courier partner has completed its investigation and confirmed the parcel as lost." },
       ],
     },
-    {
-      title: "10. Lost Shipments",
-      blocks: [
-          { type: "paragraph", text: "If your shipment is marked delivered but you have not received it, please contact us within 48 hours. Kobbo will investigate the matter with the courier partner before determining the appropriate resolution." }
-      ],
-    },
-    {
-      title: "11. Order Cancellation Before Dispatch",
-      blocks: [
-          { type: "paragraph", text: "Orders may be cancelled before dispatch by contacting our support team. Once shipped, the order cannot be cancelled and will be governed by our Returns & Refunds policy." }
-      ],
-    },
-    {
-      title: "12. Contact",
-      blocks: [
-          { type: "paragraph", text: "For shipping-related assistance: Email: support@kobbo.in" }
-      ],
-    }
   ],
 };
 
 export const returnPolicyContent: PolicyPageContent = {
-  title: "Returns & Refunds",
-  description:
-    "Returns, replacements, refunds and cancellations for Kobbo orders.",
-  lastUpdated: "04-08-2026",
-  intro:
-    "At Kobbo, we strive to ensure every order reaches you in perfect condition. If you are not completely satisfied with your purchase, please review our policy below.",
+  title: "Return & Refund Policy",
+  description: "Quality assurance, transit replacement support, and refund terms for Kobbo orders.",
   sections: [
     {
-      title: "1. 7-Day Returns",
+      title: "Return Policy",
       blocks: [
-        {
-          type: "paragraph",
-          text: "Eligible products may be returned within 7 calendar days from the date of delivery. To qualify for a return, the product must:",
-        },
-        { type: "bullet", text: "Be unused and unplayed with." },
-        { type: "bullet", text: "Be in its original condition." },
-        { type: "bullet", text: "Be returned with its original packaging." },
-        {
-          type: "bullet",
-          text: "Include all accessories, manuals and tags.",
-        },
-        { type: "bullet", text: "Be accompanied by proof of purchase." },
-        { type: "bullet", text: "Be in a condition suitable for resale." },
-        {
-          type: "paragraph",
-          text: "Kobbo reserves the right to inspect returned products before approving a refund.",
-        },
+          { type: "paragraph", text: "At Kobbo, we are committed to providing you with a smooth and enjoyable shopping experience. As opened or used products cannot be resold, we do not accept returns or exchanges once an order has been delivered." },
+          { type: "paragraph", text: "In rare cases, a product or its parts may be affected during transit. If you receive a product with damaged or missing parts, Kobbo will provide replacement support where applicable." },
+          { type: "paragraph", text: "Any issue regarding a damaged or missing product/part must be reported to us within 24 hours of delivery, along with the relevant order details and clear photographs/videos of the issue for verification." },
+          { type: "paragraph", text: "Once the concern has been reviewed and verified, Kobbo will assist with the replacement of the affected part(s), as applicable." },
+          { type: "paragraph", text: "Please note: Replacement support is applicable only to issues arising during transit and does not cover damage caused after delivery, misuse, or normal wear and tear." },
       ],
     },
     {
-      title: "2. Items Eligible for Free Replacement",
+      title: "Refund Policy",
       blocks: [
-        { type: "paragraph", text: "We will gladly replace a product if:" },
-        { type: "bullet", text: "The wrong product was delivered." },
-        {
-          type: "bullet",
-          text: "The product arrived damaged during transit.",
-        },
-        {
-          type: "bullet",
-          text: "There is a verified manufacturing defect.",
-        },
-        {
-          type: "bullet",
-          text: "Essential components or accessories are missing.",
-        },
-        {
-          type: "paragraph",
-          text: "Customers must notify us within 48 hours of delivery.",
-        },
+          { type: "paragraph", text: "At Kobbo, we take care to ensure that every order is packed and dispatched with the utmost attention to quality. As our products are intended to be enjoyed in their original condition, we do not generally offer refunds once an order has been delivered, opened, or used." },
+          { type: "paragraph", text: "However, we understand that on rare occasions, an issue may occur during transit. If a product reaches you with damage, breakage, leakage, missing items, or an incorrect product, Kobbo may provide a refund or replacement after the issue has been verified." },
+          { type: "paragraph", text: "For any such claim, an unboxing video along with the original packaging is mandatory. If the package appears visibly tampered with, damaged, or dented at the time of delivery, we request that you refuse the shipment from the delivery partner." },
+          { type: "paragraph", text: "Kobbo will not be responsible for damage that occurs after delivery of the product." },
+          { type: "paragraph", text: "If your order is marked as delivered but you have not received it, please contact our customer care team at +91 8329195232 within 3 days of the order being marked as delivered. Refund requests made after this period will not be considered." },
+          { type: "paragraph", text: "Where a refund is applicable:" },
+          { type: "bullet", text: "COD refunds will be transferred to the bank account provided by the customer within 4–7 working days." },
+          { type: "paragraph", text: "Other refunds may take up to 15 days from the date of refund acceptance to be credited." },
+          { type: "paragraph", text: "Once the refund is initiated, Kobbo will share the relevant refund details, including the transaction ID and applicable screenshots." },
+          { type: "paragraph", text: "In exceptional cases where a return is accepted by Kobbo, the applicable logistics and courier charges may be borne by the customer." },
       ],
     },
     {
-      title: "3. Electronic Toys",
+      title: "Cancellation Policy",
       blocks: [
-        {
-          type: "paragraph",
-          text: "Electronic toys are not eligible for return or refund once delivered. However, if an electronic toy:",
-        },
-        { type: "bullet", text: "arrives damaged," },
-        { type: "bullet", text: "has a verified manufacturing defect, or" },
-        {
-          type: "bullet",
-          text: "is not functioning as intended upon first use,",
-        },
-        {
-          type: "paragraph",
-          text: "Kobbo will provide a free replacement, subject to verification. Customers must report such issues within 48 hours of delivery along with photographs or videos, and may be requested to provide an uninterrupted unboxing video.",
-        },
+
       ],
     },
     {
-      title: "4. Unboxing Video Requirement",
+      title: "Need to cancel your order?",
       blocks: [
-        {
-          type: "paragraph",
-          text: "To help us resolve issues fairly and efficiently, customers are strongly encouraged to record a continuous, uninterrupted video while opening their package. This may be required for claims involving:",
-        },
-        { type: "bullet", text: "Damaged products" },
-        { type: "bullet", text: "Incorrect products" },
-        { type: "bullet", text: "Missing components" },
-        {
-          type: "bullet",
-          text: "Electronic products not functioning upon delivery",
-        },
-        {
-          type: "paragraph",
-          text: "Failure to provide an unboxing video may affect our ability to process certain claims.",
-        },
+          { type: "paragraph", text: "If you've changed your mind, please contact us as soon as possible after placing your order." },
+          { type: "paragraph", text: "We recommend requesting cancellation within 5–6 hours of placing the order, as this gives us the best chance of stopping the order before it enters the dispatch process and helps avoid unnecessary shipping costs." },
       ],
     },
     {
-      title: "5. Non-Returnable Items",
+      title: "Before your order is dispatched",
       blocks: [
-        { type: "paragraph", text: "Returns will not be accepted if:" },
-        {
-          type: "bullet",
-          text: "The product has been used or played with.",
-        },
-        {
-          type: "bullet",
-          text: "The product has been intentionally damaged.",
-        },
-        {
-          type: "bullet",
-          text: "The product has been altered or repaired.",
-        },
-        {
-          type: "bullet",
-          text: "The original packaging is missing or significantly damaged.",
-        },
-        {
-          type: "bullet",
-          text: "Accessories, manuals or tags are missing.",
-        },
-        {
-          type: "bullet",
-          text: "The product has been damaged due to misuse, negligence or improper handling.",
-        },
-        { type: "bullet", text: "The product shows excessive wear." },
-        {
-          type: "bullet",
-          text: "The product has been personalised or customised.",
-        },
-        {
-          type: "bullet",
-          text: "The return request is made after the applicable return period.",
-        },
-        {
-          type: "bullet",
-          text: "The item is an electronic toy (except for eligible replacement cases described above).",
-        },
+          { type: "paragraph", text: "If we receive your cancellation request before the order leaves our warehouse, the order can be cancelled. For prepaid orders, the eligible refund will be returned to the original payment method within 15 days of cancellation approval." },
       ],
     },
     {
-      title: "6. Natural Variations",
+      title: "After your order has been dispatched",
       blocks: [
-        {
-          type: "paragraph",
-          text: "Products made from natural materials may exhibit slight variations in:",
-        },
-        { type: "bullet", text: "Wood grain" },
-        { type: "bullet", text: "Colour" },
-        { type: "bullet", text: "Texture" },
-        { type: "bullet", text: "Finish" },
-        {
-          type: "paragraph",
-          text: "These are natural characteristics and shall not be treated as manufacturing defects.",
-        },
+          { type: "paragraph", text: "Once the order has left our warehouse, it cannot simply be cancelled while in transit. The shipment will need to return to our warehouse first." },
+          { type: "paragraph", text: "Once the returned shipment reaches us, the applicable refund will be processed after deducting any forward and return logistics charges." },
+      ],
+    },
+  ],
+};
+
+export const cancellationPolicyContent: PolicyPageContent = {
+  title: "Cancellation Policy",
+  description: "Information on cancelling your Kobbo order before or after dispatch.",
+  sections: [
+    {
+      title: "Cancellation Policy",
+      blocks: [
+
       ],
     },
     {
-      title: "7. Colour Accuracy",
+      title: "Need to cancel your order?",
       blocks: [
-        {
-          type: "paragraph",
-          text: "Actual product colours may vary slightly due to:",
-        },
-        { type: "bullet", text: "Studio lighting" },
-        { type: "bullet", text: "Product photography" },
-        { type: "bullet", text: "Device or monitor settings" },
-        { type: "bullet", text: "Mobile screen display" },
-        {
-          type: "paragraph",
-          text: "Minor colour variations do not qualify as defects.",
-        },
+          { type: "paragraph", text: "If you've changed your mind, please contact us as soon as possible after placing your order." },
+          { type: "paragraph", text: "We recommend requesting cancellation within 5–6 hours of placing the order, as this gives us the best chance of stopping the order before it enters the dispatch process and helps avoid unnecessary shipping costs." },
       ],
     },
     {
-      title: "8. Refund Process",
+      title: "Before your order is dispatched",
       blocks: [
-        {
-          type: "paragraph",
-          text: "Once the returned product has been received and successfully inspected:",
-        },
-        {
-          type: "bullet",
-          text: "Approved refunds will be processed within 7–10 business days.",
-        },
-        {
-          type: "bullet",
-          text: "Refunds will be issued to the original payment method used at checkout.",
-        },
-        {
-          type: "paragraph",
-          text: "The time taken for the refund to reflect in your account may vary depending on your bank or payment provider.",
-        },
+          { type: "paragraph", text: "If we receive your cancellation request before the order leaves our warehouse, the order can be cancelled. For prepaid orders, the eligible refund will be returned to the original payment method within 15 days of cancellation approval." },
       ],
     },
     {
-      title: "9. Return Shipping",
+      title: "After your order has been dispatched",
       blocks: [
-        { type: "paragraph", text: "For approved returns due to:" },
-        { type: "bullet", text: "Manufacturing defects" },
-        { type: "bullet", text: "Transit damage" },
-        { type: "bullet", text: "Incorrect product delivered" },
-        {
-          type: "paragraph",
-          text: "Kobbo will bear the return shipping cost. For approved returns due to change of mind (where eligible), customers may be required to bear the return shipping charges or arrange the return shipment, unless otherwise agreed by Kobbo.",
-        },
-      ],
-    },
-    {
-      title: "10. Right to Reject Returns",
-      blocks: [
-        {
-          type: "paragraph",
-          text: "Kobbo reserves the right to decline any return or replacement request if:",
-        },
-        { type: "bullet", text: "The return conditions are not met." },
-        {
-          type: "bullet",
-          text: "The product is found to be used, damaged or not in resalable condition.",
-        },
-        {
-          type: "bullet",
-          text: "Required accessories or packaging are missing.",
-        },
-        {
-          type: "bullet",
-          text: "The claim is found to be fraudulent or abusive.",
-        },
-        {
-          type: "bullet",
-          text: "The product fails inspection upon receipt.",
-        },
-      ],
-    },
-    {
-      title: "11. Cancellation Policy",
-      blocks: [
-        { type: "subtitle", text: "Before Dispatch" },
-        {
-          type: "paragraph",
-          text: "Orders may be cancelled free of charge any time before they have been dispatched from our warehouse.",
-        },
-        { type: "subtitle", text: "After Dispatch" },
-        {
-          type: "paragraph",
-          text: "Once an order has been dispatched, it cannot be cancelled. If eligible, customers may request a return or replacement in accordance with this policy after the order has been delivered.",
-        },
-        { type: "subtitle", text: "Cancellation by Kobbo" },
-        {
-          type: "paragraph",
-          text: "Kobbo reserves the right to cancel any order under circumstances including, but not limited to:",
-        },
-        { type: "bullet", text: "Product unavailability" },
-        {
-          type: "bullet",
-          text: "Incorrect pricing due to technical or human error",
-        },
-        { type: "bullet", text: "Payment verification failure" },
-        { type: "bullet", text: "Suspected fraudulent activity" },
-        { type: "bullet", text: "Duplicate or suspicious orders" },
-        {
-          type: "bullet",
-          text: "Force majeure events or circumstances beyond our reasonable control",
-        },
-        {
-          type: "paragraph",
-          text: "In such cases, any amount paid by the customer will be refunded in full to the original payment method.",
-        },
-        { type: "subtitle", text: "Cash on Delivery (COD)" },
-        {
-          type: "paragraph",
-          text: "Kobbo reserves the right to refuse or restrict Cash on Delivery (COD) services for customers who repeatedly refuse deliveries, fail to accept orders, or misuse the COD facility.",
-        },
+          { type: "paragraph", text: "Once the order has left our warehouse, it cannot simply be cancelled while in transit. The shipment will need to return to our warehouse first." },
+          { type: "paragraph", text: "Once the returned shipment reaches us, the applicable refund will be processed after deducting any forward and return logistics charges." },
       ],
     },
   ],
@@ -488,725 +272,269 @@ export const returnPolicyContent: PolicyPageContent = {
 
 export const privacyPolicyContent: PolicyPageContent = {
   title: "Privacy Policy",
-  description: `How Kobbo (${legalEntity.name}) collects, uses, and protects your personal information.`,
-  lastUpdated: "04-08-2026",
+  description: "How Kobbo collects, uses, and safeguards your personal information.",
+  intro: "At Kobbo, we value your privacy and take reasonable steps to protect the information you share with us. This Privacy Policy explains what information we collect when you use our website, how we use it, and the circumstances in which it may be shared.",
   sections: [
     {
-      title: "1. Introduction",
+      title: "1. Information We Collect",
       blocks: [
-          { type: "paragraph", text: "Welcome to Kobbo, a brand owned and operated by Heena Ashok Shah (\"Kobbo\", \"we\", \"our\" or \"us\"). Your privacy matters to us. This Privacy Policy explains how we collect, use, store, process, share and protect your personal information when you visit www.kobbo.in, place an order, communicate with us or otherwise interact with our Website. By accessing or using our Website, you consent to the practices described in this Privacy Policy. If you do not agree with this Policy, please discontinue the use of our Website." }
+          { type: "paragraph", text: "When you purchase something from our store, we collect the personal information that you provide as part of the buying and selling process. This may include your name, address, and email address." },
+          { type: "paragraph", text: "When you browse our website, we may also automatically receive your Internet Protocol (IP) address. This helps us understand information about your browser and operating system and allows us to improve your experience on our website." },
+          { type: "paragraph", text: "Where applicable and with your permission, we may also use your email address to send you information about Kobbo, new products, and other updates." },
       ],
     },
     {
-      title: "2. Our Commitment",
+      title: "2. How Your Consent Works",
       blocks: [
-          { type: "paragraph", text: "At Kobbo, we believe trust extends beyond our products. We are committed to handling your personal information responsibly, transparently and in accordance with applicable Indian laws, including the Digital Personal Data Protection Act, 2023 (DPDP Act)." }
+          { type: "paragraph", text: "When you provide us with personal information for a specific purpose, such as completing a transaction, making a payment, placing an order, arranging delivery, or requesting a return, you give us permission to collect and use that information for that particular purpose." },
+          { type: "paragraph", text: "If we need to use your information for another purpose, we will seek your consent where required." },
       ],
     },
     {
-      title: "3. Information We Collect",
+      title: "3. When We May Share Your Information",
       blocks: [
-          { type: "paragraph", text: "Depending on how you interact with us, we may collect:" },
-          { type: "subtitle", text: "Personal Information" },
-          { type: "bullet", text: "Full Name" },
-          { type: "bullet", text: "Email Address" },
-          { type: "bullet", text: "Shipping Address" },
-          { type: "bullet", text: "Billing Address" },
-          { type: "bullet", text: "Mobile Number (if provided)" },
-          { type: "bullet", text: "Order History" },
-          { type: "subtitle", text: "Payment Information" },
-          { type: "paragraph", text: "Payments are processed through secure third-party payment providers. Kobbo does not store your:" },
-          { type: "bullet", text: "Credit Card Number" },
-          { type: "bullet", text: "Debit Card Number" },
-          { type: "bullet", text: "CVV" },
-          { type: "bullet", text: "UPI PIN" },
-          { type: "bullet", text: "Banking Passwords" },
-          { type: "paragraph", text: "Payment providers may securely process payment information according to their own privacy policies." },
-          { type: "subtitle", text: "Technical Information" },
-          { type: "paragraph", text: "When you browse our Website, we may automatically collect:" },
-          { type: "bullet", text: "IP Address" },
-          { type: "bullet", text: "Browser Type" },
-          { type: "bullet", text: "Device Type" },
-          { type: "bullet", text: "Operating System" },
-          { type: "bullet", text: "Website Usage Information" },
-          { type: "bullet", text: "Pages Visited" },
-          { type: "bullet", text: "Referral Sources" },
-          { type: "bullet", text: "Time Spent on Pages" },
-          { type: "subtitle", text: "Cookies & Tracking Technologies" },
-          { type: "paragraph", text: "We may use:" },
-          { type: "bullet", text: "Cookies" },
-          { type: "bullet", text: "Pixels" },
-          { type: "bullet", text: "Analytics Tools" },
-          { type: "bullet", text: "Session Storage" },
-          { type: "bullet", text: "Browser Storage Technologies" },
-          { type: "paragraph", text: "to improve Website functionality and customer experience." }
+          { type: "paragraph", text: "We may disclose your personal information when we are legally required to do so, or when such disclosure is necessary in connection with a violation of our Terms of Service." },
+          { type: "paragraph", text: "Apart from these circumstances, your information is handled only as necessary for the operation of our store and the services associated with it." },
       ],
     },
     {
-      title: "4. Why We Collect Your Information",
+      title: "4. Payment Processing",
       blocks: [
-          { type: "paragraph", text: "We collect information to:" },
-          { type: "bullet", text: "Process orders" },
-          { type: "bullet", text: "Deliver products" },
-          { type: "bullet", text: "Provide customer support" },
-          { type: "bullet", text: "Improve Website performance" },
-          { type: "bullet", text: "Detect fraud" },
-          { type: "bullet", text: "Prevent unauthorised activity" },
-          { type: "bullet", text: "Process refunds" },
-          { type: "bullet", text: "Manage returns" },
-          { type: "bullet", text: "Respond to enquiries" },
-          { type: "bullet", text: "Send order updates" },
-          { type: "bullet", text: "Improve customer experience" },
-          { type: "bullet", text: "Analyse shopping behaviour" },
-          { type: "bullet", text: "Comply with legal obligations" }
+          { type: "paragraph", text: "Payments made through the Kobbo website are processed through Razorpay." },
+          { type: "paragraph", text: "Kobbo and Razorpay do not store your card information on our own servers. Payment information is encrypted and handled in accordance with applicable Payment Card Industry Data Security Standards (PCI-DSS) during the payment process." },
+          { type: "paragraph", text: "Your payment details are used only for completing the transaction you have initiated. Once the transaction has been completed, the purchase transaction information is not retained by us." },
+          { type: "paragraph", text: "Our payment processing service follows the security standards established by the PCI Security Standards Council, which is supported by major payment card networks including Visa, Mastercard, American Express, and Discover." },
+          { type: "paragraph", text: "For additional information regarding payment processing and Razorpay's terms and conditions, you may refer to Razorpay's official terms and policies." },
       ],
     },
     {
-      title: "5. Marketing Communications",
+      title: "5. Third-Party Services",
       blocks: [
-          { type: "paragraph", text: "If you choose to subscribe, we may send:" },
-          { type: "bullet", text: "Product launches" },
-          { type: "bullet", text: "Promotional offers" },
-          { type: "bullet", text: "Newsletters" },
-          { type: "bullet", text: "Festival offers" },
-          { type: "bullet", text: "Brand updates" },
-          { type: "paragraph", text: "You may unsubscribe at any time using the unsubscribe link or by contacting us. We do not send unsolicited marketing after you opt out." }
+          { type: "paragraph", text: "Kobbo may use third-party service providers to support certain functions of our store." },
+          { type: "paragraph", text: "These providers may collect, use, or disclose information only to the extent that is necessary for them to provide the services they perform for us." },
+          { type: "paragraph", text: "Their handling of information may also be subject to their own terms and privacy policies." },
       ],
     },
     {
-      title: "6. Cookies",
+      title: "6. Protection of Your Information",
       blocks: [
-          { type: "paragraph", text: "Cookies help us:" },
-          { type: "bullet", text: "Remember your preferences" },
-          { type: "bullet", text: "Maintain your shopping cart" },
-          { type: "bullet", text: "Improve Website speed" },
-          { type: "bullet", text: "Understand customer behaviour" },
-          { type: "bullet", text: "Measure Website traffic" },
-          { type: "paragraph", text: "You may disable cookies through your browser settings. Please note that disabling cookies may affect certain Website features." }
+          { type: "paragraph", text: "We take reasonable precautions and follow appropriate industry practices to protect your personal information from being lost, misused, accessed without authorisation, disclosed, altered, or destroyed." },
+          { type: "paragraph", text: "While we take reasonable measures to safeguard your information, no method of transmitting or storing information electronically can be guaranteed to be completely secure." },
       ],
     },
     {
-      title: "7. Shopify",
+      title: "7. Cookies",
       blocks: [
-          { type: "paragraph", text: "Our Website is powered by Shopify. Shopify collects and processes certain information necessary for operating the online store. Your information may therefore also be processed according to Shopify's Privacy Policy." }
+          { type: "paragraph", text: "Our website may use cookies and similar technologies to maintain your website session and support the functioning of our website." },
+          { type: "paragraph", text: "Cookies may also help us understand how visitors interact with our website. They are not intended to personally identify you when you visit other websites." },
+          { type: "paragraph", text: "You may manage cookie preferences through your browser settings. However, restricting cookies may affect certain features or functionality of the website." },
       ],
     },
     {
-      title: "8. Payment Partners",
+      title: "8. Age of Consent",
       blocks: [
-          { type: "paragraph", text: "Payments may be processed through authorised payment partners. These providers independently process payment information in accordance with their own privacy policies. Kobbo does not control their internal data handling practices." }
+          { type: "paragraph", text: "By using this website, you represent that you are at least the age of majority in your state or province of residence." },
+          { type: "paragraph", text: "If you are the parent or legal guardian of a minor, you may provide consent for your minor dependent to use this website where applicable." },
       ],
     },
     {
-      title: "9. Shipping Partners",
+      title: "9. Changes to This Privacy Policy",
       blocks: [
-          { type: "paragraph", text: "To deliver your order, we may share limited information including:" },
-          { type: "bullet", text: "Name" },
-          { type: "bullet", text: "Delivery Address" },
-          { type: "bullet", text: "Contact Number (where provided)" },
-          { type: "bullet", text: "Order Information" },
-          { type: "paragraph", text: "with logistics partners solely for the purpose of completing delivery." }
+          { type: "paragraph", text: "Kobbo may update or modify this Privacy Policy from time to time." },
+          { type: "paragraph", text: "We encourage you to review this page periodically so that you remain aware of any changes. Any updates or clarifications will take effect once they are published on the website." },
+          { type: "paragraph", text: "If we make material changes to the way we collect, use, or disclose personal information, we will provide appropriate notice so that you are aware of the updated practices." },
       ],
     },
     {
-      title: "10. Analytics",
+      title: "Questions & Contact Information",
       blocks: [
-          { type: "paragraph", text: "We may use analytics services to better understand how customers interact with our Website. These tools may collect information regarding:" },
-          { type: "bullet", text: "pages visited" },
-          { type: "bullet", text: "clicks" },
-          { type: "bullet", text: "browsing behaviour" },
-          { type: "bullet", text: "session duration" },
-          { type: "bullet", text: "device information" },
-          { type: "paragraph", text: "The data collected is used to improve our Website and customer experience." }
+          { type: "paragraph", text: "If you have any questions about this Privacy Policy, or would like to access, correct, amend, or request deletion of personal information that Kobbo holds about you, please contact us." },
+          { type: "paragraph", text: "Email: hello@kobbo.in" },
+          { type: "paragraph", text: "Kobbo will be happy to assist with your request." },
       ],
     },
-    {
-      title: "11. Meta Pixel & Advertising",
-      blocks: [
-          { type: "paragraph", text: "We may use Meta Pixel and similar advertising technologies to:" },
-          { type: "bullet", text: "measure advertising performance" },
-          { type: "bullet", text: "understand customer interests" },
-          { type: "bullet", text: "improve marketing campaigns" },
-          { type: "bullet", text: "display relevant advertisements" },
-          { type: "paragraph", text: "These technologies may collect certain browser and interaction data. You may manage advertising preferences through your respective platform settings." }
-      ],
-    },
-    {
-      title: "12. How Long We Keep Your Data",
-      blocks: [
-          { type: "paragraph", text: "We retain personal information only for as long as reasonably necessary to:" },
-          { type: "bullet", text: "fulfil orders" },
-          { type: "bullet", text: "comply with tax laws" },
-          { type: "bullet", text: "maintain accounting records" },
-          { type: "bullet", text: "resolve disputes" },
-          { type: "bullet", text: "prevent fraud" },
-          { type: "bullet", text: "comply with legal obligations" },
-          { type: "paragraph", text: "When information is no longer required, we take reasonable steps to securely delete or anonymise it." }
-      ],
-    },
-    {
-      title: "13. Data Security",
-      blocks: [
-          { type: "paragraph", text: "We implement reasonable administrative, technical and organisational safeguards to protect your information. These include measures intended to prevent:" },
-          { type: "bullet", text: "unauthorised access" },
-          { type: "bullet", text: "accidental disclosure" },
-          { type: "bullet", text: "misuse" },
-          { type: "bullet", text: "alteration" },
-          { type: "bullet", text: "destruction" },
-          { type: "paragraph", text: "However, no internet transmission or electronic storage system can be guaranteed to be completely secure." }
-      ],
-    },
-    {
-      title: "14. Children'S Privacy",
-      blocks: [
-          { type: "paragraph", text: "Kobbo creates products intended for children. However, purchases must always be made by adults. We do not knowingly collect personal information directly from children. If we become aware that personal information has been collected directly from a child without appropriate consent where required, we will take reasonable steps to delete such information." }
-      ],
-    },
-    {
-      title: "15. Third-Party Links",
-      blocks: [
-          { type: "paragraph", text: "Our Website may contain links to third-party websites. We are not responsible for:" },
-          { type: "bullet", text: "their privacy practices" },
-          { type: "bullet", text: "security" },
-          { type: "bullet", text: "policies" },
-          { type: "bullet", text: "content" },
-          { type: "paragraph", text: "Customers are encouraged to review the privacy policies of third-party websites before sharing personal information." }
-      ],
-    },
-    {
-      title: "16. Your Rights",
-      blocks: [
-          { type: "paragraph", text: "Subject to applicable law, you may request:" },
-          { type: "bullet", text: "access to your personal information;" },
-          { type: "bullet", text: "correction of inaccurate information;" },
-          { type: "bullet", text: "deletion of information where appropriate;" },
-          { type: "bullet", text: "withdrawal of consent where processing is based on consent." },
-          { type: "paragraph", text: "To make such a request, please contact us using the details provided below. We may ask you to verify your identity before processing certain requests." }
-      ],
-    },
-    {
-      title: "17. Policy Updates",
-      blocks: [
-          { type: "paragraph", text: "We may update this Privacy Policy from time to time to reflect changes in our business, legal requirements or services. The updated version will be posted on this page with the revised \"Last Updated\" date. Your continued use of the Website after such changes constitutes acceptance of the revised Privacy Policy." }
-      ],
-    },
-    {
-      title: "18. Contact Us",
-      blocks: [
-          { type: "paragraph", text: `If you have any questions about this Privacy Policy or how we handle your information, please contact: Kobbo — ${legalEntity.ownershipLine} Legal name: ${legalEntity.name}. Website: www.kobbo.in Email: support@kobbo.in` }
-      ],
-    }
   ],
 };
 
 export const termsPolicyContent: PolicyPageContent = {
-  title: "Terms & Conditions",
-  description: "Terms governing your use of www.kobbo.in and purchases from Kobbo.",
-  lastUpdated: "04-08-2026",
+  title: "Terms of Service",
+  description: "Terms and conditions governing your use of Kobbo website and services.",
   sections: [
     {
-      title: "1. Introduction",
+      title: "Overview",
       blocks: [
-          { type: "paragraph", text: "Welcome to Kobbo (\"Kobbo\", \"Company\", \"we\", \"our\", or \"us\"), a brand owned and operated by Heena Ashok Shah. These Terms & Conditions (\"Terms\") govern your access to and use of www.kobbo.in (\"Website\"), including all purchases, services, features and content made available through the Website. By accessing, browsing or purchasing from our Website, you acknowledge that you have read, understood and agree to be legally bound by these Terms, together with our Privacy Policy, Shipping Policy, Returns & Refunds policy and all other policies published on our Website. If you do not agree with these Terms, please discontinue the use of this Website immediately." }
+          { type: "paragraph", text: "This website is operated by Kobbo. Throughout this website, the terms “we,” “us,” and “our” refer to Kobbo. Kobbo provides this website, including the information, tools, and services available through it, subject to your acceptance of the terms, conditions, policies, and notices mentioned here." },
+          { type: "paragraph", text: "By accessing our website and/or purchasing from us, you are using our “Service” and agree to be bound by these Terms of Service, together with any additional terms, conditions, and policies referred to or linked on this website." },
+          { type: "paragraph", text: "Please read these Terms of Service carefully before using or accessing our website. By accessing any part of the website, you agree to these Terms. If you do not agree with all of the terms and conditions contained in this agreement, you may not access the website or use any of its services. Where these Terms are considered an offer, your acceptance is expressly limited to these Terms." },
+          { type: "paragraph", text: "Any new features or tools added to the current store will also be subject to these Terms of Service. The latest version of these Terms can be reviewed on this page at any time. Kobbo reserves the right to update, modify, or replace any part of these Terms by publishing changes on the website. It is your responsibility to check this page periodically for updates. Your continued use of or access to the website after changes have been posted constitutes acceptance of those changes." },
       ],
     },
     {
-      title: "2. Eligibility",
+      title: "SECTION 1 – ONLINE STORE TERMS",
       blocks: [
-          { type: "paragraph", text: "By using this Website, you confirm that:" },
-          { type: "bullet", text: "You are at least 18 years of age, or" },
-          { type: "bullet", text: "You are accessing the Website under the supervision of a parent or legal guardian." },
-          { type: "bullet", text: "You are legally capable of entering into a binding contract under the applicable laws of India." },
-          { type: "paragraph", text: "Purchases intended for children must always be made by an adult." }
+          { type: "paragraph", text: "By agreeing to these Terms of Service, you confirm that you are at least the age of majority in your state or province of residence, or that you are the age of majority in your state or province and have provided consent for any minor dependents to use this website." },
+          { type: "paragraph", text: "You may not use Kobbo's products for any unlawful or unauthorised purpose, nor may you violate any applicable laws in your jurisdiction while using the Service, including copyright laws." },
+          { type: "paragraph", text: "You must not transmit any worms, viruses, or any other code of a destructive nature. Any breach or violation of these Terms may result in immediate termination of your Services." },
       ],
     },
     {
-      title: "3. About Kobbo",
+      title: "SECTION 2 – GENERAL CONDITIONS",
       blocks: [
-          { type: "paragraph", text: "Kobbo is a children's toy brand operated by Heena Ashok Shah, committed to designing and curating safe, engaging and thoughtfully crafted toys that inspire curiosity, creativity and joyful learning. While we strive to provide accurate product descriptions, all purchases remain subject to these Terms." }
+          { type: "paragraph", text: "Kobbo reserves the right to refuse service to anyone at any time and for any reason." },
+          { type: "paragraph", text: "You understand that your content, excluding credit card information, may be transferred across various networks without encryption and may be changed where necessary to meet the technical requirements of connecting networks or devices. Credit card information is encrypted whenever it is transferred over networks." },
+          { type: "paragraph", text: "You agree not to reproduce, duplicate, copy, sell, resell, or exploit any part of the Service, your use of the Service, access to the Service, or any contact available through the website without our express written permission." },
+          { type: "paragraph", text: "The headings used throughout these Terms are provided only for convenience and do not affect or otherwise change the meaning of these Terms." },
       ],
     },
     {
-      title: "4. Acceptance Of Orders",
+      title: "SECTION 3 – MODIFICATIONS TO THE SERVICE AND PRICES",
       blocks: [
-          { type: "paragraph", text: "Placing an order on our Website constitutes an offer to purchase. Acceptance of your order occurs only after:" },
-          { type: "bullet", text: "successful payment verification," },
-          { type: "bullet", text: "inventory confirmation," },
-          { type: "bullet", text: "fraud screening," },
-          { type: "bullet", text: "and shipment confirmation." },
-          { type: "paragraph", text: "Kobbo reserves the absolute right to refuse, cancel or limit any order without assigning any reason. Examples include:" },
-          { type: "bullet", text: "product unavailable" },
-          { type: "bullet", text: "pricing errors" },
-          { type: "bullet", text: "suspected fraudulent transactions" },
-          { type: "bullet", text: "duplicate orders" },
-          { type: "bullet", text: "repeated abuse of return policies" },
-          { type: "bullet", text: "payment verification failure" },
-          { type: "bullet", text: "suspicious purchasing behaviour" },
-          { type: "paragraph", text: "Where payment has already been received, the amount shall be refunded to the original payment method." }
+          { type: "paragraph", text: "Prices of our products may change without prior notice. Kobbo reserves the right to modify or discontinue the Service, or any part or content of it, at any time without notice." },
+          { type: "paragraph", text: "Kobbo shall not be liable to you or any third party for any modification, change in price, suspension, or discontinuation of the Service." },
       ],
     },
     {
-      title: "5. Product Information",
+      title: "SECTION 4 – PRODUCTS",
       blocks: [
-          { type: "paragraph", text: "We make every reasonable effort to ensure product descriptions, specifications, dimensions, photographs and pricing are accurate. However, slight differences may exist. Products may vary due to:" },
-          { type: "bullet", text: "lighting" },
-          { type: "bullet", text: "photography" },
-          { type: "bullet", text: "monitor settings" },
-          { type: "bullet", text: "mobile screen calibration" },
-          { type: "bullet", text: "natural materials" },
-          { type: "bullet", text: "manufacturing batches" },
-          { type: "paragraph", text: "Such variations shall not be treated as manufacturing defects." }
+          { type: "paragraph", text: "Certain products may be available exclusively through our website. Such products may be available in limited quantities and are subject to returns or exchanges only in accordance with our Return Policy." },
+          { type: "paragraph", text: "We make reasonable efforts to display product images and colours as accurately as possible on the website. However, we cannot guarantee that the display of any colour on your particular computer or device will be completely accurate." },
+          { type: "paragraph", text: "Kobbo reserves the right, although it is not obligated, to limit the sale of products to any individual, geographic region, or jurisdiction. These limitations may be applied on a case-by-case basis." },
+          { type: "paragraph", text: "We also reserve the right to limit the quantities of products offered and to modify product descriptions or pricing at any time without notice. Kobbo may discontinue any product at any time. Any offer for a product or service made on this website is void where prohibited." },
+          { type: "paragraph", text: "We do not warrant that the quality of any products, information, or other materials purchased or obtained through the Service will meet your expectations, or that any errors in the Service will necessarily be corrected." },
       ],
     },
     {
-      title: "6. Natural Material Disclaimer",
+      title: "SECTION 5 – ACCURACY OF BILLING AND ACCOUNT INFORMATION",
       blocks: [
-          { type: "paragraph", text: "Certain Kobbo products may include natural materials such as wood. Accordingly, minor variations in:" },
-          { type: "bullet", text: "grain" },
-          { type: "bullet", text: "texture" },
-          { type: "bullet", text: "finish" },
-          { type: "bullet", text: "colour" },
-          { type: "bullet", text: "knots" },
-          { type: "bullet", text: "patterns" },
-          { type: "paragraph", text: "are natural characteristics and enhance the uniqueness of each product. These shall not constitute defects and shall not be grounds for return or replacement." }
+          { type: "paragraph", text: "Kobbo reserves the right to refuse any order placed through our store. We may, at our discretion, limit or cancel quantities purchased per person, household, or order." },
+          { type: "paragraph", text: "Such restrictions may apply to orders placed using the same customer account, the same credit card, and/or the same billing or shipping address." },
+          { type: "paragraph", text: "If we make a change to or cancel an order, we may attempt to notify you using the email address and/or billing address or phone number provided when the order was placed." },
+          { type: "paragraph", text: "We also reserve the right to limit or prohibit orders that, in our sole judgment, appear to have been placed by dealers, resellers, or distributors." },
+          { type: "paragraph", text: "You agree to provide current, complete, and accurate purchase and account information for all purchases made through our store. You also agree to promptly update your account and other information, including your email address and credit card numbers and expiration dates, so that we can complete your transactions and contact you when necessary." },
+          { type: "paragraph", text: "For further details regarding returns, please refer to our Return Policy." },
       ],
     },
     {
-      title: "7. Product Dimensions",
+      title: "SECTION 6 – THIRD-PARTY LINKS",
       blocks: [
-          { type: "paragraph", text: "Product dimensions provided on the Website are approximate. Minor variations resulting from manufacturing processes are normal and shall not be considered defects." }
+          { type: "paragraph", text: "The website may contain links to third-party websites that are not affiliated with Kobbo." },
+          { type: "paragraph", text: "Kobbo is not responsible for reviewing or evaluating the content, accuracy, or practices of third-party websites. We do not warrant and will not have any liability or responsibility for third-party materials, websites, products, or services." },
       ],
     },
     {
-      title: "8. Product Images",
+      title: "SECTION 7 – USER COMMENTS, FEEDBACK AND OTHER SUBMISSIONS",
       blocks: [
-          { type: "paragraph", text: "Product photographs are for illustrative purposes. Accessories, props, furniture, decorative items or background elements shown in photographs are not included unless specifically stated." }
+          { type: "paragraph", text: "If you send us specific submissions at our request, such as contest entries, or voluntarily send us creative ideas, suggestions, proposals, plans, or other materials by email, post, or any other means, you agree that Kobbo may, without restriction, edit, copy, publish, distribute, translate, or otherwise use such comments in any medium." },
+          { type: "paragraph", text: "We are under no obligation to:" },
+          { type: "paragraph", text: "Maintain any comments in confidence;" },
+          { type: "paragraph", text: "Pay compensation for any comments; or" },
+          { type: "paragraph", text: "Respond to any comments." },
+          { type: "paragraph", text: "Kobbo may, but is not obligated to, monitor, edit, or remove content that we determine, at our sole discretion, to be unlawful, offensive, threatening, libellous, defamatory, pornographic, obscene, or otherwise objectionable, or that violates any party's intellectual property rights or these Terms of Service." },
+          { type: "paragraph", text: "You agree that your comments will not violate any rights of a third party, including copyright, trademark, privacy, personality, or other personal or proprietary rights." },
+          { type: "paragraph", text: "You further agree that your comments will not contain libellous, unlawful, abusive, or obscene material, or any computer virus or other malware that could affect the operation of the Service or any related website." },
+          { type: "paragraph", text: "You may not use a false email address, pretend to be someone other than yourself, or otherwise mislead Kobbo or third parties regarding the origin of any comments." },
+          { type: "paragraph", text: "You are solely responsible for the comments you make and for ensuring their accuracy. Kobbo accepts no responsibility and assumes no liability for comments posted by you or any third party." },
       ],
     },
     {
-      title: "9. Age Recommendations",
+      title: "SECTION 8 – PERSONAL INFORMATION",
       blocks: [
-          { type: "paragraph", text: "Age recommendations displayed on the Website are provided for guidance only. Parents and guardians should independently assess whether a product is suitable for their child considering:" },
-          { type: "bullet", text: "developmental stage" },
-          { type: "bullet", text: "maturity" },
-          { type: "bullet", text: "supervision requirements" },
-          { type: "bullet", text: "individual abilities" },
-          { type: "paragraph", text: "Kobbo shall not be responsible for misuse contrary to the recommended usage." }
+          { type: "paragraph", text: "Any personal information submitted through the store is governed by our Privacy Policy." },
       ],
     },
     {
-      title: "10. Child Safety",
+      title: "SECTION 9 – ERRORS, INACCURACIES AND OMISSIONS",
       blocks: [
-          { type: "paragraph", text: "Some toys may contain:" },
-          { type: "bullet", text: "small parts" },
-          { type: "bullet", text: "detachable accessories" },
-          { type: "bullet", text: "moving components" },
-          { type: "paragraph", text: "Adult supervision is recommended wherever appropriate. Customers are responsible for ensuring that products are used safely and in accordance with the provided instructions." }
+          { type: "paragraph", text: "From time to time, information on our website or within the Service may contain typographical errors, inaccuracies, or omissions relating to product descriptions, pricing, promotions, offers, product shipping charges, transit times, and availability." },
+          { type: "paragraph", text: "Kobbo reserves the right to correct such errors, inaccuracies, or omissions and to change or update information or cancel orders if any information within the Service or on any related website is found to be inaccurate at any time, including after an order has been submitted." },
+          { type: "paragraph", text: "We are under no obligation to update, amend, or clarify information contained in the Service or any related website, including pricing information, except where required by law." },
+          { type: "paragraph", text: "The absence of a specified update or refresh date should not be understood to mean that all information on the Service or related website has not been modified or updated." },
       ],
     },
     {
-      title: "11. Product Care",
+      title: "SECTION 10 – PROHIBITED USES",
       blocks: [
-          { type: "paragraph", text: "Customers are responsible for:" },
-          { type: "bullet", text: "proper storage" },
-          { type: "bullet", text: "safe usage" },
-          { type: "bullet", text: "regular inspection" },
-          { type: "bullet", text: "cleaning according to provided instructions" },
-          { type: "paragraph", text: "Damage resulting from:" },
-          { type: "bullet", text: "misuse" },
-          { type: "bullet", text: "negligence" },
-          { type: "bullet", text: "improper storage" },
-          { type: "bullet", text: "accidental impact" },
-          { type: "bullet", text: "water exposure" },
-          { type: "bullet", text: "exposure to extreme temperatures" },
-          { type: "paragraph", text: "shall not qualify for refunds or replacements." }
+          { type: "paragraph", text: "In addition to other restrictions contained in these Terms of Service, you are prohibited from using the website or its content:" },
+          { type: "paragraph", text: "For any unlawful purpose;" },
+          { type: "paragraph", text: "To encourage or participate in unlawful activities;" },
+          { type: "paragraph", text: "To violate any applicable international, federal, provincial, state, or local laws, rules, or regulations;" },
+          { type: "paragraph", text: "To infringe upon or violate our intellectual property rights or those of others;" },
+          { type: "paragraph", text: "To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate against others based on gender, sexual orientation, religion, ethnicity, race, age, national origin, or disability;" },
+          { type: "paragraph", text: "To submit false or misleading information;" },
+          { type: "paragraph", text: "To upload or transmit viruses or any other form of malicious code that may affect the functionality or operation of the Service, related websites, other websites, or the Internet;" },
+          { type: "paragraph", text: "To collect or track the personal information of others;" },
+          { type: "paragraph", text: "To spam, phish, pharm, pretext, spider, crawl, or scrape;" },
+          { type: "paragraph", text: "For any obscene or immoral purpose; or" },
+          { type: "paragraph", text: "To interfere with or bypass the security features of the Service, related websites, other websites, or the Internet." },
+          { type: "paragraph", text: "Kobbo reserves the right to terminate your use of the Service or any related website for violating any of these prohibited uses." },
       ],
     },
     {
-      title: "12. Pricing",
+      title: "SECTION 11 – DISCLAIMER OF WARRANTIES; LIMITATION OF LIABILITY",
       blocks: [
-          { type: "paragraph", text: "All prices displayed on the Website are quoted in Indian Rupees (INR) and are inclusive or exclusive of applicable taxes as indicated at checkout. Kobbo reserves the right to:" },
-          { type: "bullet", text: "change prices without notice" },
-          { type: "bullet", text: "discontinue products" },
-          { type: "bullet", text: "introduce promotional pricing" },
-          { type: "bullet", text: "modify offers" },
-          { type: "paragraph", text: "Pricing changes shall not affect orders already confirmed." }
+          { type: "paragraph", text: "Kobbo does not guarantee, represent, or warrant that your use of our Service will be uninterrupted, timely, secure, or free from errors." },
+          { type: "paragraph", text: "We do not warrant that the results obtained through use of the Service will be accurate or reliable." },
+          { type: "paragraph", text: "You agree that Kobbo may remove the Service for indefinite periods or cancel the Service at any time, without notice." },
+          { type: "paragraph", text: "You expressly agree that your use of, or inability to use, the Service is at your sole risk. The Service, as well as all products and services delivered to you through the Service, are provided “as is” and “as available”, unless expressly stated otherwise by Kobbo, without representations, warranties, or conditions of any kind, whether express or implied." },
+          { type: "paragraph", text: "This includes implied warranties or conditions of merchantability, merchantable quality, fitness for a particular purpose, durability, title, and non-infringement." },
+          { type: "paragraph", text: "In no event shall Kobbo, its partners, officers, employees, affiliates, agents, contractors, interns, suppliers, service providers, or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, or consequential damages of any kind." },
+          { type: "paragraph", text: "This includes, without limitation, lost profits, lost revenue, lost savings, loss of data, replacement costs, or similar damages, whether based in contract, tort including negligence, strict liability, or otherwise, arising from your use of the Service or any products purchased through the Service, or from any other claim relating in any way to your use of the Service or any product." },
+          { type: "paragraph", text: "This limitation applies even where Kobbo has been advised of the possibility of such damages. As certain states or jurisdictions may not allow the exclusion or limitation of liability for consequential or incidental damages, our liability shall be limited to the maximum extent permitted by applicable law." },
       ],
     },
     {
-      title: "13. Pricing Errors",
+      title: "SECTION 12 – INDEMNIFICATION",
       blocks: [
-          { type: "paragraph", text: "Despite our best efforts, pricing errors may occasionally occur. If a product is mistakenly listed at an incorrect price due to:" },
-          { type: "bullet", text: "technical issues" },
-          { type: "bullet", text: "software errors" },
-          { type: "bullet", text: "typographical mistakes" },
-          { type: "paragraph", text: "Kobbo reserves the right to cancel the affected order even after payment has been received. In such cases, customers shall receive a full refund." }
+          { type: "paragraph", text: "You agree to indemnify, defend, and hold harmless Kobbo and its parent, subsidiaries, affiliates, partners, officers, directors, agents, contractors, licensors, subcontractors, suppliers, interns, and employees from any claim or demand, including reasonable attorneys' fees, made by any third party due to or arising out of your breach of these Terms of Service or the documents incorporated by reference, or your violation of any law or the rights of a third party." },
       ],
     },
     {
-      title: "14. Payment",
+      title: "SECTION 13 – SEVERABILITY",
       blocks: [
-          { type: "paragraph", text: "Payments may be processed through authorised third-party payment gateways. Kobbo does not store customers' complete debit card, credit card or banking credentials. Customers agree that payment information provided is accurate and authorised." }
+          { type: "paragraph", text: "If any provision of these Terms of Service is found to be unlawful, void, or unenforceable, that provision shall nevertheless remain enforceable to the fullest extent permitted by applicable law." },
+          { type: "paragraph", text: "The unenforceable portion shall be treated as separated from these Terms of Service, and such determination shall not affect the validity or enforceability of the remaining provisions." },
       ],
     },
     {
-      title: "15. Cash On Delivery",
+      title: "SECTION 14 – TERMINATION",
       blocks: [
-          { type: "paragraph", text: "Where Cash on Delivery (COD) is available, Kobbo reserves the right to restrict or withdraw COD facilities for customers with repeated order refusals, unsuccessful delivery attempts or suspected misuse." }
+          { type: "paragraph", text: "Any obligations and liabilities incurred by the parties before the termination date shall continue after termination for all applicable purposes." },
+          { type: "paragraph", text: "These Terms of Service remain effective unless terminated by either you or Kobbo." },
+          { type: "paragraph", text: "You may terminate these Terms at any time by notifying us that you no longer wish to use our Services, or when you stop using our website." },
+          { type: "paragraph", text: "If, in our sole judgment, you fail or we suspect that you have failed to comply with any term or provision of these Terms of Service, Kobbo may also terminate this agreement at any time without notice." },
+          { type: "paragraph", text: "You will remain responsible for all amounts due up to and including the date of termination, and we may accordingly deny you access to our Services or any part of them." },
       ],
     },
     {
-      title: "16. Promotions & Discount CODes",
+      title: "SECTION 15 – ENTIRE AGREEMENT",
       blocks: [
-          { type: "paragraph", text: "Discounts, promotional offers and coupon codes:" },
-          { type: "bullet", text: "cannot be exchanged for cash," },
-          { type: "bullet", text: "may not be combined unless expressly stated," },
-          { type: "bullet", text: "may be withdrawn without prior notice," },
-          { type: "bullet", text: "remain subject to individual promotional terms." },
-          { type: "paragraph", text: "Kobbo reserves the final decision regarding promotional eligibility." }
+          { type: "paragraph", text: "If Kobbo does not exercise or enforce any right or provision contained in these Terms of Service, this shall not constitute a waiver of that right or provision." },
+          { type: "paragraph", text: "These Terms of Service, together with any policies or operating rules posted by us on this website or relating to the Service, constitute the complete agreement and understanding between you and Kobbo concerning your use of the Service." },
+          { type: "paragraph", text: "They supersede any prior or contemporaneous agreements, communications, and proposals, whether oral or written, between you and us, including previous versions of these Terms of Service." },
+          { type: "paragraph", text: "Any ambiguity in interpreting these Terms of Service shall not be construed against the party responsible for drafting them." },
       ],
     },
     {
-      title: "17. Shipping & Delivery",
+      title: "SECTION 16 – GOVERNING LAW",
       blocks: [
-          { type: "paragraph", text: "Shipping timelines displayed on the Website are estimates only. While Kobbo makes every reasonable effort to dispatch and deliver orders promptly, delivery dates are not guaranteed. Delays may occur due to:" },
-          { type: "bullet", text: "courier delays" },
-          { type: "bullet", text: "adverse weather" },
-          { type: "bullet", text: "natural disasters" },
-          { type: "bullet", text: "strikes" },
-          { type: "bullet", text: "public holidays" },
-          { type: "bullet", text: "governmental restrictions" },
-          { type: "bullet", text: "force majeure events" },
-          { type: "bullet", text: "incorrect delivery information provided by the customer" },
-          { type: "paragraph", text: "Kobbo shall not be liable for any direct or indirect loss arising from delivery delays beyond its reasonable control. Risk in the products passes to the customer upon successful delivery." }
+          { type: "paragraph", text: "These Terms of Service and any separate agreements under which we provide Services shall be governed by and interpreted in accordance with the laws of India and the jurisdiction of Delhi." },
       ],
     },
     {
-      title: "18. Delivery Address",
+      title: "SECTION 17 – CHANGES TO TERMS OF SERVICE",
       blocks: [
-          { type: "paragraph", text: "Customers are solely responsible for ensuring that the shipping address, contact number and recipient details provided during checkout are accurate. Kobbo shall not be responsible for:" },
-          { type: "bullet", text: "incorrect addresses" },
-          { type: "bullet", text: "incomplete addresses" },
-          { type: "bullet", text: "failed delivery attempts due to customer unavailability" },
-          { type: "bullet", text: "orders delivered to the address provided by the customer" },
-          { type: "paragraph", text: "Any additional shipping charges arising from re-dispatch shall be borne by the customer." }
+          { type: "paragraph", text: "You may review the latest version of these Terms of Service at any time on this page." },
+          { type: "paragraph", text: "Kobbo reserves the right, at its sole discretion, to update, modify, or replace any part of these Terms by posting the revised terms or changes on the website." },
+          { type: "paragraph", text: "It is your responsibility to review the website periodically for updates. Your continued use of or access to the website or the Service after any changes have been posted constitutes acceptance of those changes." },
       ],
     },
     {
-      title: "19. Returns & Refunds",
+      title: "SECTION 18 – CONTACT INFORMATION",
       blocks: [
-          { type: "paragraph", text: "Returns, refunds, replacements and cancellations shall be governed by the Kobbo Returns & Refunds policy available on the Website. Customers agree that acceptance of a return request shall be subject to compliance with the conditions specified therein. Submission of a return request does not automatically guarantee approval." }
+          { type: "paragraph", text: "If you have any questions regarding these Terms of Service, please contact us at:" },
+          { type: "paragraph", text: "Kobbo" },
+          { type: "paragraph", text: "Email: hello@kobbo.in" },
       ],
     },
-    {
-      title: "20. Inspection Of Products",
-      blocks: [
-          { type: "paragraph", text: "Customers are requested to inspect products immediately upon delivery. Any claim relating to:" },
-          { type: "bullet", text: "damaged products" },
-          { type: "bullet", text: "incorrect products" },
-          { type: "bullet", text: "missing items" },
-          { type: "paragraph", text: "must be reported within 48 hours of delivery. Delayed claims may not be accepted." }
-      ],
-    },
-    {
-      title: "21. Unboxing Video",
-      blocks: [
-          { type: "paragraph", text: "For faster resolution of delivery-related issues, customers are strongly encouraged to record a continuous, uninterrupted video while opening the package. Such video may be requested while processing claims involving:" },
-          { type: "bullet", text: "transit damage" },
-          { type: "bullet", text: "incorrect products" },
-          { type: "bullet", text: "missing components" },
-          { type: "bullet", text: "manufacturing defects" },
-          { type: "paragraph", text: "Failure to provide supporting evidence may affect our ability to process certain claims." }
-      ],
-    },
-    {
-      title: "22. Account Responsibility",
-      blocks: [
-          { type: "paragraph", text: "If customers create an account on the Website, they agree to:" },
-          { type: "bullet", text: "maintain accurate information" },
-          { type: "bullet", text: "safeguard login credentials" },
-          { type: "bullet", text: "prevent unauthorised access" },
-          { type: "bullet", text: "notify Kobbo immediately in case of suspected misuse" },
-          { type: "paragraph", text: "Customers remain responsible for all activities carried out using their accounts." }
-      ],
-    },
-    {
-      title: "23. Customer Reviews",
-      blocks: [
-          { type: "paragraph", text: "Customers may voluntarily submit reviews, photographs or testimonials. By submitting such content, customers grant Kobbo a perpetual, worldwide, royalty-free, non-exclusive licence to:" },
-          { type: "bullet", text: "publish" },
-          { type: "bullet", text: "reproduce" },
-          { type: "bullet", text: "edit" },
-          { type: "bullet", text: "display" },
-          { type: "bullet", text: "distribute" },
-          { type: "paragraph", text: "such content for marketing, promotional and business purposes. Kobbo reserves the right to moderate, edit or remove content that is unlawful, misleading, offensive or irrelevant." }
-      ],
-    },
-    {
-      title: "24. User Submissions",
-      blocks: [
-          { type: "paragraph", text: "Any suggestions, feedback, ideas or recommendations voluntarily shared with Kobbo may be used without obligation to compensate the contributor." }
-      ],
-    },
-    {
-      title: "25. Intellectual Property",
-      blocks: [
-          { type: "paragraph", text: "Unless otherwise stated, all intellectual property rights relating to the Website remain the exclusive property of Heena Ashok Shah. This includes:" },
-          { type: "bullet", text: "Kobbo name" },
-          { type: "bullet", text: "logo" },
-          { type: "bullet", text: "product designs" },
-          { type: "bullet", text: "product descriptions" },
-          { type: "bullet", text: "graphics" },
-          { type: "bullet", text: "illustrations" },
-          { type: "bullet", text: "icons" },
-          { type: "bullet", text: "videos" },
-          { type: "bullet", text: "photographs" },
-          { type: "bullet", text: "website layout" },
-          { type: "bullet", text: "written content" },
-          { type: "bullet", text: "software" },
-          { type: "bullet", text: "branding elements" },
-          { type: "paragraph", text: "No part of the Website may be copied, reproduced, modified, republished, uploaded, transmitted, distributed or commercially exploited without prior written permission." }
-      ],
-    },
-    {
-      title: "26. Trademarks",
-      blocks: [
-          { type: "paragraph", text: "\"Kobbo\", associated logos, brand names, slogans and visual identity elements are proprietary trademarks belonging to Heena Ashok Shah. Unauthorised use is strictly prohibited." }
-      ],
-    },
-    {
-      title: "27. Website Content",
-      blocks: [
-          { type: "paragraph", text: "Information published on the Website is provided for general informational purposes. Although Kobbo strives for accuracy, we do not warrant that all information is complete, current or error-free. Customers should independently evaluate product suitability before making a purchase." }
-      ],
-    },
-    {
-      title: "28. Third-Party Links",
-      blocks: [
-          { type: "paragraph", text: "The Website may contain links to third-party websites or services. Kobbo neither controls nor endorses such third-party websites. We shall not be responsible for:" },
-          { type: "bullet", text: "their content" },
-          { type: "bullet", text: "availability" },
-          { type: "bullet", text: "privacy practices" },
-          { type: "bullet", text: "products" },
-          { type: "bullet", text: "services" },
-          { type: "paragraph", text: "Accessing third-party websites is entirely at the customer's own risk." }
-      ],
-    },
-    {
-      title: "29. Prohibited Activities",
-      blocks: [
-          { type: "paragraph", text: "Customers agree not to:" },
-          { type: "bullet", text: "use the Website for unlawful purposes" },
-          { type: "bullet", text: "interfere with Website security" },
-          { type: "bullet", text: "attempt unauthorised access" },
-          { type: "bullet", text: "introduce malware or viruses" },
-          { type: "bullet", text: "scrape, copy or harvest Website content" },
-          { type: "bullet", text: "impersonate another person" },
-          { type: "bullet", text: "submit false information" },
-          { type: "bullet", text: "disrupt Website functionality" },
-          { type: "bullet", text: "misuse discount codes" },
-          { type: "bullet", text: "engage in fraudulent transactions" },
-          { type: "paragraph", text: "Violation of these Terms may result in suspension or permanent restriction of Website access." }
-      ],
-    },
-    {
-      title: "30. Fraud Prevention",
-      blocks: [
-          { type: "paragraph", text: "To protect customers and the integrity of our business, Kobbo reserves the right to:" },
-          { type: "bullet", text: "verify customer identity" },
-          { type: "bullet", text: "request additional information" },
-          { type: "bullet", text: "cancel suspicious orders" },
-          { type: "bullet", text: "refuse future orders" },
-          { type: "bullet", text: "report fraudulent activities to relevant authorities" },
-          { type: "paragraph", text: "Any attempt to misuse promotional offers, payment systems or return policies may result in permanent account restrictions." }
-      ],
-    },
-    {
-      title: "31. Website Availability",
-      blocks: [
-          { type: "paragraph", text: "While Kobbo aims to ensure uninterrupted access to the Website, we do not guarantee continuous availability. Temporary interruptions may occur due to:" },
-          { type: "bullet", text: "maintenance" },
-          { type: "bullet", text: "upgrades" },
-          { type: "bullet", text: "technical issues" },
-          { type: "bullet", text: "internet failures" },
-          { type: "bullet", text: "cyber incidents" },
-          { type: "bullet", text: "third-party service outages" },
-          { type: "paragraph", text: "Kobbo shall not be liable for losses arising from such interruptions." }
-      ],
-    },
-    {
-      title: "32. Disclaimer Of Warranties",
-      blocks: [
-          { type: "paragraph", text: "To the fullest extent permitted by applicable law, the Website, its content, services and products are provided on an \"as is\" and \"as available\" basis. Except as expressly stated on the Website or required under applicable law, Kobbo makes no representation or warranty, express or implied, regarding:" },
-          { type: "bullet", text: "uninterrupted availability of the Website," },
-          { type: "bullet", text: "error-free operation," },
-          { type: "bullet", text: "accuracy or completeness of information," },
-          { type: "bullet", text: "suitability of products for every individual child," },
-          { type: "bullet", text: "compatibility with every expectation or purpose," },
-          { type: "bullet", text: "uninterrupted delivery services." },
-          { type: "paragraph", text: "Nothing in these Terms excludes any statutory rights available to consumers under applicable Indian law." }
-      ],
-    },
-    {
-      title: "33. Product Disclaimer",
-      blocks: [
-          { type: "paragraph", text: "Kobbo designs and curates toys intended to encourage learning, creativity and play. However:" },
-          { type: "bullet", text: "every child develops differently;" },
-          { type: "bullet", text: "educational outcomes may vary;" },
-          { type: "bullet", text: "product performance depends upon proper use, supervision and age appropriateness." },
-          { type: "paragraph", text: "Kobbo does not guarantee any specific educational, developmental or behavioural outcome arising from the use of its products." }
-      ],
-    },
-    {
-      title: "34. Limitation Of Liability",
-      blocks: [
-          { type: "paragraph", text: "To the maximum extent permitted by law, Kobbo (Heena Ashok Shah), its directors, partners, employees, consultants, suppliers, service providers and affiliates shall not be liable for:" },
-          { type: "bullet", text: "indirect losses," },
-          { type: "bullet", text: "incidental damages," },
-          { type: "bullet", text: "consequential damages," },
-          { type: "bullet", text: "punitive damages," },
-          { type: "bullet", text: "emotional distress," },
-          { type: "bullet", text: "loss of profits," },
-          { type: "bullet", text: "loss of revenue," },
-          { type: "bullet", text: "business interruption," },
-          { type: "bullet", text: "loss of opportunity," },
-          { type: "bullet", text: "loss of goodwill," },
-          { type: "bullet", text: "loss of data." },
-          { type: "paragraph", text: "In any event, Kobbo's aggregate liability arising out of or relating to any order shall not exceed the amount actually paid by the customer for the product giving rise to the claim. Nothing in these Terms limits liability where such limitation is prohibited under applicable law." }
-      ],
-    },
-    {
-      title: "35. Customer Responsibility",
-      blocks: [
-          { type: "paragraph", text: "Customers acknowledge that they are responsible for:" },
-          { type: "bullet", text: "selecting products appropriate for the intended child," },
-          { type: "bullet", text: "reading all product descriptions," },
-          { type: "bullet", text: "following safety instructions," },
-          { type: "bullet", text: "ensuring appropriate adult supervision where necessary," },
-          { type: "bullet", text: "using products only for their intended purpose." },
-          { type: "paragraph", text: "Improper use of products shall be the sole responsibility of the customer." }
-      ],
-    },
-    {
-      title: "36. Misuse Of Products",
-      blocks: [
-          { type: "paragraph", text: "Kobbo shall not be responsible for injuries, damage or loss resulting from:" },
-          { type: "bullet", text: "misuse," },
-          { type: "bullet", text: "negligent handling," },
-          { type: "bullet", text: "modification," },
-          { type: "bullet", text: "improper assembly," },
-          { type: "bullet", text: "use contrary to instructions," },
-          { type: "bullet", text: "use beyond the recommended age," },
-          { type: "bullet", text: "commercial or institutional use where not intended." }
-      ],
-    },
-    {
-      title: "37. Force Majeure",
-      blocks: [
-          { type: "paragraph", text: "Kobbo shall not be liable for any failure or delay in performing its obligations where such failure or delay arises due to circumstances beyond its reasonable control, including but not limited to:" },
-          { type: "bullet", text: "natural disasters," },
-          { type: "bullet", text: "floods," },
-          { type: "bullet", text: "earthquakes," },
-          { type: "bullet", text: "pandemics," },
-          { type: "bullet", text: "epidemics," },
-          { type: "bullet", text: "war," },
-          { type: "bullet", text: "terrorism," },
-          { type: "bullet", text: "labour strikes," },
-          { type: "bullet", text: "government actions," },
-          { type: "bullet", text: "internet failures," },
-          { type: "bullet", text: "cyber-attacks," },
-          { type: "bullet", text: "power outages," },
-          { type: "bullet", text: "courier disruptions," },
-          { type: "bullet", text: "transportation failures." },
-          { type: "paragraph", text: "Performance shall resume as soon as reasonably practicable after the event ceases." }
-      ],
-    },
-    {
-      title: "38. Indemnity",
-      blocks: [
-          { type: "paragraph", text: "You agree to indemnify, defend and hold harmless Heena Ashok Shah, Kobbo, its directors, employees, affiliates, service providers and representatives against any claims, losses, damages, liabilities, costs and expenses (including reasonable legal fees) arising from:" },
-          { type: "bullet", text: "your breach of these Terms;" },
-          { type: "bullet", text: "your misuse of the Website;" },
-          { type: "bullet", text: "your violation of any applicable law;" },
-          { type: "bullet", text: "infringement of third-party rights;" },
-          { type: "bullet", text: "fraudulent or unlawful activity committed through your account." }
-      ],
-    },
-    {
-      title: "39. Electronic Communications",
-      blocks: [
-          { type: "paragraph", text: "By using the Website or communicating with Kobbo electronically, you consent to receive communications from us through:" },
-          { type: "bullet", text: "email," },
-          { type: "bullet", text: "SMS," },
-          { type: "bullet", text: "WhatsApp (where applicable)," },
-          { type: "bullet", text: "notifications on the Website." },
-          { type: "paragraph", text: "Electronic communications shall satisfy any legal requirement that such communications be in writing." }
-      ],
-    },
-    {
-      title: "40. Termination",
-      blocks: [
-          { type: "paragraph", text: "Kobbo reserves the right to suspend, restrict or terminate access to the Website, with or without prior notice, if we reasonably believe that a customer has:" },
-          { type: "bullet", text: "violated these Terms," },
-          { type: "bullet", text: "engaged in fraudulent activity," },
-          { type: "bullet", text: "misused promotional offers," },
-          { type: "bullet", text: "abused return policies," },
-          { type: "bullet", text: "interfered with Website security," },
-          { type: "bullet", text: "attempted unauthorised access," },
-          { type: "bullet", text: "engaged in unlawful conduct." },
-          { type: "paragraph", text: "Termination shall not affect any accrued rights or obligations of either party." }
-      ],
-    },
-    {
-      title: "41. Severability",
-      blocks: [
-          { type: "paragraph", text: "If any provision of these Terms is found by a court of competent jurisdiction to be invalid, unlawful or unenforceable, such provision shall be deemed severed only to the extent necessary. The remaining provisions shall continue in full force and effect." }
-      ],
-    },
-    {
-      title: "42. Waiver",
-      blocks: [
-          { type: "paragraph", text: "Failure by Kobbo to enforce any right or provision under these Terms shall not constitute a waiver of such right or provision. Any waiver shall be effective only if made expressly in writing." }
-      ],
-    },
-    {
-      title: "43. Entire Agreement",
-      blocks: [
-          { type: "paragraph", text: "These Terms, together with the Privacy Policy, Shipping Policy, Returns & Refunds policy and any other policies published on the Website, constitute the entire agreement between you and Kobbo regarding the use of the Website and supersede all prior communications or understandings relating to the subject matter herein." }
-      ],
-    },
-    {
-      title: "44. Changes To These Terms",
-      blocks: [
-          { type: "paragraph", text: "Kobbo reserves the right to modify or update these Terms at any time. Any changes shall become effective immediately upon publication on the Website unless otherwise stated. Customers are encouraged to review these Terms periodically. Continued use of the Website after such changes constitutes acceptance of the revised Terms." }
-      ],
-    },
-    {
-      title: "45. Governing Law",
-      blocks: [
-          { type: "paragraph", text: "These Terms shall be governed by and construed in accordance with the laws of India." }
-      ],
-    },
-    {
-      title: "46. Jurisdiction",
-      blocks: [
-          { type: "paragraph", text: "Any dispute arising out of or relating to these Terms, the Website or any transaction with Kobbo shall be subject to the exclusive jurisdiction of the competent courts at the place where the registered office of Heena Ashok Shah, is situated, unless otherwise required by applicable consumer protection laws." }
-      ],
-    },
-    {
-      title: "47. Grievance Redressal",
-      blocks: [
-          { type: "paragraph", text: "If you have any questions, complaints or grievances regarding our Website, products or these Terms, please contact us at: Email: support@kobbo.in We will endeavour to acknowledge and address genuine grievances within a reasonable timeframe in accordance with applicable law." }
-      ],
-    },
-    {
-      title: "48. Contact Information",
-      blocks: [
-          { type: "paragraph", text: "Brand: Kobbo" },
-          { type: "paragraph", text: `Legal Name: ${legalEntity.name}` },
-          { type: "paragraph", text: "Website: www.kobbo.in" },
-          { type: "paragraph", text: "Customer Support: support@kobbo.in" },
-      ],
-    }
   ],
 };

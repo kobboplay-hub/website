@@ -19,14 +19,20 @@ const relatedPolicies = [
     titles: [
       "Returns & Refunds",
       "Return Policy",
+      "Return & Refund Policy",
       "Return, Refund & Replacement Policy",
     ],
+  },
+  {
+    label: "Cancellation",
+    href: "/cancellation-policy",
+    titles: ["Cancellation Policy"],
   },
   { label: "Privacy", href: "/privacy-policy", titles: ["Privacy Policy"] },
   {
     label: "Terms",
     href: "/terms-and-conditions",
-    titles: ["Terms & Conditions"],
+    titles: ["Terms & Conditions", "Terms of Service"],
   },
 ] as const;
 

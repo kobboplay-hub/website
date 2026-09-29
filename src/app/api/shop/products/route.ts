@@ -1,26 +1,16 @@
 import { NextResponse } from "next/server";
 import {
   getShopProductsByCursor,
+  parseShopSort,
   SHOP_PRODUCTS_PER_PAGE,
-  type ShopSortOption,
 } from "@/lib/shopify";
 import { getProductReviewSummaries } from "@/lib/judgeme";
-
-const validSorts: ShopSortOption[] = [
-  "featured",
-  "price-asc",
-  "price-desc",
-  "alpha",
-];
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const q = (searchParams.get("q") ?? "").trim();
-    const sortRaw = searchParams.get("sort") ?? "featured";
-    const sort = validSorts.includes(sortRaw as ShopSortOption)
-      ? (sortRaw as ShopSortOption)
-      : "featured";
+    const sort = parseShopSort(searchParams.get("sort"));
     const after = searchParams.get("cursor");
     const firstRaw = Number.parseInt(
       searchParams.get("first") ?? String(SHOP_PRODUCTS_PER_PAGE),

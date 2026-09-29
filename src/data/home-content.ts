@@ -7,20 +7,14 @@ export const announcementBar = {
   items: [
     {
       id: "shipping",
-      label: "Free Shipping Across India",
+      label: "Free Shipping",
       icon: "truck" as const,
     },
     {
-      id: "returns",
-      label: "7-Day Easy Returns",
-      icon: "returns" as const,
-    },
-    {
-      id: "ganpati",
-      label: "New: Ganpati Collection",
-      icon: "ganpati" as const,
+      id: "age-focus",
+      label: "Made for 2–5 years",
+      icon: "sparkles" as const,
       accent: true as const,
-      href: "/collections/ganpati-collection",
     },
     {
       id: "payments",
@@ -31,21 +25,21 @@ export const announcementBar = {
 };
 
 export const heroContent = {
-  ratingValue: "4.8",
-  ratingLabel: "Rated by 675+ Happy Families",
+  ratingValue: "4.9",
+  ratingLabel: "Loved by 1,200+ Mindful Parents",
   headline: "More than toys",
   description:
-    "Educational toys, STEM kits & creative play for growing minds",
-  primaryCta: { label: "Shop Now", href: "/shop" },
+    "Thoughtfully put-together developmental play kits for 2–3 and 3–5 year olds, with toys selected for their stage of development.",
+  primaryCta: { label: "Explore The Kits", href: "#kits" },
   trustItems: [
-    { id: "safe", label: "Safe Materials", icon: "shield" as const },
-    { id: "designed", label: "Thoughtfully Curated", icon: "leaf" as const },
+    { id: "age-kits", label: "Age-based kits", icon: "sparkles" as const },
+    { id: "learn-play", label: "Learn through play", icon: "leaf" as const },
   ],
-  imageBadgeTitle: "Screen-Free",
-  imageBadgeSubtitle: "Learning Toys",
+  imageBadgeTitle: "Stage-Based",
+  imageBadgeSubtitle: "Learning Kits",
   imageDesktop: "/hero-desktop.png",
   imageMobile: "/hero-mobile.png",
-  imageAlt: "Child playing with colorful educational toys",
+  imageAlt: "Children playing with Kobbo developmental toys",
 };
 
 export const collectionsSection = {
@@ -58,6 +52,55 @@ export const ganpatiCollection = {
   title: "Ganpati Collection",
 };
 
+
+export interface WhyParentsItem {
+  title: string;
+  description: string;
+  image: { src: string; alt: string };
+}
+
+export const whyParentsSection: {
+  eyebrow: string;
+  title: string;
+  items: WhyParentsItem[];
+} = {
+  eyebrow: "Confidence for every parent",
+  title: "Why Parents Choose Us",
+  items: [
+    {
+      title: "Thoughtfully Curated",
+      description: "Handpicked for every age",
+      image: {
+        src: "/premium_craftsmanship.avif",
+        alt: "Wooden toys arranged on a playroom table",
+      },
+    },
+    {
+      title: "Skill-Based Play",
+      description: "Learn while having fun",
+      image: {
+        src: "/designed_for_learning.avif",
+        alt: "Children playing together with learning toys",
+      },
+    },
+    {
+      title: "Age-Appropriate",
+      description: "Chosen with little learners in mind",
+      image: {
+        src: "/Safety First.avif",
+        alt: "Toddler playing with building blocks alongside parents",
+      },
+    },
+    {
+      title: "Easy Shopping",
+      description: "Thoughtful picks, all in one place",
+      image: {
+        src: "/our-story.png",
+        alt: "A curated collection of children's toys and books",
+      },
+    },
+  ],
+};
 
 export const instagramSection = {
   title: "Unboxing & Play Moments",

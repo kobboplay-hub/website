@@ -7,8 +7,8 @@ import ShopError from "@/components/shop/ShopError";
 import EmptyState from "@/components/ui/EmptyState";
 import {
   getShopProductsByCursor,
+  parseShopSort,
   SHOP_PRODUCTS_PER_PAGE,
-  type ShopSortOption,
 } from "@/lib/shopify";
 import { getProductReviewSummaries } from "@/lib/judgeme";
 import { shopMetadata } from "@/data/seo";
@@ -25,23 +25,10 @@ interface ShopPageProps {
   }>;
 }
 
-const validSorts: ShopSortOption[] = [
-  "featured",
-  "price-asc",
-  "price-desc",
-  "alpha",
-];
-
-function parseSort(raw: string | undefined): ShopSortOption {
-  return validSorts.includes(raw as ShopSortOption)
-    ? (raw as ShopSortOption)
-    : "featured";
-}
-
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const { q, sort: sortParam } = await searchParams;
   const searchQuery = (q ?? "").trim();
-  const sort = parseSort(sortParam);
+  const sort = parseShopSort(sortParam);
 
   let result;
   let hasError = false;

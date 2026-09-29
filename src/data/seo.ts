@@ -78,6 +78,19 @@ export function productMetadata(title: string, description?: string): Metadata {
   );
 }
 
+/** Shop by Age listing — `ageGroupName` comes from the Shopify metaobject */
+export function ageGroupMetadata(ageGroupName: string, path: string): Metadata {
+  const base = buildMetadata(
+    buildPageTitle(`${ageGroupName} Play Kits`),
+    `Shop age-appropriate Kobbo play kits for ${ageGroupName}.`,
+  );
+  return {
+    ...base,
+    alternates: { canonical: path },
+    openGraph: { ...base.openGraph, url: path },
+  };
+}
+
 export function policyMetadata(title: string, description: string): Metadata {
   return buildMetadata(buildPageTitle(title), description);
 }

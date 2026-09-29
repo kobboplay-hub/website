@@ -1,32 +1,34 @@
 /**
- * EDITABLE: Footer links, contact info, and social placeholders.
+ * Footer links, contact info, and social placeholders.
  */
 
 export const footerBrand = {
-  tagline: "More Than Toys.",
-  email: "support@kobbo.in",
+  tagline: "More than toys.",
+  email: "hello@kobbo.in",
   phone: "+91 8329195232",
-  paymentMethods: ["VISA", "Mastercard", "UPI"] as const,
+  paymentMethods: ["Razorpay", "UPI", "Cards", "NetBanking"] as const,
 };
 
 /** Legal entity shown in footer, contact page, and policies */
 export const legalEntity = {
-  name: "Heena Ashok Shah",
-  ownershipLine: "Kobbo is a brand owned and operated by Heena Ashok Shah.",
+  name: "Kobbo",
+  ownershipLine: "Kobbo — Developmental Play Kits for curious, growing minds.",
 } as const;
 
 export const footerQuickLinks = [
-  { label: "Shop", href: "/shop" },
+  { label: "Shop by Age", href: "/shop" },
   { label: "About Us", href: "/about" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "FAQs", href: "/faqs" },
+  { label: "Contact", href: "/contact" },
+  { label: "FAQ", href: "/faqs" },
 ] as const;
 
 export const footerCustomerCare = [
-  { label: "Shipping Policy", href: "/shipping-policy" },
-  { label: "Returns & Refunds", href: "/return-policy" },
-  { label: "Terms & Conditions", href: "/terms-and-conditions" },
   { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Refund Policy", href: "/return-policy" },
+  { label: "Return Policy", href: "/return-policy" },
+  { label: "Cancellation Policy", href: "/cancellation-policy" },
+  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "Terms of Service", href: "/terms-and-conditions" },
 ] as const;
 
 /** Social profile URLs */

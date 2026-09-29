@@ -9,10 +9,15 @@ import {
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_QUERY,
+  GET_AGE_GROUPS_QUERY,
 } from "./queries";
+import { cache } from "react";
 import type {
+  AgeGroup,
   Collection,
   Product,
+  ProductMerchandisingFlags,
+  ShopifyAgeGroupNode,
   ShopifyCollectionNode,
   ShopifyMediaVideo,
   ShopifyMetafield,
@@ -21,6 +26,7 @@ import type {
 import { parseMoney } from "./types";
 
 const REVALIDATE_SECONDS = 3600;
+const CATALOG_REVALIDATE_SECONDS = 60;
 
 interface ShopifyFetchOptions {
   query: string;
@@ -117,6 +123,27 @@ function normalizeMediaVideos(
     );
 }
 
+function normalizeAgeGroup(node: ShopifyAgeGroupNode): AgeGroup {
+  return {
+    id: node.id,
+    handle: node.handle,
+    name: node.name?.value?.trim() || node.handle,
+  };
+}
+
+function normalizeMerchandisingFlags(
+  flags: ShopifyProductNode["merchandisingFlags"],
+): ProductMerchandisingFlags {
+  const isTrue = (key: string) =>
+    flags?.some((flag) => flag?.key === key && flag.value === "true") ?? false;
+
+  return {
+    featured: isTrue("featured_product"),
+    trending: isTrue("trending_toys"),
+    bestSelling: isTrue("best_selling_toys"),
+  };
+}
+
 export function normalizeProduct(node: ShopifyProductNode): Product {
   const currencyCode = node.priceRange.minVariantPrice.currencyCode;
 
@@ -139,6 +166,10 @@ export function normalizeProduct(node: ShopifyProductNode): Product {
     seo: node.seo ?? { title: null, description: null },
     metafields: normalizeMetafields(node.metafields),
     mediaVideos: normalizeMediaVideos(node.media),
+    ageGroup: node.ageGroup?.reference
+      ? normalizeAgeGroup(node.ageGroup.reference)
+      : null,
+    merchandising: normalizeMerchandisingFlags(node.merchandisingFlags),
   };
 }
 
@@ -166,6 +197,19 @@ export async function getProducts(limit = 20): Promise<Product[]> {
 export const SHOP_PRODUCTS_PER_PAGE = 12;
 
 export type ShopSortOption = "featured" | "price-asc" | "price-desc" | "alpha";
+
+const SHOP_SORT_OPTIONS: ShopSortOption[] = [
+  "featured",
+  "price-asc",
+  "price-desc",
+  "alpha",
+];
+
+export function parseShopSort(raw: string | null | undefined): ShopSortOption {
+  return SHOP_SORT_OPTIONS.includes(raw as ShopSortOption)
+    ? (raw as ShopSortOption)
+    : "featured";
+}
 
 interface ShopifyProductSortParams {
   sortKey: string;
@@ -316,6 +360,98 @@ export async function getShopProductsPage(
   };
 }
 
+const MAX_CATALOG_PAGES = 40;
+
+/**
+ * Walks every Storefront product page so derived filters (e.g. age group)
+ * never miss products beyond the first cursor page.
+ */
+export const getAllProducts = cache(
+  async (sort: ShopSortOption = "featured"): Promise<Product[]> => {
+    const { sortKey, reverse } = toShopifySortParams(sort);
+    const collected: Product[] = [];
+    let after: string | null = null;
+
+    for (let page = 0; page < MAX_CATALOG_PAGES; page++) {
+      const data: {
+        products: {
+          pageInfo: { hasNextPage: boolean; endCursor: string | null };
+          edges: { node: ShopifyProductNode }[];
+        };
+      } = await shopifyFetch({
+        query: PRODUCTS_SORTED_PAGINATED_QUERY,
+        variables: { first: 50, after, sortKey, reverse },
+        revalidate: CATALOG_REVALIDATE_SECONDS,
+      });
+
+      collected.push(
+        ...data.products.edges.map((edge) => normalizeProduct(edge.node)),
+      );
+
+      if (!data.products.pageInfo.hasNextPage) return collected;
+      after = data.products.pageInfo.endCursor;
+      if (!after) return collected;
+    }
+
+    console.warn(
+      `getAllProducts stopped after ${MAX_CATALOG_PAGES} pages; catalogue may be truncated.`,
+    );
+    return collected;
+  },
+);
+
+/** All `age_group` metaobjects in Shopify Admin order. Throws on Shopify errors. */
+export const getAgeGroups = cache(async (): Promise<AgeGroup[]> => {
+  const data = await shopifyFetch<{
+    metaobjects: { nodes: ShopifyAgeGroupNode[] };
+  }>({
+    query: GET_AGE_GROUPS_QUERY,
+    variables: { first: 50 },
+    revalidate: CATALOG_REVALIDATE_SECONDS,
+  });
+
+  return data.metaobjects.nodes.map(normalizeAgeGroup);
+});
+
+/** Navigation-safe variant: never throws, returns [] when Shopify is unavailable. */
+export async function getNavAgeGroups(): Promise<AgeGroup[]> {
+  if (!isShopifyConfigured()) return [];
+  try {
+    return await getAgeGroups();
+  } catch (error) {
+    console.error("Failed to fetch age groups for navigation:", error);
+    return [];
+  }
+}
+
+export async function getAgeGroupByHandle(
+  handle: string,
+): Promise<AgeGroup | null> {
+  const ageGroups = await getAgeGroups();
+  return ageGroups.find((group) => group.handle === handle) ?? null;
+}
+
+/** Matches on the metaobject id — the display name is never used for identity. */
+export async function getProductsByAgeGroup(
+  ageGroup: AgeGroup,
+  sort: ShopSortOption = "featured",
+): Promise<Product[]> {
+  const products = await getAllProducts(sort);
+  return products.filter((product) => product.ageGroup?.id === ageGroup.id);
+}
+
+/** Products flagged with the `custom.featured_product` boolean metafield */
+export async function getFeaturedProducts(): Promise<Product[]> {
+  const products = await getAllProducts("featured");
+  return products.filter((product) => product.merchandising.featured);
+}
+
+/** Products flagged with the `custom.best_selling_toys` boolean metafield */
+export async function getBestSellingProducts(): Promise<Product[]> {
+  const products = await getAllProducts("featured");
+  return products.filter((product) => product.merchandising.bestSelling);
+}
+
 export interface ProductsPageResult {
   products: Product[];
   page: number;
@@ -413,8 +549,7 @@ export async function getCollections(limit = 20): Promise<Collection[]> {
   }>({
     query: GET_COLLECTIONS_QUERY,
     variables: { first: limit },
-    revalidate: false,
-    cache: "no-store",
+    revalidate: 60,
   });
 
   return data.collections.edges.map((edge) => normalizeCollection(edge.node));

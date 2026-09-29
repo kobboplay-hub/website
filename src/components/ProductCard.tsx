@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Heart, ImageOff } from "lucide-react";
+import { Heart, ImageOff, Sparkles } from "lucide-react";
 import {
   formatPrice,
   getProductImageUrl,
@@ -16,15 +16,36 @@ import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductCardRating from "@/components/reviews/ProductCardRating";
 import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
+const DEFAULT_IMAGE_SIZES =
+  "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw";
+
 interface ProductCardProps {
   product: Product;
   reviewSummary?: JudgeMeProductSummary | null;
+  /** Small pill shown over the image, e.g. "Featured" */
+  badge?: string;
+  /** `featured`: discount % and a full-width Add to Cart button */
+  layout?: "compact" | "featured";
+  imageSizes?: string;
 }
 
 export default function ProductCard({
   product,
   reviewSummary,
+  badge,
+  layout = "compact",
+  imageSizes = DEFAULT_IMAGE_SIZES,
 }: ProductCardProps) {
+  const isFeaturedLayout = layout === "featured";
+  const hasDiscount =
+    product.compareAtPrice !== null && product.compareAtPrice > product.price;
+  const discountPercent =
+    hasDiscount && product.compareAtPrice
+      ? Math.round(
+          ((product.compareAtPrice - product.price) / product.compareAtPrice) *
+            100,
+        )
+      : 0;
   const imageUrl = getProductImageUrl(product);
   const videoUrl = getProductPreviewVideoUrl(product);
   const merchandiseId = getDefaultMerchandiseId(product);
@@ -98,7 +119,7 @@ export default function ProductCard({
             src={imageUrl}
             alt={product.featuredImage?.altText ?? product.title}
             fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            sizes={imageSizes}
             className={`object-cover transition-all duration-500 group-hover:scale-105 ${
               showVideo ? "opacity-0" : "opacity-100"
             }`}
@@ -123,6 +144,16 @@ export default function ProductCard({
             preload="metadata"
             aria-hidden
           />
+        )}
+
+        {badge && (
+          <span className="absolute left-2 top-2.5 z-10 inline-flex max-w-[calc(100%-3.5rem)] items-center gap-1 rounded-full bg-kobbo-white/95 px-2 py-1 text-[10px] font-bold leading-none text-kobbo-black shadow-soft sm:left-2.5 sm:px-2.5 sm:text-[11px]">
+            <Sparkles
+              className="h-3 w-3 shrink-0 text-kobbo-yellow"
+              strokeWidth={2.5}
+            />
+            <span className="truncate">{badge}</span>
+          </span>
         )}
       </Link>
 
@@ -151,23 +182,51 @@ export default function ProductCard({
           productId={product.id}
           initialSummary={reviewSummary}
         />
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <div className="flex flex-wrap items-baseline gap-1.5">
-            <span className="text-base font-bold text-kobbo-black sm:text-lg">
-              {formatPrice(product.price, product.currencyCode)}
-            </span>
-            {product.compareAtPrice && product.compareAtPrice > product.price && (
-              <span className="text-xs text-kobbo-muted line-through sm:text-sm">
-                {formatPrice(product.compareAtPrice, product.currencyCode)}
+        {isFeaturedLayout ? (
+          <div className="mt-auto pt-2">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="text-lg font-bold text-kobbo-black sm:text-xl">
+                {formatPrice(product.price, product.currencyCode)}
               </span>
-            )}
+              {hasDiscount && product.compareAtPrice && (
+                <>
+                  <span className="text-sm text-kobbo-muted line-through">
+                    {formatPrice(product.compareAtPrice, product.currencyCode)}
+                  </span>
+                  <span className="rounded-full bg-kobbo-yellow/25 px-2 py-0.5 text-xs font-bold text-kobbo-black">
+                    {discountPercent}% OFF
+                  </span>
+                </>
+              )}
+            </div>
+            <AddToCartButton
+              variant="full"
+              merchandiseId={merchandiseId}
+              productTitle={product.title}
+              disabled={!product.availableForSale}
+              label={product.availableForSale ? "Add to Cart" : "Sold Out"}
+              className="mt-3 min-h-11 py-2.5"
+            />
           </div>
-          <AddToCartButton
-            merchandiseId={merchandiseId}
-            productTitle={product.title}
-            disabled={!product.availableForSale}
-          />
-        </div>
+        ) : (
+          <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+            <div className="flex flex-wrap items-baseline gap-1.5">
+              <span className="text-base font-bold text-kobbo-black sm:text-lg">
+                {formatPrice(product.price, product.currencyCode)}
+              </span>
+              {hasDiscount && product.compareAtPrice && (
+                <span className="text-xs text-kobbo-muted line-through sm:text-sm">
+                  {formatPrice(product.compareAtPrice, product.currencyCode)}
+                </span>
+              )}
+            </div>
+            <AddToCartButton
+              merchandiseId={merchandiseId}
+              productTitle={product.title}
+              disabled={!product.availableForSale}
+            />
+          </div>
+        )}
       </div>
     </article>
   );

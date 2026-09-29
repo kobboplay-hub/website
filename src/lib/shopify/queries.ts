@@ -1,3 +1,11 @@
+const AGE_GROUP_FIELDS = `
+  id
+  handle
+  name: field(key: "name") {
+    value
+  }
+`;
+
 export const PRODUCT_CARD_FRAGMENT = `
   fragment ProductCard on Product {
     id
@@ -8,6 +16,23 @@ export const PRODUCT_CARD_FRAGMENT = `
     vendor
     productType
     tags
+    ageGroup: metafield(namespace: "custom", key: "age_group") {
+      reference {
+        ... on Metaobject {
+          ${AGE_GROUP_FIELDS}
+        }
+      }
+    }
+    merchandisingFlags: metafields(
+      identifiers: [
+        { namespace: "custom", key: "featured_product" }
+        { namespace: "custom", key: "trending_toys" }
+        { namespace: "custom", key: "best_selling_toys" }
+      ]
+    ) {
+      key
+      value
+    }
     featuredImage {
       url
       altText
@@ -344,6 +369,16 @@ export const GET_PRODUCT_BY_HANDLE_QUERY = `
   query GetProductByHandle($handle: String!) {
     product(handle: $handle) {
       ...ProductDetail
+    }
+  }
+`;
+
+export const GET_AGE_GROUPS_QUERY = `
+  query GetAgeGroups($first: Int!) {
+    metaobjects(type: "age_group", first: $first) {
+      nodes {
+        ${AGE_GROUP_FIELDS}
+      }
     }
   }
 `;

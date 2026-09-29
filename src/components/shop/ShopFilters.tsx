@@ -15,9 +15,17 @@ const sortOptions: { value: ShopSortOption; label: string }[] = [
 interface ShopFiltersProps {
   searchQuery: string;
   sort: ShopSortOption;
+  /** Listing route the filters push to (defaults to All Shop) */
+  basePath?: string;
+  showSearch?: boolean;
 }
 
-export default function ShopFilters({ searchQuery, sort }: ShopFiltersProps) {
+export default function ShopFilters({
+  searchQuery,
+  sort,
+  basePath = "/shop",
+  showSearch = true,
+}: ShopFiltersProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -29,9 +37,9 @@ export default function ShopFilters({ searchQuery, sort }: ShopFiltersProps) {
       if (q.trim()) params.set("q", q.trim());
       if (s !== "featured") params.set("sort", s);
       const qs = params.toString();
-      return qs ? `/shop?${qs}` : "/shop";
+      return qs ? `${basePath}?${qs}` : basePath;
     },
-    [],
+    [basePath],
   );
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -60,33 +68,39 @@ export default function ShopFilters({ searchQuery, sort }: ShopFiltersProps) {
   }
 
   return (
-    <div className="mt-4 flex flex-col gap-3 sm:mt-5 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      className={`mt-4 flex flex-col gap-3 sm:mt-5 sm:flex-row sm:items-center ${
+        showSearch ? "sm:justify-between" : "sm:justify-end"
+      }`}
+    >
       {/* Search input */}
-      <div className="relative w-full sm:max-w-md sm:flex-1">
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-kobbo-muted" />
-        <input
-          ref={inputRef}
-          type="search"
-          defaultValue={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Search all products..."
-          className="min-h-11 w-full rounded-full border-2 border-transparent bg-kobbo-white py-2.5 pl-11 pr-10 text-sm text-kobbo-black placeholder:text-kobbo-muted/60 shadow-soft outline-none transition-colors focus:border-kobbo-yellow"
-          autoComplete="off"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={clearSearch}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-kobbo-muted hover:text-kobbo-black"
-            aria-label="Clear search"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-        {isPending && (
-          <span className="absolute right-10 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin rounded-full border-2 border-kobbo-yellow border-t-transparent" />
-        )}
-      </div>
+      {showSearch && (
+        <div className="relative w-full sm:max-w-md sm:flex-1">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-kobbo-muted" />
+          <input
+            ref={inputRef}
+            type="search"
+            defaultValue={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search all products..."
+            className="min-h-11 w-full rounded-full border-2 border-transparent bg-kobbo-white py-2.5 pl-11 pr-10 text-sm text-kobbo-black placeholder:text-kobbo-muted/60 shadow-soft outline-none transition-colors focus:border-kobbo-yellow"
+            autoComplete="off"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-kobbo-muted hover:text-kobbo-black"
+              aria-label="Clear search"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {isPending && (
+            <span className="absolute right-10 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin rounded-full border-2 border-kobbo-yellow border-t-transparent" />
+          )}
+        </div>
+      )}
 
       {/* Sort select */}
       <select

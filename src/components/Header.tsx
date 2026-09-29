@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
-  Heart,
   ShoppingCart,
   Menu,
   X,
@@ -12,6 +11,7 @@ import {
   Home,
   Store,
   Info,
+  PhoneCall,
   ChevronRight,
   Package,
   LogOut,
@@ -20,15 +20,40 @@ import {
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
-import { useWishlist } from "@/context/wishlist-context";
 import AccountMenu from "@/components/account/AccountMenu";
 import SearchOverlay from "@/components/search/SearchOverlay";
+import {
+  ShopByAgeAccordion,
+  ShopByAgeDropdown,
+} from "@/components/nav/ShopByAgeMenu";
+import { SHOP_BY_AGE_PATH } from "@/lib/shop-by-age";
+import { useAgeGroups } from "@/context/age-groups-context";
 
-const navLinks = [
+interface NavLink {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  /** Renders the dynamic Shopify age-group menu; `href` is the fallback link */
+  ageMenu?: boolean;
+}
+
+const navLinks: NavLink[] = [
   { label: "Home", href: "/", icon: Home },
-  { label: "Shop Toys", href: "/shop", icon: Store },
+  { label: "Shop by Age", href: "/shop", icon: Store, ageMenu: true },
   { label: "About Us", href: "/about", icon: Info },
+  { label: "Contact", href: "/contact", icon: PhoneCall },
 ];
+
+function isNavLinkActive(link: NavLink, pathname: string): boolean {
+  if (link.href === "/") return pathname === "/";
+  if (
+    link.ageMenu &&
+    (pathname === SHOP_BY_AGE_PATH || pathname.startsWith(`${SHOP_BY_AGE_PATH}/`))
+  ) {
+    return true;
+  }
+  return pathname === link.href || pathname.startsWith(`${link.href}/`);
+}
 
 function MobileMenuRow({
   icon: Icon,
@@ -106,20 +131,20 @@ function MobileMenuRow({
 
 export default function Header({ immersive = false }: { immersive?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileAgeOpen, setMobileAgeOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { cartCount, openCart } = useCart();
-  const { count: wishlistCount } = useWishlist();
   const { isLoggedIn, logout } = useAuth();
+  const ageGroups = useAgeGroups();
+  const hasAgeMenu = ageGroups.length > 0;
 
   const accountHref = isLoggedIn ? "/account" : "/login";
-  const wishlistHref = isLoggedIn
-    ? "/account/wishlist"
-    : "/login?redirect=/account/wishlist";
 
   const closeMobile = () => {
     setMobileOpen(false);
+    setMobileAgeOpen(false);
     document.body.style.overflow = "";
   };
 
@@ -143,6 +168,7 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
 
   useEffect(() => {
     setMobileOpen(false);
+    setMobileAgeOpen(false);
     document.body.style.overflow = "";
   }, [pathname]);
 
@@ -242,10 +268,19 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
               aria-label="Main navigation"
             >
               {navLinks.map((link) => {
-                const isActive =
-                  link.href === "/"
-                    ? pathname === "/"
-                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
+                const isActive = isNavLinkActive(link, pathname);
+
+                if (link.ageMenu && hasAgeMenu) {
+                  return (
+                    <ShopByAgeDropdown
+                      key={link.label}
+                      label={link.label}
+                      ageGroups={ageGroups}
+                      pathname={pathname}
+                      active={isActive}
+                    />
+                  );
+                }
 
                 return (
                   <Link
@@ -287,21 +322,6 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
               <div className="hidden sm:block">
                 <AccountMenu />
               </div>
-
-              {/* Wishlist icon: always accessible, with active badge */}
-              <Link
-                href={wishlistHref}
-                aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}
-                onClick={closeMobile}
-                className={`relative ${iconBtn}`}
-              >
-                <Heart className="h-5 w-5" strokeWidth={2} />
-                {wishlistCount > 0 && (
-                  <span className="absolute right-0 top-0 flex h-[18px] min-w-[18px] translate-x-0.5 -translate-y-0.5 items-center justify-center rounded-full bg-kobbo-yellow px-1 text-[10px] font-bold leading-none text-kobbo-black shadow-xs">
-                    {wishlistCount > 99 ? "99+" : wishlistCount}
-                  </span>
-                )}
-              </Link>
 
               {/* Shopping cart button: always accessible, with count badge */}
               <button
@@ -346,10 +366,23 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
             >
               <div className="space-y-0.5">
                 {navLinks.map((link) => {
-                  const isActive =
-                    link.href === "/"
-                      ? pathname === "/"
-                      : pathname === link.href || pathname.startsWith(`${link.href}/`);
+                  const isActive = isNavLinkActive(link, pathname);
+
+                  if (link.ageMenu && hasAgeMenu) {
+                    return (
+                      <ShopByAgeAccordion
+                        key={link.label}
+                        label={link.label}
+                        icon={link.icon}
+                        ageGroups={ageGroups}
+                        pathname={pathname}
+                        active={isActive}
+                        expanded={mobileAgeOpen}
+                        onToggle={() => setMobileAgeOpen((open) => !open)}
+                        onNavigate={closeMobile}
+                      />
+                    );
+                  }
 
                   return (
                     <MobileMenuRow
@@ -394,15 +427,6 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
                     onClick={closeMobile}
                   />
                 )}
-
-                <MobileMenuRow
-                  icon={Heart}
-                  label="Wishlist"
-                  href={wishlistHref}
-                  badge={wishlistCount}
-                  active={pathname === "/account/wishlist"}
-                  onClick={closeMobile}
-                />
 
                 <MobileMenuRow
                   icon={ShoppingCart}

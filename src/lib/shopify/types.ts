@@ -58,6 +58,24 @@ export interface ShopifyMediaVideo {
   previewImage?: ShopifyImage | null;
 }
 
+/** Shopify `age_group` metaobject entry — `handle` is the stable route slug */
+export interface AgeGroup {
+  id: string;
+  handle: string;
+  /** Display label from the metaobject `name` field (presentation only) */
+  name: string;
+}
+
+/** Resolved `custom.age_group` metaobject reference on a product */
+export type ProductAgeGroupReference = AgeGroup;
+
+/** Boolean merchandising metafields set per product in Shopify Admin */
+export interface ProductMerchandisingFlags {
+  featured: boolean;
+  trending: boolean;
+  bestSelling: boolean;
+}
+
 /** Normalized product for frontend use */
 export interface Product {
   id: string;
@@ -79,6 +97,8 @@ export interface Product {
   metafields: ShopifyMetafield[];
   /** Populated on product detail fetches — Shopify media videos */
   mediaVideos?: ShopifyMediaVideo[];
+  ageGroup: ProductAgeGroupReference | null;
+  merchandising: ProductMerchandisingFlags;
 }
 
 export interface Collection {
@@ -116,6 +136,16 @@ export interface ShopifyProductNode {
   media?: {
     edges: { node: ShopifyMediaVideo }[];
   };
+  ageGroup?: {
+    reference: ShopifyAgeGroupNode | null;
+  } | null;
+  merchandisingFlags?: ({ key: string; value: string } | null)[];
+}
+
+export interface ShopifyAgeGroupNode {
+  id: string;
+  handle: string;
+  name: { value: string | null } | null;
 }
 
 export interface ShopifyCollectionNode {

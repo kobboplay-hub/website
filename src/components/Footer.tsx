@@ -57,7 +57,7 @@ export default function Footer() {
 
           <div>
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-kobbo-yellow">
-              Quick Links
+              Info
             </h3>
             <ul className="mt-3 space-y-2">
               {footerQuickLinks.map((link) => (
@@ -75,7 +75,7 @@ export default function Footer() {
 
           <div>
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-kobbo-yellow">
-              Customer Care
+              Support
             </h3>
             <ul className="mt-3 space-y-2">
               {footerCustomerCare.map((link) => (
