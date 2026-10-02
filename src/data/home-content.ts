@@ -25,12 +25,10 @@ export const announcementBar = {
 };
 
 export const heroContent = {
-  ratingValue: "4.9",
-  ratingLabel: "Loved by 1,200+ Mindful Parents",
   headline: "More than toys",
   description:
     "Thoughtfully put-together developmental play kits for 2–3 and 3–5 year olds, with toys selected for their stage of development.",
-  primaryCta: { label: "Explore The Kits", href: "/shop" },
+  primaryCta: { label: "Explore The Kits", href: "#play-kits" },
   trustItems: [
     { id: "age-kits", label: "Age-based kits", icon: "sparkles" as const },
     { id: "learn-play", label: "Learn through play", icon: "leaf" as const },
@@ -104,9 +102,7 @@ export const whyParentsSection: {
 
 export const instagramSection = {
   title: "Unboxing & Play Moments",
-  subtitle:
-    "Watch real unboxing moments and playful demos from our products.",
-  profileUrl:
-    "https://www.instagram.com/kobboplay?igsh=MXE3bDZ3NWxzbzk0bg%3D%3D&utm_source=qr",
+  subtitle: "Play moments from @kobboplay.",
+  profileUrl: "https://www.instagram.com/kobboplay/",
   viewOnInstagramLabel: "View on Instagram",
 };

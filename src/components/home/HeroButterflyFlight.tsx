@@ -39,16 +39,14 @@ const DESKTOP_WAYPOINTS_2: Waypoint[] = [
   { x: 0.78, y: 0.28 }, // Swoops toward upper right badge area
 ];
 
-// Mobile Butterfly (Single - Soft curved S-flight across visible areas)
+// Mobile Butterfly stays below the text and CTA, over the photo.
 const MOBILE_WAYPOINTS: Waypoint[] = [
-  { x: 0.16, y: 0.14 }, // Top-left near review pill
-  { x: 0.54, y: 0.18 }, // Arcing across headline
-  { x: 0.80, y: 0.26 }, // Near badge top-right
-  { x: 0.70, y: 0.44 }, // Dipping past CTA button
-  { x: 0.46, y: 0.58 }, // Swooping into lower photo area
-  { x: 0.68, y: 0.72 }, // Arcing near toys
-  { x: 0.26, y: 0.64 }, // Gliding back up the left
-  { x: 0.20, y: 0.38 }, // Rising past trust points
+  { x: 0.78, y: 0.50 },
+  { x: 0.56, y: 0.58 },
+  { x: 0.73, y: 0.72 },
+  { x: 0.42, y: 0.78 },
+  { x: 0.20, y: 0.66 },
+  { x: 0.36, y: 0.52 },
 ];
 
 // ══════════════════════════════════════════════════════════════

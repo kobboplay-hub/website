@@ -1,53 +1,56 @@
-import { Quote } from "lucide-react";
+"use client";
+
+import { motion, useReducedMotion } from "motion/react";
+
+const paragraphs = [
+  "I've always found the toy aisle a little overwhelming.",
+  "So many choices. So many things labelled educational. And so much time spent wondering what is actually worth bringing home.",
+  "That got me thinking, what if someone just did the choosing for you?",
+  "That's the idea behind Kobbo.",
+  "We bring together thoughtful toys and activities for different ages and kinds of play, and put them together in a way that makes choosing a little easier.",
+];
 
 export default function FounderNote() {
+  const reduceMotion = useReducedMotion();
+  const reveal = (delay: number) => ({
+    initial: reduceMotion ? false : { opacity: 0, y: 18 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.6, delay: reduceMotion ? 0 : delay, ease: "easeOut" as const },
+  });
+
   return (
-    <section className="relative overflow-hidden bg-kobbo-white py-12 sm:py-16 lg:py-20">
-      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        {/* Floating card styled in Kobbo cream and beige */}
-        <div className="group relative overflow-hidden rounded-3xl border border-kobbo-beige bg-kobbo-cream p-6 shadow-soft-lg transition-all duration-500 hover:shadow-2xl sm:p-12 lg:p-14">
-          <div className="flex flex-col items-center text-center">
-            {/* Soft decorative quotation icon */}
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-kobbo-yellow/30 text-kobbo-black sm:h-14 sm:w-14">
-              <Quote className="h-6 w-6 rotate-180" />
+    <section aria-labelledby="founder-heading" className="overflow-hidden bg-kobbo-white py-12 sm:py-16 lg:py-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="grid overflow-hidden rounded-3xl border border-kobbo-beige bg-kobbo-cream shadow-soft-lg md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, x: -28 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative flex min-h-60 items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_30%_25%,#fff8e8_0%,#ffe17b_50%,#ffc700_100%)] p-8 sm:min-h-80 md:min-h-full"
+          >
+            {/* Replace this panel with Ruchi's portrait when the client supplies it. */}
+            <div className="relative flex aspect-[4/5] w-40 max-w-full flex-col items-center justify-center rounded-[7rem] border border-white/70 bg-white/35 text-center shadow-soft backdrop-blur-sm sm:w-52">
+              <span className="font-heading text-7xl font-extrabold text-kobbo-black/70 sm:text-8xl" aria-hidden>R</span>
+              <span className="px-4 text-xs font-semibold text-kobbo-black/70">Ruchi&apos;s portrait coming soon</span>
             </div>
+          </motion.div>
 
-            {/* Heading in Kobbo editorial style */}
-            <p className="mt-4 font-heading text-xs font-bold uppercase tracking-[0.2em] text-kobbo-muted">
-              Our Philosophy
-            </p>
-            <h2 className="font-heading mt-1 text-2xl font-extrabold lowercase tracking-tight text-kobbo-black sm:text-3xl lg:text-4xl">
-              a note from the founder
-            </h2>
-
-            {/* Exact Client Copy */}
-            <div className="mt-6 max-w-2xl space-y-4 text-sm leading-relaxed text-kobbo-black/85 sm:mt-8 sm:text-base sm:leading-relaxed">
-              <p>
-                I&apos;ve always found the toy aisle a little overwhelming.
-              </p>
-              <p>
-                So many choices. So many things labelled educational. And so much time spent wondering what is actually worth bringing home.
-              </p>
-              <p className="font-semibold text-kobbo-black">
-                That got me thinking, what if someone just did the choosing for you?
-              </p>
-              <p className="font-extrabold text-kobbo-black">
-                That&apos;s the idea behind Kobbo.
-              </p>
-              <p>
-                We bring together thoughtful toys and activities for different ages and kinds of play, and put them together in a way that makes choosing a little easier.
-              </p>
+          <div className="p-6 sm:p-10 lg:p-14">
+            <motion.h2 {...reveal(0)} id="founder-heading" className="font-heading text-3xl font-extrabold tracking-tight text-kobbo-black sm:text-4xl">
+              A Note From Founder
+            </motion.h2>
+            <div className="mt-6 space-y-4 text-sm leading-relaxed text-kobbo-black/85 sm:text-base sm:leading-7">
+              {paragraphs.map((paragraph, index) => (
+                <motion.p key={paragraph} {...reveal(0.08 + index * 0.12)} className={index === 3 ? "font-bold text-kobbo-black" : ""}>
+                  {paragraph}
+                </motion.p>
+              ))}
             </div>
-
-            {/* Signature & Sign-off in Kobbo styling */}
-            <div className="mt-8 border-t border-kobbo-beige pt-6 sm:mt-10 sm:pt-8">
-              <p className="font-heading text-xl font-extrabold text-kobbo-black sm:text-2xl">
-                Kobbo Play
-              </p>
-              <p className="mt-1 text-xs font-semibold text-kobbo-muted">
-                Thoughtfully put-together for growing minds
-              </p>
-            </div>
+            <motion.p {...reveal(0.8)} className="mt-8 border-t border-kobbo-beige pt-5 font-heading text-2xl font-bold italic text-kobbo-black sm:text-3xl">
+              — Love, Ruchi
+            </motion.p>
           </div>
         </div>
       </div>

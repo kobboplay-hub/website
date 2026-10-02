@@ -2,6 +2,7 @@ import {
   GET_PRODUCTS_QUERY,
   GET_PRODUCTS_PAGINATED_QUERY,
   GET_PRODUCTS_WITH_VIDEOS_QUERY,
+  GET_HOMEPAGE_AGE_PRODUCTS_QUERY,
   GET_RECENT_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_PAGINATED_QUERY,
   PRODUCTS_SORTED_PAGINATED_QUERY,
@@ -435,6 +436,38 @@ export const getAllProducts = cache(
     return collected;
   },
 );
+
+/** Products assigned to a Shopify age-group metaobject for the homepage. */
+export const getHomepageAgeProducts = cache(async (): Promise<Product[]> => {
+  const products: Product[] = [];
+  let after: string | null = null;
+
+  for (let page = 0; page < MAX_CATALOG_PAGES; page++) {
+    const data: {
+      products: {
+        pageInfo: { hasNextPage: boolean; endCursor: string | null };
+        edges: { node: ShopifyProductNode }[];
+      };
+    } = await shopifyFetch({
+      query: GET_HOMEPAGE_AGE_PRODUCTS_QUERY,
+      variables: { first: 50, after },
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+    });
+
+    products.push(
+      ...data.products.edges
+        .map((edge) => normalizeProduct(edge.node))
+        .filter((product) => product.ageGroup !== null),
+    );
+
+    if (!data.products.pageInfo.hasNextPage) return products;
+    after = data.products.pageInfo.endCursor;
+    if (!after) return products;
+  }
+
+  console.warn(`getHomepageAgeProducts stopped after ${MAX_CATALOG_PAGES} pages; catalogue may be truncated.`);
+  return products;
+});
 
 /** All `age_group` metaobjects in Shopify Admin order. Throws on Shopify errors. */
 export const getAgeGroups = cache(async (): Promise<AgeGroup[]> => {

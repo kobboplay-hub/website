@@ -1,46 +1,29 @@
-/**
- * EDITABLE: Instagram video card placeholders.
- * PLACEHOLDER thumbnails — replace with real reel/post URLs when available.
- */
-
-export const INSTAGRAM_PROFILE_URL =
-  "https://www.instagram.com/kobboplay?igsh=MXE3bDZ3NWxzbzk0bg%3D%3D&utm_source=qr";
-
+/** Public reels from @kobboplay. Replace or reorder these URLs as new footage arrives. */
 export interface InstagramVideo {
   id: string;
   title: string;
-  thumbnail: string;
-  /** PLACEHOLDER: Link to specific reel/post when available */
-  instagramUrl: string;
+  url: string;
 }
 
 export const instagramVideos: InstagramVideo[] = [
   {
-    id: "1",
-    title: "Building Blocks Unboxing",
-    thumbnail:
-      "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=500&fit=crop",
-    instagramUrl: INSTAGRAM_PROFILE_URL,
+    id: "DdtfdTZBuTS",
+    title: "Strategy game play",
+    url: "https://www.instagram.com/reel/DdtfdTZBuTS/",
   },
   {
-    id: "2",
-    title: "Stacking Rings Demo",
-    thumbnail:
-      "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&h=500&fit=crop",
-    instagramUrl: INSTAGRAM_PROFILE_URL,
+    id: "DdlwgzEB_MM",
+    title: "Gobble game moment",
+    url: "https://www.instagram.com/reel/DdlwgzEB_MM/",
   },
   {
-    id: "3",
-    title: "Busy Board Playtime",
-    thumbnail:
-      "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=400&h=500&fit=crop",
-    instagramUrl: INSTAGRAM_PROFILE_URL,
+    id: "DdeFhcazaKp",
+    title: "Kobbo play moment",
+    url: "https://www.instagram.com/reel/DdeFhcazaKp/",
   },
   {
-    id: "4",
-    title: "Pull Along Fun",
-    thumbnail:
-      "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=500&fit=crop",
-    instagramUrl: INSTAGRAM_PROFILE_URL,
+    id: "Dd6XbAZgZD0",
+    title: "Galaxy projector play",
+    url: "https://www.instagram.com/reel/Dd6XbAZgZD0/",
   },
 ];

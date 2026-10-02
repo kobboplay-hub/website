@@ -274,6 +274,48 @@ export const GET_PRODUCTS_WITH_VIDEOS_QUERY = `
   }
 `;
 
+/** Homepage age-group products; merchandising and review metafields are intentionally omitted. */
+export const GET_HOMEPAGE_AGE_PRODUCTS_QUERY = `
+  query GetHomepageAgeProducts($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
+      pageInfo { hasNextPage endCursor }
+      edges {
+        node {
+          id
+          handle
+          title
+          description
+          availableForSale
+          vendor
+          productType
+          tags
+          ageGroup: metafield(namespace: "custom", key: "age_group") {
+            reference {
+              ... on Metaobject {
+                id
+                handle
+                name: field(key: "name") { value }
+              }
+            }
+          }
+          featuredImage { url altText width height }
+          images(first: 5) { edges { node { url altText width height } } }
+          priceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } }
+          compareAtPriceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } }
+          variants(first: 20) {
+            edges { node {
+              id title availableForSale
+              price { amount currencyCode }
+              compareAtPrice { amount currencyCode }
+              selectedOptions { name value }
+            } }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_RECENT_PRODUCTS_QUERY = `
   ${PRODUCT_CARD_FRAGMENT}
   query GetRecentProducts($first: Int!) {

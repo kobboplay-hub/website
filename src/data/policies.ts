@@ -180,7 +180,7 @@ export const shippingPolicyContent: PolicyPageContent = {
 };
 
 export const returnPolicyContent: PolicyPageContent = {
-  title: "Return & Refund Policy",
+  title: "Return Policy",
   description: "Quality assurance, transit replacement support, and refund terms for Kobbo orders.",
   sections: [
     {
@@ -210,12 +210,6 @@ export const returnPolicyContent: PolicyPageContent = {
     },
     {
       title: "Cancellation Policy",
-      blocks: [
-
-      ],
-    },
-    {
-      title: "Need to cancel your order?",
       blocks: [
           { type: "paragraph", text: "If you've changed your mind, please contact us as soon as possible after placing your order." },
           { type: "paragraph", text: "We recommend requesting cancellation within 5–6 hours of placing the order, as this gives us the best chance of stopping the order before it enters the dispatch process and helps avoid unnecessary shipping costs." },

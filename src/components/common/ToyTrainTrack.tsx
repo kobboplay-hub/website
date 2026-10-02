@@ -39,10 +39,10 @@ export default function ToyTrainTrack() {
   }, [direction]);
 
   return (
-    <section className="relative overflow-hidden border-b border-kobbo-beige/80 bg-kobbo-cream pb-4 pt-1 sm:pb-6">
+    <section aria-label="Decorative toy train" className="relative overflow-hidden border-b border-kobbo-beige/80 bg-kobbo-cream">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Track container */}
-        <div className="relative h-20 w-full sm:h-24">
+        <div className="relative h-12 w-full sm:h-14">
           {/* Animated Toy Train on the track */}
           <div
             className="absolute bottom-2.5 z-20 -translate-x-1/2 transition-transform duration-100 ease-out will-change-transform sm:bottom-3"

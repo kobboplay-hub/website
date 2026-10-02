@@ -26,8 +26,8 @@ export function ShopByAgeDropdown({
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pinnedRef = useRef(false);
-  const pointerTypeRef = useRef<string>("");
+  const clickedOpenRef = useRef(false);
+  const pointerTypeRef = useRef("");
   const suppressFocusOpenRef = useRef(false);
   const menuId = useId();
 
@@ -40,7 +40,7 @@ export function ShopByAgeDropdown({
 
   const close = useCallback((restoreFocus = false) => {
     clearCloseTimer();
-    pinnedRef.current = false;
+    clickedOpenRef.current = false;
     setOpen(false);
     if (restoreFocus && document.activeElement !== triggerRef.current) {
       suppressFocusOpenRef.current = true;
@@ -97,18 +97,18 @@ export function ShopByAgeDropdown({
       return;
     }
 
+    clearCloseTimer();
     if (pointerTypeRef.current === "mouse") {
       if (!open) {
         setOpen(true);
-        pinnedRef.current = true;
-      } else if (!pinnedRef.current) {
-        pinnedRef.current = true;
+        clickedOpenRef.current = true;
+      } else if (!clickedOpenRef.current) {
+        clickedOpenRef.current = true;
       } else {
         close();
       }
       return;
     }
-
     if (open) close();
     else setOpen(true);
   };
@@ -150,10 +150,11 @@ export function ShopByAgeDropdown({
       onPointerEnter={(event) => {
         if (event.pointerType !== "mouse") return;
         clearCloseTimer();
+        clickedOpenRef.current = false;
         setOpen(true);
       }}
       onPointerLeave={(event) => {
-        if (event.pointerType !== "mouse" || pinnedRef.current) return;
+        if (event.pointerType !== "mouse") return;
         if (rootRef.current?.querySelector(":focus-visible")) return;
         clearCloseTimer();
         closeTimerRef.current = setTimeout(() => close(), HOVER_CLOSE_DELAY_MS);

@@ -13,7 +13,7 @@ const badges = [
   },
   {
     icon: Heart,
-    title: "Parent Loved",
+    title: "Thoughtful Play",
     subtitle: "Screen-free engagement",
   },
   {
