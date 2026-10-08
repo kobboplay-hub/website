@@ -6,6 +6,7 @@ import { Fragment, useEffect, useRef } from "react";
 import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
 import HeroButterflyFlight from "@/components/home/HeroButterflyFlight";
+import TrustBadges from "@/components/TrustBadges";
 
 function ScreenFreeIcon({ className }: { className?: string }) {
   return (
@@ -38,29 +39,25 @@ function ScreenFreeBadge({
 }) {
   return (
     <div
-      className={`flex items-center border border-kobbo-beige/80 bg-white/95 backdrop-blur-xs shadow-soft-lg transition-all duration-300 ${
-        compact
+      className={`flex items-center border border-kobbo-beige/80 bg-white/95 backdrop-blur-xs shadow-soft-lg transition-all duration-300 ${compact
           ? "gap-1.5 rounded-full px-2.5 py-1.5"
           : "gap-2.5 rounded-2xl px-3.5 py-2.5 hover:shadow-xl"
-      } ${className}`}
+        } ${className}`}
     >
       <ScreenFreeIcon
-        className={`shrink-0 transition-transform duration-500 group-hover:scale-105 ${
-          compact ? "h-7 w-7" : "h-10 w-10"
-        }`}
+        className={`shrink-0 transition-transform duration-500 group-hover:scale-105 ${compact ? "h-7 w-7" : "h-10 w-10"
+          }`}
       />
       <div className="min-w-0 leading-tight">
         <p
-          className={`font-bold text-[#1A1A1A] ${
-            compact ? "text-[11px]" : "text-sm"
-          }`}
+          className={`font-bold text-[#1A1A1A] ${compact ? "text-[11px]" : "text-sm"
+            }`}
         >
           {title}
         </p>
         <p
-          className={`font-semibold text-kobbo-green ${
-            compact ? "text-[10px]" : "text-xs"
-          }`}
+          className={`font-semibold text-kobbo-green ${compact ? "text-[10px]" : "text-xs"
+            }`}
         >
           {subtitle}
         </p>
@@ -208,7 +205,7 @@ export default function HeroSection() {
       className="relative overflow-hidden bg-kobbo-cream"
     >
       {/* ══════════ MOBILE — stable across all phone widths / aspect ratios ══════════ */}
-      <div className="relative isolate min-h-[100svh] overflow-hidden sm:hidden">
+      <div className="relative isolate min-h-[max(100svh,600px)] overflow-hidden sm:hidden">
         <div className="absolute inset-0 top-8 overflow-hidden">
           <Image
             src={imageMobile}
@@ -224,6 +221,12 @@ export default function HeroSection() {
         {/* Cream wash keeps copy readable; child stays in lower half */}
         <div
           className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[50%] bg-[linear-gradient(180deg,rgba(255,251,240,0.92)_0%,rgba(255,251,240,0.88)_42%,rgba(255,251,240,0.55)_68%,rgba(255,251,240,0.18)_86%,transparent_100%)]"
+          aria-hidden
+        />
+
+        {/* Fade the image gently behind the mobile benefit strip. */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-52 bg-[linear-gradient(0deg,rgba(255,248,232,0.94)_0%,rgba(255,248,232,0.62)_42%,transparent_100%)]"
           aria-hidden
         />
 
@@ -460,6 +463,7 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
+      <TrustBadges />
     </section>
   );
 }

@@ -299,7 +299,7 @@ export const GET_HOMEPAGE_AGE_PRODUCTS_QUERY = `
             }
           }
           featuredImage { url altText width height }
-          images(first: 5) { edges { node { url altText width height } } }
+          images(first: 50) { edges { node { url altText width height } } }
           priceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } }
           compareAtPriceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } }
           variants(first: 20) {

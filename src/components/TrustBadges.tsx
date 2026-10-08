@@ -23,34 +23,50 @@ const badges = [
   },
 ];
 
+function BenefitBadge({ badge, className = "" }: { badge: (typeof badges)[number]; className?: string }) {
+  const Icon = badge.icon;
+
+  return (
+    <div className={`group flex min-w-0 items-center gap-1.5 p-2 sm:gap-2.5 sm:p-2.5 ${className}`}>
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-kobbo-white/90 transition-transform duration-300 group-hover:scale-105 sm:h-9 sm:w-9 sm:rounded-xl">
+        <Icon className="h-3.5 w-3.5 text-kobbo-black sm:h-4 sm:w-4" strokeWidth={2.2} />
+      </div>
+      <div
+        className="min-w-0"
+        style={{ textShadow: "0 1px 3px #fff8e8, 0 0 8px rgba(255, 248, 232, 0.9)" }}
+      >
+        <span className="block font-heading text-[11px] font-extrabold leading-tight text-kobbo-black sm:text-xs lg:text-sm">
+          {badge.title}
+        </span>
+        <span className="mt-0.5 block text-[11px] font-semibold leading-tight text-[#303030] sm:text-xs">
+          {badge.subtitle}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function TrustBadges() {
   return (
-    <section className="border-b border-kobbo-beige/80 bg-gradient-to-b from-kobbo-cream via-kobbo-yellow/10 to-kobbo-cream py-3 sm:py-4">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-4">
-          {badges.map((badge) => (
-            <div
-              key={badge.title}
-              className="group flex items-center gap-2.5 rounded-2xl border border-kobbo-beige bg-kobbo-yellow/15 p-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-kobbo-yellow/25 hover:shadow-soft sm:gap-3 sm:p-3"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-kobbo-white shadow-soft transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
-                <badge.icon
-                  className="h-4 w-4 text-kobbo-black sm:h-5 sm:w-5"
-                  strokeWidth={2.2}
-                />
-              </div>
-              <div className="min-w-0">
-                <span className="block font-heading text-xs font-extrabold leading-tight text-kobbo-black sm:text-sm">
-                  {badge.title}
-                </span>
-                <span className="hidden text-[11px] font-medium leading-none text-kobbo-muted sm:mt-0.5 sm:block">
-                  {badge.subtitle}
-                </span>
-              </div>
+    <div role="group" aria-label="Why families choose Kobbo" className="absolute inset-x-0 bottom-12 z-20">
+      <div className="overflow-hidden px-4 sm:hidden">
+        <div className="animate-benefit-marquee flex w-max">
+          {[0, 1].map((copy) => (
+            <div key={copy} className="flex shrink-0 gap-2 pr-2" aria-hidden={copy === 1}>
+              {badges.map((badge) => (
+                <BenefitBadge key={badge.title} badge={badge} className="w-48 shrink-0" />
+              ))}
             </div>
           ))}
         </div>
       </div>
-    </section>
+      <div className="mx-auto hidden max-w-7xl px-6 sm:block lg:px-8">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {badges.map((badge) => (
+            <BenefitBadge key={badge.title} badge={badge} />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

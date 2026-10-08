@@ -15,7 +15,7 @@ export default function SiteLayout({
   immersiveHero = false,
 }: SiteLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden">
+    <div className="flex min-h-screen flex-col overflow-x-clip">
       <AnnouncementBar />
       <div className="relative flex min-h-0 flex-1 flex-col">
         <Header immersive={immersiveHero} />

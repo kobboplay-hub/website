@@ -39,22 +39,21 @@ export default function ToyTrainTrack() {
   }, [direction]);
 
   return (
-    <section aria-label="Decorative toy train" className="relative overflow-hidden border-b border-kobbo-beige/80 bg-kobbo-cream">
+    <section aria-label="Decorative toy train" className="relative z-10 -mt-3 bg-kobbo-cream sm:-mt-3.5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Track container */}
-        <div className="relative h-12 w-full sm:h-14">
+        <div className="relative h-10 w-full sm:h-12">
           {/* Animated Toy Train on the track */}
           <div
             className="absolute bottom-2.5 z-20 -translate-x-1/2 transition-transform duration-100 ease-out will-change-transform sm:bottom-3"
             style={{ left: `${positionPercent}%` }}
           >
             <div
-              className={`relative animate-train-bob ${
-                direction === "backward" ? "-scale-x-100" : ""
-              }`}
+              className={`relative animate-train-bob ${direction === "backward" ? "-scale-x-100" : ""
+                }`}
             >
               {/* Smoke bubbles rising from the chimney */}
-              <div className="pointer-events-none absolute -top-5 left-[34px]">
+              <div className="pointer-events-none absolute -top-5 left-[34px] hidden sm:block">
                 <div className="animate-smoke-1 absolute h-2.5 w-2.5 rounded-full bg-kobbo-yellow/70 shadow-xs" />
                 <div className="animate-smoke-2 absolute h-2 w-2 rounded-full bg-kobbo-yellow/50 shadow-xs" />
               </div>
@@ -134,9 +133,8 @@ export default function ToyTrainTrack() {
             </div>
           </div>
 
-          {/* Railway Track */}
+          {/* Railway track, kept without the section's bottom border. */}
           <div className="absolute bottom-2.5 inset-x-0 sm:bottom-3">
-            {/* Wooden Ties / Sleepers Pattern */}
             <div
               className="h-2 w-full opacity-50"
               style={{
@@ -144,7 +142,6 @@ export default function ToyTrainTrack() {
                   "repeating-linear-gradient(90deg, #c7ba9f 0, #c7ba9f 3px, transparent 3px, transparent 16px)",
               }}
             />
-            {/* Steel Rail Line */}
             <div className="h-[3px] w-full rounded-full bg-gradient-to-r from-stone-400 via-kobbo-black/70 to-stone-400 shadow-xs" />
           </div>
         </div>

@@ -1,10 +1,8 @@
 import SiteLayout from "@/components/SiteLayout";
 import HeroSection from "@/components/HeroSection";
-import TrustBadges from "@/components/TrustBadges";
 import ToyTrainTrack from "@/components/common/ToyTrainTrack";
 import PlayKitsSection from "@/components/home/PlayKitsSection";
 import ResearchStatBanner from "@/components/home/ResearchStatBanner";
-import WhyParentsChooseUs from "@/components/WhyParentsChooseUs";
 import InstagramVideos from "@/components/InstagramVideos";
 import FounderNote from "@/components/home/FounderNote";
 import {
@@ -31,12 +29,10 @@ export default async function Home() {
   return (
     <SiteLayout immersiveHero>
       <HeroSection />
-      <TrustBadges />
       <ToyTrainTrack />
       <PlayKitsSection ageGroups={ageGroups} products={products} />
       <ResearchStatBanner />
       <InstagramVideos />
-      <WhyParentsChooseUs />
       <FounderNote />
     </SiteLayout>
   );

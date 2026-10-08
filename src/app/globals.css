@@ -22,7 +22,7 @@
 
 html,
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
@@ -399,6 +399,17 @@ body {
 
 .animate-float-block {
   animation: hero-float-block 6.5s ease-in-out infinite;
+}
+
+@keyframes benefit-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-benefit-marquee {
+  animation: benefit-marquee 16s linear infinite;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
