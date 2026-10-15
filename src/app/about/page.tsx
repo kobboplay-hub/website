@@ -6,12 +6,12 @@ import { aboutContent } from "@/data/about";
 import { buildMetadata, buildPageTitle } from "@/data/seo";
 
 export const metadata: Metadata = buildMetadata(
-  buildPageTitle("Our Story"),
-  "At Kobbo, childhood is about building curious minds and lifelong learners. Discover why we're more than toys.",
+  buildPageTitle("More Than Toys. Meaningful Play."),
+  "Thoughtfully selected toys and age-specific play kits that make choosing easier and everyday play more meaningful.",
 );
 
 export default function AboutPage() {
-  const { eyebrow, headline, paragraphs, purpose, closing, image, imageAlt } =
+  const { eyebrow, headline, paragraphs, closing, image, imageAlt } =
     aboutContent;
 
   return (
@@ -35,7 +35,7 @@ export default function AboutPage() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-kobbo-muted">
                 {eyebrow}
               </p>
-              <h1 className="font-heading mt-3 text-4xl font-extrabold tracking-tight text-kobbo-black sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
+              <h1 className="font-heading mt-3 text-4xl font-extrabold tracking-tight text-kobbo-black sm:text-5xl lg:text-[3rem] lg:leading-[1.08]">
                 {headline}
               </h1>
             </header>
@@ -68,24 +68,9 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <p className="font-heading mt-8 text-2xl font-extrabold leading-snug text-kobbo-black sm:mt-10 sm:text-3xl">
-              {purpose}
+            <p className="font-heading mt-8 border-t border-kobbo-beige pt-8 text-xl font-extrabold text-kobbo-black sm:mt-10 sm:text-2xl">
+              {closing}
             </p>
-
-            <div className="mt-8 space-y-2 border-t border-kobbo-beige pt-8 sm:mt-10">
-              {closing.map((line, index) => (
-                <p
-                  key={line}
-                  className={
-                    index === closing.length - 1
-                      ? "font-heading text-xl font-extrabold text-kobbo-black sm:text-2xl"
-                      : "text-[15px] leading-relaxed text-kobbo-muted sm:text-base"
-                  }
-                >
-                  {line}
-                </p>
-              ))}
-            </div>
 
             <div className="mt-10 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:items-center">
               <Link

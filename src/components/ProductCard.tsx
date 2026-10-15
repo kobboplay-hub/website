@@ -112,7 +112,7 @@ export default function ProductCard({
     >
       <Link
         href={`/products/${product.handle}`}
-        className="relative aspect-square overflow-hidden bg-kobbo-beige"
+        className="relative aspect-square overflow-hidden bg-kobbo-white"
       >
         {imageUrl ? (
           <Image
@@ -120,7 +120,7 @@ export default function ProductCard({
             alt={product.featuredImage?.altText ?? product.title}
             fill
             sizes={imageSizes}
-            className={`object-cover transition-all duration-500 group-hover:scale-105 ${
+            className={`object-contain p-2 transition-all duration-500 group-hover:scale-[1.03] sm:p-3 ${
               showVideo ? "opacity-0" : "opacity-100"
             }`}
           />

@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useRef } from "react";
-import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
+import { Leaf, ShieldCheck, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
+import type { AgeGroup } from "@/lib/shopify/types";
 import HeroButterflyFlight from "@/components/home/HeroButterflyFlight";
 import TrustBadges from "@/components/TrustBadges";
 
@@ -129,11 +130,40 @@ function HeroBlock({ className = "" }: { className?: string }) {
   );
 }
 
-export default function HeroSection() {
+function HeroAgeButtons({ ageGroups, compact = false }: { ageGroups: AgeGroup[]; compact?: boolean }) {
+  const sortedGroups = [...ageGroups]
+    .sort((a, b) => Number(a.name.match(/\d+/)?.[0] ?? 99) - Number(b.name.match(/\d+/)?.[0] ?? 99))
+    .slice(0, 2);
+  const ageButtons = [
+    { label: "2–3 years", group: sortedGroups[0] },
+    { label: "3–5 years", group: sortedGroups[1] },
+  ];
+
+  return (
+    <div className="hero-enter-cta mt-5 lg:mt-8">
+      <p className="mb-2.5 text-xs font-bold text-kobbo-black sm:text-sm">Shop by your child&apos;s age</p>
+      <div className="flex flex-wrap gap-2.5">
+        {ageButtons.map(({ label, group }) => (
+          <Link
+            key={label}
+            href="#play-kits"
+            onClick={() => {
+              if (group) window.dispatchEvent(new CustomEvent("kobbo:select-play-kit-age", { detail: group.id }));
+            }}
+            className={`inline-flex items-center justify-center rounded-full bg-kobbo-yellow font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black ${compact ? "min-h-10 px-5 text-xs" : "min-h-11 px-7 text-sm"}`}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function HeroSection({ ageGroups }: { ageGroups: AgeGroup[] }) {
   const {
     headline,
     description,
-    primaryCta,
     trustItems,
     imageBadgeTitle,
     imageBadgeSubtitle,
@@ -263,23 +293,7 @@ export default function HeroSection() {
               {description}
             </p>
 
-            {/* Staggered Layer 3: CTA Button with light sweep shimmer */}
-            <div className="hero-enter-cta mt-5">
-              <Link
-                href={primaryCta.href}
-                className="group relative inline-flex min-h-10 items-center justify-center gap-1.5 overflow-hidden rounded-full bg-kobbo-yellow px-5 py-2 text-xs font-bold text-[#1A1A1A] shadow-soft transition-transform active:scale-[0.98]"
-              >
-                <span
-                  aria-hidden
-                  className="animate-shimmer-sweep pointer-events-none absolute inset-0 -top-1/2 -bottom-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/45 to-transparent"
-                />
-                <span className="relative z-10">{primaryCta.label}</span>
-                <ArrowRight
-                  className="relative z-10 h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1"
-                  strokeWidth={2.5}
-                />
-              </Link>
-            </div>
+            <HeroAgeButtons ageGroups={ageGroups} compact />
 
             {/* Staggered Layer 4: Trust Items */}
             <div className="hero-enter-trust mt-4 flex flex-col items-start gap-2">
@@ -391,24 +405,7 @@ export default function HeroSection() {
               {description}
             </p>
 
-            {/* Staggered Layer 3: CTA Button with light sweep shimmer & polished hover */}
-            <div className="hero-enter-cta mt-8 lg:mt-9">
-              <Link
-                href={primaryCta.href}
-                className="group relative inline-flex min-h-11 items-center justify-center gap-2 overflow-hidden rounded-full bg-kobbo-yellow px-8 py-2.5 text-sm font-bold text-[#1A1A1A] shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-kobbo-yellow-light hover:shadow-[0_12px_28px_-6px_rgba(255,199,0,0.55)] active:scale-[0.98]"
-              >
-                {/* Light sweep reflection */}
-                <span
-                  aria-hidden
-                  className="animate-shimmer-sweep pointer-events-none absolute inset-0 -top-1/2 -bottom-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                />
-                <span className="relative z-10">{primaryCta.label}</span>
-                <ArrowRight
-                  className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
-                  strokeWidth={2.5}
-                />
-              </Link>
-            </div>
+            <HeroAgeButtons ageGroups={ageGroups} />
 
             {/* Staggered Layer 4: Trust Items */}
             <div className="hero-enter-trust mt-6 flex items-center gap-3 lg:mt-7">

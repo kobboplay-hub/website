@@ -16,11 +16,11 @@ export default function FounderNote() {
     >
       <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
         <Image
-          src="/founder-note-placeholder.png"
+          src="/founder-ruchi.jpeg"
           alt=""
           fill
           sizes="100vw"
-          className="object-cover object-[61%_center] sm:object-center"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-kobbo-black/15" />
       </div>

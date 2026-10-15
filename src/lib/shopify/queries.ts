@@ -126,6 +126,53 @@ export const PRODUCT_DETAIL_FRAGMENT = `
   fragment ProductDetail on Product {
     ...ProductCard
     descriptionHtml
+    kitFlag: metafield(namespace: "custom", key: "kit") {
+      value
+    }
+    insidePlayKit: metafield(namespace: "custom", key: "inside_the_play_ki") {
+      reference {
+        ... on Metaobject {
+          id
+          fields {
+            key
+            value
+            reference {
+              ... on MediaImage {
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+          }
+        }
+      }
+      references(first: 50) {
+        edges {
+          node {
+            ... on Metaobject {
+              id
+              fields {
+                key
+                value
+                reference {
+                  ... on MediaImage {
+                    image {
+                      url
+                      altText
+                      width
+                      height
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     seo {
       title
       description
@@ -263,8 +310,9 @@ export const PRODUCT_WITH_VIDEO_FRAGMENT = `
 
 export const GET_PRODUCTS_WITH_VIDEOS_QUERY = `
   ${PRODUCT_WITH_VIDEO_FRAGMENT}
-  query GetProductsWithVideos($first: Int!) {
-    products(first: $first) {
+  query GetProductsWithVideos($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
+      pageInfo { hasNextPage endCursor }
       edges {
         node {
           ...ProductWithVideo

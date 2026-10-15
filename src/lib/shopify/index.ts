@@ -18,6 +18,7 @@ import type {
   Collection,
   Product,
   ProductMerchandisingFlags,
+  PlayKitItem,
   ShopifyAgeGroupNode,
   ShopifyCollectionNode,
   ShopifyMediaVideo,
@@ -145,6 +146,28 @@ function normalizeMerchandisingFlags(
   };
 }
 
+function normalizePlayKitItems(node: ShopifyProductNode): PlayKitItem[] {
+  const singleItem = node.insidePlayKit?.reference;
+  const items = singleItem
+    ? [singleItem]
+    : (node.insidePlayKit?.references?.edges ?? []).map((edge) => edge.node);
+
+  return items.flatMap((item) => {
+    if (!item?.fields) return [];
+
+    const fields = new Map(item.fields.map((field) => [field.key, field]));
+    const title = fields.get("title")?.value?.trim();
+    if (!title) return [];
+
+    return [{
+      id: item.id,
+      title,
+      description: fields.get("description")?.value?.trim() ?? "",
+      image: fields.get("image")?.reference?.image ?? null,
+    }];
+  });
+}
+
 export function normalizeProduct(node: ShopifyProductNode): Product {
   const currencyCode = node.priceRange.minVariantPrice.currencyCode;
 
@@ -171,6 +194,8 @@ export function normalizeProduct(node: ShopifyProductNode): Product {
       ? normalizeAgeGroup(node.ageGroup.reference)
       : null,
     merchandising: normalizeMerchandisingFlags(node.merchandisingFlags),
+    isKit: node.kitFlag?.value?.toLowerCase() === "true",
+    playKitItems: normalizePlayKitItems(node),
   };
 }
 
@@ -573,15 +598,29 @@ export async function getProductsPage(
   };
 }
 
-export async function getProductsWithVideos(limit = 50): Promise<Product[]> {
-  const data = await shopifyFetch<{
-    products: { edges: { node: ShopifyProductNode }[] };
-  }>({
-    query: GET_PRODUCTS_WITH_VIDEOS_QUERY,
-    variables: { first: limit },
-  });
+export async function getProductsWithVideos(): Promise<Product[]> {
+  const products: Product[] = [];
+  let after: string | null = null;
 
-  return data.products.edges.map((edge) => normalizeProduct(edge.node));
+  while (true) {
+    const data: {
+      products: {
+        pageInfo: { hasNextPage: boolean; endCursor: string | null };
+        edges: { node: ShopifyProductNode }[];
+      };
+    } = await shopifyFetch({
+      query: GET_PRODUCTS_WITH_VIDEOS_QUERY,
+      variables: { first: 50, after },
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+    });
+
+    products.push(...data.products.edges.map((edge) => normalizeProduct(edge.node)));
+    const nextCursor = data.products.pageInfo.endCursor;
+    if (!data.products.pageInfo.hasNextPage || !nextCursor || nextCursor === after) break;
+    after = nextCursor;
+  }
+
+  return products;
 }
 
 /** Newest products first — used for homepage "Recently Added" */

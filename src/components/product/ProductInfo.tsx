@@ -1,25 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
-  Heart,
   Minus,
   Plus,
-  Truck,
-  ShieldCheck,
-  Lock,
   Loader2,
   type LucideProps,
 } from "lucide-react";
 import { formatPrice, type Product } from "@/lib/shopify/types";
 import { useCart } from "@/context/cart-context";
-import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductDescription from "@/components/product/ProductDescription";
 import ProductDetailRating from "@/components/product/ProductDetailRating";
 import ProductShareButton from "@/components/product/ProductShareButton";
 import ProductHighlights from "@/components/product/ProductHighlights";
+import { useProductPurchase } from "@/components/product/ProductPurchaseContext";
 import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 interface ProductInfoProps {
@@ -63,54 +58,9 @@ function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
   );
 }
 
-type TrustItem = {
-  icon:
-    | typeof ReplacementIcon
-    | typeof Truck
-    | typeof ShieldCheck
-    | typeof Lock;
-  label: string;
-  href?: string;
-};
-
-function getTrustItems(showReplacement: boolean): TrustItem[] {
-  const items: TrustItem[] = [];
-  if (showReplacement) {
-    items.push({
-      icon: ReplacementIcon,
-      label: "7 days Replacement",
-      href: "/return-policy",
-    });
-  }
-  items.push(
-    {
-      icon: Truck,
-      label: "Free Delivery",
-      href: "/shipping-policy",
-    },
-    {
-      icon: ShieldCheck,
-      label: "Secure transaction",
-    },
-    {
-      icon: Lock,
-      label: "Safe Checkout",
-    },
-  );
-  return items;
-}
-
 export default function ProductInfo({ product, reviewSummary }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(1);
-  const { isWishlisted, toggleWishlist } = useWishlist();
-  const wishlisted = isWishlisted(product.handle);
-  const [selectedVariantId, setSelectedVariantId] = useState(
-    product.variants.find((v) => v.availableForSale)?.id ??
-      product.variants[0]?.id ??
-      "",
-  );
+  const { quantity, setQuantity, selectedVariantId, setSelectedVariantId } = useProductPurchase();
   const { buyNow, isBuyNowLoading } = useCart();
-  const trustItems = getTrustItems(isElectronicToy(product));
 
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ??
@@ -268,58 +218,16 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
             {buyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Buy Now
           </button>
-          <button
-            type="button"
-            onClick={() => toggleWishlist(product.handle)}
-            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full border-2 border-kobbo-beige bg-kobbo-white py-3 text-sm font-semibold text-kobbo-black transition-all hover:border-kobbo-yellow hover:bg-kobbo-cream active:bg-kobbo-beige"
-          >
-            <Heart
-              className={`h-4 w-4 ${wishlisted ? "fill-kobbo-yellow text-kobbo-yellow" : ""}`}
-            />
-            {wishlisted ? "Added to Wishlist" : "Add to Wishlist"}
-          </button>
         </div>
 
-        {/* Amazon-style service badges — single row on mobile */}
-        <div className="mt-6 flex flex-nowrap items-start justify-between gap-1 border-t border-kobbo-beige/80 pt-5 sm:justify-start sm:gap-x-6">
-          {trustItems.map((item) => {
-            const Icon = item.icon;
-            const content = (
-              <>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#f0ad4e]/70 bg-[#fff8ef] sm:h-11 sm:w-11">
-                  <Icon
-                    className="h-3.5 w-3.5 text-[#e67e22] sm:h-5 sm:w-5"
-                    strokeWidth={1.75}
-                  />
-                </span>
-                <span className="w-full text-center text-[9px] font-medium leading-tight text-kobbo-muted sm:max-w-[5.5rem] sm:text-xs sm:leading-snug">
-                  {item.label}
-                </span>
-              </>
-            );
-
-            const itemClassName =
-              "group flex min-w-0 flex-1 flex-col items-center gap-1 sm:flex-none sm:min-w-[5.5rem] sm:max-w-[6.5rem] sm:gap-1.5";
-
-            if (item.href) {
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={itemClassName}
-                >
-                  {content}
-                </Link>
-              );
-            }
-
-            return (
-              <div key={item.label} className={itemClassName}>
-                {content}
-              </div>
-            );
-          })}
-        </div>
+        {isElectronicToy(product) && (
+          <div className="mt-6 border-t border-kobbo-beige/80 pt-5">
+            <Link href="/return-policy" className="inline-flex items-center gap-2 text-sm font-medium text-kobbo-muted hover:text-kobbo-black">
+              <ReplacementIcon className="size-5 text-[#e67e22]" strokeWidth={1.75} />
+              7 days Replacement
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Mobile sticky buy bar — standard ecommerce pattern */}

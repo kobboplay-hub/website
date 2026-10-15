@@ -83,14 +83,14 @@ export default function RecentlyViewed({ currentProduct }: RecentlyViewedProps) 
               href={`/products/${item.handle}`}
               className="group w-40 shrink-0 overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg sm:w-48"
             >
-              <div className="relative aspect-square bg-kobbo-beige">
+              <div className="relative aspect-square bg-kobbo-white">
                 {item.imageUrl ? (
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
                     fill
                     sizes="192px"
-                    className="object-cover transition-transform group-hover:scale-105"
+                    className="object-contain p-2 transition-transform group-hover:scale-[1.03]"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-kobbo-muted">

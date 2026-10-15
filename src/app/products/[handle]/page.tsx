@@ -7,6 +7,8 @@ import ProductFloatingVideoWidget from "@/components/product/ProductFloatingVide
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductVideo from "@/components/product/ProductVideo";
 import ProductTabs from "@/components/product/ProductTabs";
+import InsidePlayKit from "@/components/product/InsidePlayKit";
+import { ProductPurchaseProvider } from "@/components/product/ProductPurchaseContext";
 import WhyParentsLoveIt from "@/components/product/WhyParentsLoveIt";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import ProductReviews from "@/components/reviews/ProductReviews";
@@ -100,6 +102,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
+      <ProductPurchaseProvider key={product.id} product={product}>
       <div className="min-w-0 overflow-x-hidden pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
         <ProductBreadcrumb productName={product.title} />
 
@@ -130,7 +133,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
 
         <ProductVideo videos={videos} />
-        <ProductTabs content={tabsContent} />
+        {product.isKit ? (
+          <InsidePlayKit items={product.playKitItems} />
+        ) : (
+          <ProductTabs content={tabsContent} />
+        )}
         <WhyParentsLoveIt items={defaultWhyParentsLove} />
         <RelatedProducts
           products={relatedProducts}
@@ -144,6 +151,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <FAQSection faqs={productFaqs} />
         <RecentlyViewed currentProduct={product} />
       </div>
+      </ProductPurchaseProvider>
     </SiteLayout>
   );
 }

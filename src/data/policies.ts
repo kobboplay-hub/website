@@ -3,7 +3,7 @@
  * Purged of any former legal entities. 100% Kobbo.
  */
 
-import { legalEntity, footerBrand } from "./footer";
+import { footerBrand } from "./footer";
 
 export type PolicyBlock =
   | { type: "paragraph"; text: string }
@@ -108,7 +108,7 @@ export const contactPageContent: PolicyPageContent = {
       blocks: [
         {
           type: "paragraph",
-          text: legalEntity.ownershipLine,
+          text: "Kobbo | Stage-Based Play for Your Child’s Developing Brain",
         },
       ],
     },

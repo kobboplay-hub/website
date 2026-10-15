@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { useCart } from "@/context/cart-context";
+import Link from "next/link";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import AddToCartButton from "@/components/cart/AddToCartButton";
 import type { Product } from "@/lib/shopify/types";
 
 interface PlayKitCardProps {
@@ -13,14 +14,19 @@ interface PlayKitCardProps {
   count: number;
 }
 
+function formatPrice(amount: number, currencyCode: string): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: currencyCode,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
 export default function PlayKitCard({ product, ageName, index, count }: PlayKitCardProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const touchStartX = useRef<number | null>(null);
   const thumbnailStripRef = useRef<HTMLDivElement>(null);
-  const { buyNow, isBuyNowLoading } = useCart();
   const merchandiseId = product.variants.find((variant) => variant.availableForSale)?.id ?? null;
-  const isLoading = merchandiseId ? isBuyNowLoading(merchandiseId) : false;
   const images = product.featuredImage
     ? [product.featuredImage, ...product.images.filter((image) => image.url !== product.featuredImage?.url)]
     : product.images;
@@ -48,17 +54,6 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
     if (Math.abs(distance) > 40) showAdjacentImage(distance < 0 ? 1 : -1);
   }
 
-  async function handleContinue() {
-    if (!merchandiseId || isLoading) return;
-    setCheckoutError(null);
-    const checkoutUrl = await buyNow(merchandiseId, 1);
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
-    } else {
-      setCheckoutError("Could not start checkout. Please try again.");
-    }
-  }
-
   return (
     <article
       role="group"
@@ -68,7 +63,7 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
     >
       <div className="min-w-0 bg-kobbo-beige p-3 sm:p-4">
         <div
-          className="relative aspect-[4/3] w-full touch-pan-y overflow-hidden rounded-2xl bg-kobbo-white"
+          className="relative aspect-square w-full touch-pan-y overflow-hidden rounded-2xl bg-kobbo-white"
           onTouchStart={(event) => { touchStartX.current = event.touches[0].clientX; }}
           onTouchEnd={handleImageTouchEnd}
           onTouchCancel={() => { touchStartX.current = null; }}
@@ -79,7 +74,7 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
               alt={activeImage.altText || `${product.title} image ${activeImageIndex + 1}`}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 35vw"
-              className="object-contain p-3"
+              className="object-contain p-3 sm:p-4"
               draggable={false}
             />
           ) : (
@@ -119,7 +114,7 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
                 aria-pressed={activeImageIndex === imageIndex}
                 className={`relative size-12 shrink-0 overflow-hidden rounded-xl border-2 bg-kobbo-white transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:size-13 ${activeImageIndex === imageIndex ? "border-kobbo-yellow shadow-soft" : "border-transparent opacity-80 hover:opacity-100"}`}
               >
-                <Image src={image.url} alt="" fill sizes="64px" className="object-cover" />
+                <Image src={image.url} alt="" fill sizes="64px" className="object-contain p-1" />
               </button>
             ))}
           </div>
@@ -130,16 +125,25 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
         <p className="text-xs font-bold uppercase tracking-wider text-kobbo-muted">{ageName}</p>
         <h3 className="font-heading mt-2 text-2xl font-extrabold text-kobbo-black sm:text-3xl">{product.title}</h3>
         {product.description && <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-kobbo-black/80">{product.description}</p>}
-        <button
-          type="button"
-          onClick={handleContinue}
-          disabled={!product.availableForSale || !merchandiseId || isLoading}
-          className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-5 text-sm font-bold text-kobbo-black shadow-soft transition-colors hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isLoading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-          {product.availableForSale ? "Continue" : "Sold Out"}
-        </button>
-        {checkoutError && <p className="mt-2 text-sm text-red-700" role="alert">{checkoutError}</p>}
+        <div className="mt-5 flex flex-wrap items-baseline gap-2">
+          <span className="font-heading text-2xl font-extrabold text-kobbo-black">{formatPrice(product.price, product.currencyCode)}</span>
+          {product.compareAtPrice && product.compareAtPrice > product.price && (
+            <span className="text-sm text-kobbo-muted line-through">{formatPrice(product.compareAtPrice, product.currencyCode)}</span>
+          )}
+        </div>
+        <div className="mt-5 flex flex-col gap-3">
+          <AddToCartButton
+            merchandiseId={merchandiseId}
+            productTitle={product.title}
+            disabled={!product.availableForSale}
+            variant="full"
+            label={product.availableForSale ? "Add to Cart" : "Sold Out"}
+            className="min-h-11 px-5"
+          />
+          <Link href={`/products/${product.handle}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-kobbo-beige bg-kobbo-white px-5 text-sm font-bold text-kobbo-black transition-colors hover:border-kobbo-yellow">
+            View Kit <ArrowRight className="size-4" aria-hidden />
+          </Link>
+        </div>
       </div>
     </article>
   );

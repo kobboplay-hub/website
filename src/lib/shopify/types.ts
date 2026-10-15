@@ -41,6 +41,24 @@ export interface ShopifyMetafield {
   references?: { edges: { node: ShopifyMetafieldReference }[] };
 }
 
+export interface ShopifyKitItemNode {
+  id: string;
+  fields: {
+    key: string;
+    value: string | null;
+    reference: {
+      image?: ShopifyImage | null;
+    } | null;
+  }[];
+}
+
+export interface PlayKitItem {
+  id: string;
+  title: string;
+  description: string;
+  image: ShopifyImage | null;
+}
+
 export interface ShopifySeo {
   title: string | null;
   description: string | null;
@@ -99,6 +117,8 @@ export interface Product {
   mediaVideos?: ShopifyMediaVideo[];
   ageGroup: ProductAgeGroupReference | null;
   merchandising: ProductMerchandisingFlags;
+  isKit: boolean;
+  playKitItems: PlayKitItem[];
 }
 
 export interface Collection {
@@ -140,6 +160,11 @@ export interface ShopifyProductNode {
     reference: ShopifyAgeGroupNode | null;
   } | null;
   merchandisingFlags?: ({ key: string; value: string } | null)[];
+  kitFlag?: { value: string } | null;
+  insidePlayKit?: {
+    reference: ShopifyKitItemNode | null;
+    references: { edges: { node: ShopifyKitItemNode }[] } | null;
+  } | null;
 }
 
 export interface ShopifyAgeGroupNode {

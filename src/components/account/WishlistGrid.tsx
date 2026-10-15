@@ -54,7 +54,7 @@ export default function WishlistGrid() {
           >
             <Link
               href={`/products/${item.handle}`}
-              className="relative block aspect-square bg-kobbo-beige"
+              className="relative block aspect-square bg-kobbo-white"
             >
               {item.image ? (
                 <Image
@@ -62,7 +62,7 @@ export default function WishlistGrid() {
                   alt={item.title}
                   fill
                   sizes="200px"
-                  className="object-cover"
+                  className="object-contain p-2"
                 />
               ) : null}
             </Link>

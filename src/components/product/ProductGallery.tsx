@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, ImageOff } from "lucide-react";
 import ProductShareButton from "@/components/product/ProductShareButton";
+import { useWishlist } from "@/context/wishlist-context";
 
 interface ProductGalleryProps {
   images: string[];
@@ -19,6 +20,8 @@ export default function ProductGallery({
   altTexts = [],
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const wishlisted = productHandle ? isWishlisted(productHandle) : false;
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const hasImages = images.length > 0;
   const hasMultiple = hasImages && images.length > 1;
@@ -47,13 +50,24 @@ export default function ProductGallery({
     <div className="w-full lg:sticky lg:top-24 lg:self-start">
       <div className="relative">
         {productHandle ? (
-          <ProductShareButton
-            productTitle={productName}
-            productHandle={productHandle}
-            variant="overlay"
-          />
+          <>
+            <ProductShareButton
+              productTitle={productName}
+              productHandle={productHandle}
+              variant="overlay"
+            />
+            <button
+              type="button"
+              onClick={() => toggleWishlist(productHandle)}
+              aria-label={wishlisted ? `Remove ${productName} from wishlist` : `Add ${productName} to wishlist`}
+              aria-pressed={wishlisted}
+              className="absolute right-2 top-2 z-20 flex size-10 items-center justify-center rounded-full border border-white/70 bg-white/95 text-kobbo-black shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:right-3 sm:top-3"
+            >
+              <Heart className={`size-5 ${wishlisted ? "fill-kobbo-yellow text-kobbo-black" : ""}`} strokeWidth={2.1} aria-hidden />
+            </button>
+          </>
         ) : null}
-        <div className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-kobbo-beige shadow-soft sm:rounded-3xl">
+        <div className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-kobbo-white shadow-soft sm:rounded-3xl">
         {hasImages ? (
           <Image
             src={images[activeIndex]}
@@ -64,7 +78,7 @@ export default function ProductGallery({
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover"
+            className="object-contain p-3 sm:p-4"
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-kobbo-muted">
@@ -119,7 +133,7 @@ export default function ProductGallery({
                 alt={`${productName} thumbnail ${index + 1}`}
                 fill
                 sizes="64px"
-                className="object-cover"
+                className="object-contain bg-kobbo-white p-1"
               />
             </button>
           ))}

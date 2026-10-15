@@ -76,14 +76,14 @@ export default function OrderCard({
                 className="flex flex-col gap-3 rounded-2xl border border-kobbo-beige bg-kobbo-cream/40 p-3 sm:flex-row sm:items-center sm:gap-4 sm:p-4"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-kobbo-beige sm:h-[72px] sm:w-[72px]">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-kobbo-white sm:h-[72px] sm:w-[72px]">
                     {item.imageUrl ? (
                       <Image
                         src={item.imageUrl}
                         alt={item.title}
                         fill
                         sizes="72px"
-                        className="object-cover"
+                        className="object-contain p-1"
                       />
                     ) : null}
                   </div>

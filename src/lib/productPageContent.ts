@@ -205,11 +205,12 @@ function mediaVideoToItem(
   media: ShopifyMediaVideo,
   fallbackThumb: string,
 ): ProductVideoItem | null {
-  if (media.mediaContentType === "VIDEO" && media.sources?.[0]?.url) {
+  const source = media.sources?.find((item) => item.mimeType === "video/mp4") ?? media.sources?.[0];
+  if (media.mediaContentType === "VIDEO" && source?.url) {
     return {
       id: media.id,
       type: "mp4",
-      url: media.sources[0].url,
+      url: source.url,
       thumbnail: media.previewImage?.url ?? fallbackThumb,
       label: media.alt ?? "Product Video",
     };
@@ -578,7 +579,12 @@ export function getHomepageProductVideos(
         id: product.id,
         title: product.title,
         handle: product.handle,
-        video,
+        video: {
+          ...video,
+          thumbnail: video.thumbnail.includes("images.unsplash.com/")
+            ? product.featuredImage?.url ?? product.images[0]?.url ?? video.thumbnail
+            : video.thumbnail,
+        },
       };
     })
     .filter((item): item is HomeProductVideo => item !== null)

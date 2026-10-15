@@ -24,12 +24,8 @@ export function buildMetadata(
     description,
     applicationName: SITE_NAME,
     icons: {
-      icon: [
-        { url: "/favicon.ico", sizes: "any" },
-        { url: "/kobbo-icon.png", type: "image/png", sizes: "1024x1024" },
-      ],
-      apple: [{ url: "/kobbo-icon.png", sizes: "180x180", type: "image/png" }],
-      shortcut: ["/favicon.ico"],
+      icon: [{ url: "/kobbo-icon.png", type: "image/png", sizes: "1024x1024" }],
+      apple: [{ url: "/kobbo-icon.png", sizes: "1024x1024", type: "image/png" }],
     },
     openGraph: {
       title,
@@ -57,7 +53,7 @@ export function buildMetadata(
 }
 
 export const homeMetadata = buildMetadata(
-  buildPageTitle(),
+  "Kobbo | Stage-Based Play for Your Child’s Developing Brain",
   "Toys that grow curious minds. Educational toys, creative kits and games for growing children.",
 );
 

@@ -89,15 +89,14 @@ export default function ShopByCategories({
                 href={`/collections/${col.handle}`}
                 className="group flex w-[210px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-kobbo-beige/90 bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-kobbo-yellow hover:shadow-soft-lg active:scale-[0.98] sm:w-[260px] sm:rounded-3xl lg:w-[280px]"
               >
-                {/* Properly Aligned Image Container with compact 4:3 aspect ratio */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-kobbo-white">
                   {col.image?.url ? (
                     <Image
                       src={col.image.url}
                       alt={col.image.altText ?? col.title}
                       fill
                       sizes="(max-width: 640px) 210px, (max-width: 1024px) 260px, 280px"
-                      className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+                      className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                       priority
                     />
                   ) : (

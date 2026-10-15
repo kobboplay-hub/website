@@ -1,4 +1,4 @@
-import { Sparkles, Puzzle, Heart, Smile } from "lucide-react";
+import { Sparkles, Puzzle, Heart, Truck } from "lucide-react";
 
 const badges = [
   {
@@ -17,17 +17,17 @@ const badges = [
     subtitle: "Screen-free engagement",
   },
   {
-    icon: Smile,
-    title: "Joyful Play",
-    subtitle: "Pure fun, natural learning",
+    icon: Truck,
+    title: "Pan-India Delivery",
+    subtitle: "Right to your door",
   },
 ];
 
-function BenefitBadge({ badge, className = "" }: { badge: (typeof badges)[number]; className?: string }) {
+function BenefitBadge({ badge }: { badge: (typeof badges)[number] }) {
   const Icon = badge.icon;
 
   return (
-    <div className={`group flex min-w-0 items-center gap-1.5 p-2 sm:gap-2.5 sm:p-2.5 ${className}`}>
+    <div className="group flex min-w-0 items-center gap-1.5 p-2 sm:gap-2.5 sm:p-2.5">
       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-kobbo-white/90 transition-transform duration-300 group-hover:scale-105 sm:h-9 sm:w-9 sm:rounded-xl">
         <Icon className="h-3.5 w-3.5 text-kobbo-black sm:h-4 sm:w-4" strokeWidth={2.2} />
       </div>
@@ -48,19 +48,8 @@ function BenefitBadge({ badge, className = "" }: { badge: (typeof badges)[number
 
 export default function TrustBadges() {
   return (
-    <div role="group" aria-label="Why families choose Kobbo" className="absolute inset-x-0 bottom-12 z-20">
-      <div className="overflow-hidden px-4 sm:hidden">
-        <div className="animate-benefit-marquee flex w-max">
-          {[0, 1].map((copy) => (
-            <div key={copy} className="flex shrink-0 gap-2 pr-2" aria-hidden={copy === 1}>
-              {badges.map((badge) => (
-                <BenefitBadge key={badge.title} badge={badge} className="w-48 shrink-0" />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="mx-auto hidden max-w-7xl px-6 sm:block lg:px-8">
+    <div role="group" aria-label="Why families choose Kobbo" className="absolute inset-x-0 bottom-12 z-20 hidden sm:block">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {badges.map((badge) => (
             <BenefitBadge key={badge.title} badge={badge} />

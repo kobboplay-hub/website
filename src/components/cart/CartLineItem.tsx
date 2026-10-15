@@ -20,7 +20,7 @@ export default function CartLineItem({ line, compact }: CartLineItemProps) {
     <div className="flex gap-3 rounded-2xl bg-kobbo-cream p-3">
       <Link
         href={`/products/${line.productHandle}`}
-        className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-kobbo-beige"
+        className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-kobbo-white"
       >
         {line.imageUrl ? (
           <Image
@@ -28,7 +28,7 @@ export default function CartLineItem({ line, compact }: CartLineItemProps) {
             alt={line.imageAlt ?? line.productTitle}
             fill
             sizes="80px"
-            className="object-cover"
+            className="object-contain p-1"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-kobbo-muted">

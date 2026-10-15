@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import PlayKitCard from "@/components/home/PlayKitCard";
 import type { AgeGroup, Product } from "@/lib/shopify/types";
@@ -21,6 +22,19 @@ export default function PlayKitsSection({ ageGroups, products }: PlayKitsSection
   const ageProducts = products.filter(
     (product) => product.ageGroup?.id === selectedAge?.id,
   );
+
+  useEffect(() => {
+    const selectHeroAge = (event: Event) => {
+      const ageId = (event as CustomEvent<string>).detail;
+      if (!ageGroups.some((group) => group.id === ageId)) return;
+      setSelectedAgeId(ageId);
+      setActiveIndex(0);
+      carouselRef.current?.scrollTo({ left: 0, behavior: "instant" });
+    };
+
+    window.addEventListener("kobbo:select-play-kit-age", selectHeroAge);
+    return () => window.removeEventListener("kobbo:select-play-kit-age", selectHeroAge);
+  }, [ageGroups]);
 
   function goToProduct(index: number) {
     const carousel = carouselRef.current;
@@ -134,6 +148,15 @@ export default function PlayKitsSection({ ageGroups, products }: PlayKitsSection
             {selectedAge ? `No products are assigned to ${selectedAge.name} yet.` : "No age groups are available yet."}
           </p>
         )}
+
+        <div className="mt-9 flex justify-center sm:mt-11">
+          <Link
+            href="/shop"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-kobbo-black bg-kobbo-black px-8 py-3 text-sm font-bold text-kobbo-white transition-colors hover:bg-kobbo-black/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:text-base"
+          >
+            Shop all toys
+          </Link>
+        </div>
       </div>
     </section>
   );

@@ -97,7 +97,7 @@ export default function ProductShareButton({
     <div
       ref={rootRef}
       className={
-        variant === "overlay" ? "absolute right-2 top-2 z-20 sm:right-3 sm:top-3" : "relative"
+        variant === "overlay" ? "absolute right-14 top-2 z-20 sm:right-16 sm:top-3" : "relative"
       }
     >
       <button

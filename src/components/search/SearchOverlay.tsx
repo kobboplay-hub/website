@@ -223,14 +223,14 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                       onClick={onClose}
                       className="group flex items-center gap-3 rounded-2xl border border-transparent bg-kobbo-cream/40 px-3 py-2.5 transition-all hover:border-kobbo-yellow/40 hover:bg-kobbo-white hover:shadow-soft"
                     >
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-kobbo-beige ring-1 ring-kobbo-beige">
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-kobbo-white ring-1 ring-kobbo-beige">
                         {product.imageUrl ? (
                           <Image
                             src={product.imageUrl}
                             alt={product.title}
                             fill
                             sizes="56px"
-                            className="object-cover"
+                            className="object-contain p-1"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">

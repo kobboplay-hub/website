@@ -3,19 +3,16 @@
  */
 
 export const aboutContent = {
-  eyebrow: "Our Story",
-  headline: "More Than Toys.",
+  eyebrow: "About Us",
+  headline: "More Than Toys. Meaningful Play.",
   paragraphs: [
-    "At Kobbo, we believe childhood isn't just about keeping little hands busy—it's about building curious minds, confident thinkers, and lifelong learners.",
-    "Every toy a child picks up becomes an opportunity to imagine, solve, create and discover. That's why we carefully curate toys that encourage meaningful play rather than endless screen time.",
-    "We focus on quality, safety and thoughtful design, choosing toys that spark creativity, develop essential skills and make learning feel natural and joyful.",
-    "Whether it's a puzzle that teaches patience, a building set that inspires imagination, or a game that brings families together, every product at Kobbo is chosen with one purpose:",
+    "At Kobbo, we believe choosing toys should feel simpler, and playtime should offer more than just entertainment.",
+    "We bring together thoughtfully selected toys and create age-specific play kits that make it easier for parents to find activities suited to their child’s stage of development.",
+    "Our play kits bring different toys and activities together around the kinds of skills children are beginning to explore at each age. Instead of leaving parents to figure out what to choose and how to use it, we offer a more considered way to bring purposeful play into everyday life.",
+    "Beyond our kits, Kobbo also offers individual toys for families looking to discover something new for their little ones.",
+    "Whether you choose a complete kit or a single toy, our aim remains the same: to make choosing easier, playtime more engaging, and everyday moments more meaningful.",
   ],
-  purpose: "To make play more meaningful.",
-  closing: [
-    "Because to us, they're never just toys.",
-    "They're the building blocks of childhood.",
-  ],
+  closing: "Kobbo | More Than Toys.",
   /** Homepage BrandStory teaser */
   teaser: {
     headline: "More Than Toys.",
