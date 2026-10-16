@@ -161,6 +161,9 @@ export interface ShopifyProductNode {
   } | null;
   merchandisingFlags?: ({ key: string; value: string } | null)[];
   kitFlag?: { value: string } | null;
+  insidePlayKitItems?: {
+    references: { edges: { node: ShopifyKitItemNode }[] } | null;
+  } | null;
   insidePlayKit?: {
     reference: ShopifyKitItemNode | null;
     references: { edges: { node: ShopifyKitItemNode }[] } | null;

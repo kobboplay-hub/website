@@ -7,6 +7,7 @@ import {
   SEARCH_PRODUCTS_PAGINATED_QUERY,
   PRODUCTS_SORTED_PAGINATED_QUERY,
   GET_PRODUCT_BY_HANDLE_QUERY,
+  GET_PLAY_KIT_ITEMS_QUERY,
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_QUERY,
@@ -24,11 +25,18 @@ import type {
   ShopifyMediaVideo,
   ShopifyMetafield,
   ShopifyProductNode,
+  ShopifyKitItemNode,
 } from "./types";
 import { parseMoney } from "./types";
 
 const REVALIDATE_SECONDS = 3600;
 const CATALOG_REVALIDATE_SECONDS = 60;
+
+// Existing Shopify field is a single reference. These entries were confirmed for
+// the Little Explorer Kit; a product-level list metafield takes precedence once set.
+const LEGACY_PLAY_KIT_ITEMS: Record<string, string[]> = {
+  "the-little-explorer-kit": ["shape-sorter", "hammer-peg", "test"],
+};
 
 interface ShopifyFetchOptions {
   query: string;
@@ -146,12 +154,7 @@ function normalizeMerchandisingFlags(
   };
 }
 
-function normalizePlayKitItems(node: ShopifyProductNode): PlayKitItem[] {
-  const singleItem = node.insidePlayKit?.reference;
-  const items = singleItem
-    ? [singleItem]
-    : (node.insidePlayKit?.references?.edges ?? []).map((edge) => edge.node);
-
+function normalizePlayKitItemNodes(items: ShopifyKitItemNode[]): PlayKitItem[] {
   return items.flatMap((item) => {
     if (!item?.fields) return [];
 
@@ -166,6 +169,21 @@ function normalizePlayKitItems(node: ShopifyProductNode): PlayKitItem[] {
       image: fields.get("image")?.reference?.image ?? null,
     }];
   });
+}
+
+function normalizePlayKitItems(node: ShopifyProductNode): PlayKitItem[] {
+  const referencedItems = (
+    node.insidePlayKitItems?.references?.edges ??
+    node.insidePlayKit?.references?.edges ??
+    []
+  ).map((edge) => edge.node);
+  const items = referencedItems.length > 0
+    ? referencedItems
+    : node.insidePlayKit?.reference
+      ? [node.insidePlayKit.reference]
+      : [];
+
+  return normalizePlayKitItemNodes(items);
 }
 
 export function normalizeProduct(node: ShopifyProductNode): Product {
@@ -648,7 +666,36 @@ export async function getProductByHandle(
   });
 
   if (!data.product) return null;
-  return normalizeProduct(data.product);
+
+  const product = normalizeProduct(data.product);
+  const legacyHandles = LEGACY_PLAY_KIT_ITEMS[product.handle];
+  if (
+    product.isKit &&
+    legacyHandles &&
+    !data.product.insidePlayKitItems?.references?.edges?.length
+  ) {
+    try {
+      const result = await shopifyFetch<{
+        metaobjects: {
+          nodes: (ShopifyKitItemNode & { handle: string })[];
+        };
+      }>({ query: GET_PLAY_KIT_ITEMS_QUERY, revalidate: 60 });
+      const byHandle = new Map(
+        result.metaobjects.nodes.map((item) => [item.handle, item]),
+      );
+      const items = normalizePlayKitItemNodes(
+        legacyHandles.flatMap((itemHandle) => {
+          const item = byHandle.get(itemHandle);
+          return item ? [item] : [];
+        }),
+      );
+      if (items.length > 0) product.playKitItems = items;
+    } catch (error) {
+      console.error("Failed to load legacy play kit items:", error);
+    }
+  }
+
+  return product;
 }
 
 export async function getCollections(limit = 20): Promise<Collection[]> {

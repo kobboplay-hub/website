@@ -129,6 +129,31 @@ export const PRODUCT_DETAIL_FRAGMENT = `
     kitFlag: metafield(namespace: "custom", key: "kit") {
       value
     }
+    insidePlayKitItems: metafield(namespace: "custom", key: "inside_the_play_kit_items") {
+      references(first: 50) {
+        edges {
+          node {
+            ... on Metaobject {
+              id
+              fields {
+                key
+                value
+                reference {
+                  ... on MediaImage {
+                    image {
+                      url
+                      altText
+                      width
+                      height
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     insidePlayKit: metafield(namespace: "custom", key: "inside_the_play_ki") {
       reference {
         ... on Metaobject {
@@ -241,6 +266,31 @@ export const PRODUCT_DETAIL_FRAGMENT = `
     }
   }
   ${PRODUCT_CARD_FRAGMENT}
+`;
+
+export const GET_PLAY_KIT_ITEMS_QUERY = `
+  query GetPlayKitItems {
+    metaobjects(type: "play_kit_item", first: 50) {
+      nodes {
+        id
+        handle
+        fields {
+          key
+          value
+          reference {
+            ... on MediaImage {
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 `;
 
 export const PRODUCT_WITH_VIDEO_FRAGMENT = `
