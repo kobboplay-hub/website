@@ -6,7 +6,6 @@ import { useCart } from "@/context/cart-context";
 import { formatPrice } from "@/lib/shopify/types";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/shopify/cart";
 import CartLineItem from "@/components/cart/CartLineItem";
-import CartPromoNotes from "@/components/cart/CartPromoNotes";
 import EmptyState from "@/components/ui/EmptyState";
 import ErrorState from "@/components/ui/ErrorState";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -104,10 +103,6 @@ export default function CartPageContent() {
             ? "You qualify for free shipping!"
             : `Free shipping on orders above ₹${FREE_SHIPPING_THRESHOLD.toLocaleString("en-IN")}`}
         </p>
-
-        <div className="mt-3">
-          <CartPromoNotes />
-        </div>
 
         <button
           type="button"

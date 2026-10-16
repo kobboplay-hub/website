@@ -218,6 +218,11 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
             {buyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Buy Now
           </button>
+          {product.isKit && (
+            <p className="rounded-2xl border border-kobbo-yellow/60 bg-kobbo-yellow/15 px-4 py-3 text-center font-heading text-base font-extrabold leading-snug text-kobbo-black sm:text-lg">
+              ₹150 OFF on Prepaid Orders + A FREE GIFT 🎁
+            </p>
+          )}
         </div>
 
         {isElectronicToy(product) && (

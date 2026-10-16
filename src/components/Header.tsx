@@ -258,7 +258,7 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }
               }}
-              className="flex h-10 items-center font-heading text-[1.75rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-[2rem] lg:text-[2.5rem] xl:text-[2.65rem]"
+              className="flex h-10 items-center font-heading text-[2.125rem] font-extrabold lowercase leading-none tracking-tight text-kobbo-yellow sm:text-[2rem] lg:text-[2.5rem] xl:text-[2.65rem]"
             >
               kobbo
             </Link>

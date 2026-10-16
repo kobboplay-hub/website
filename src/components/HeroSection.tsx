@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useRef } from "react";
-import { Leaf, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
 import type { AgeGroup } from "@/lib/shopify/types";
 import HeroButterflyFlight from "@/components/home/HeroButterflyFlight";
@@ -140,9 +140,9 @@ function HeroAgeButtons({ ageGroups, compact = false }: { ageGroups: AgeGroup[];
   ];
 
   return (
-    <div className="hero-enter-cta mt-5 lg:mt-8">
-      <p className="mb-2.5 text-xs font-bold text-kobbo-black sm:text-sm">Shop by your child&apos;s age</p>
-      <div className="flex flex-wrap gap-2.5">
+    <div className={`hero-enter-cta ${compact ? "mt-7" : "mt-5 lg:mt-8"}`}>
+      <p className={`mb-2.5 text-xs font-bold text-kobbo-black sm:text-sm ${compact ? "sr-only" : ""}`}>Shop by your child&apos;s age</p>
+      <div className={compact ? "flex gap-2.5" : "flex flex-wrap gap-2.5"}>
         {ageButtons.map(({ label, group }) => (
           <Link
             key={label}
@@ -150,9 +150,10 @@ function HeroAgeButtons({ ageGroups, compact = false }: { ageGroups: AgeGroup[];
             onClick={() => {
               if (group) window.dispatchEvent(new CustomEvent("kobbo:select-play-kit-age", { detail: group.id }));
             }}
-            className={`inline-flex items-center justify-center rounded-full bg-kobbo-yellow font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black ${compact ? "min-h-10 px-5 text-xs" : "min-h-11 px-7 text-sm"}`}
+            className={`inline-flex items-center justify-center rounded-full bg-kobbo-yellow font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black ${compact ? "min-h-12 min-w-0 flex-1 gap-1.5 px-2 text-[clamp(0.8125rem,3.7vw,1rem)]" : "min-h-11 px-7 text-sm"}`}
           >
             {label}
+            {compact && <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />}
           </Link>
         ))}
       </div>
@@ -235,8 +236,8 @@ export default function HeroSection({ ageGroups }: { ageGroups: AgeGroup[] }) {
       className="relative overflow-hidden bg-kobbo-cream"
     >
       {/* ══════════ MOBILE — stable across all phone widths / aspect ratios ══════════ */}
-      <div className="relative isolate min-h-[max(100svh,600px)] overflow-hidden sm:hidden">
-        <div className="absolute inset-0 top-8 overflow-hidden">
+      <div className="relative isolate min-h-[max(100svh,680px)] overflow-hidden sm:hidden">
+        <div className="absolute inset-x-0 bottom-0 top-[42%] overflow-hidden">
           <Image
             src={imageMobile}
             alt={imageAlt}
@@ -244,19 +245,13 @@ export default function HeroSection({ ageGroups }: { ageGroups: AgeGroup[] }) {
             priority
             quality={95}
             sizes="100vw"
-            className="animate-hero-image object-cover object-[center_15%]"
+            className="animate-hero-image object-cover object-[center_35%]"
           />
         </div>
 
-        {/* Cream wash keeps copy readable; child stays in lower half */}
+        {/* Cream wash keeps the copy clear where it overlaps the photo. */}
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[50%] bg-[linear-gradient(180deg,rgba(255,251,240,0.92)_0%,rgba(255,251,240,0.88)_42%,rgba(255,251,240,0.55)_68%,rgba(255,251,240,0.18)_86%,transparent_100%)]"
-          aria-hidden
-        />
-
-        {/* Fade the image gently behind the mobile benefit strip. */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-52 bg-[linear-gradient(0deg,rgba(255,248,232,0.94)_0%,rgba(255,248,232,0.62)_42%,transparent_100%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[67%] bg-[linear-gradient(180deg,#fffbf0_0%,#fffbf0_43%,rgba(255,251,240,0.97)_62%,rgba(255,251,240,0.72)_79%,transparent_100%)]"
           aria-hidden
         />
 
@@ -267,60 +262,27 @@ export default function HeroSection({ ageGroups }: { ageGroups: AgeGroup[] }) {
         <HeroStar className="absolute left-4 top-16 z-10" />
         <HeroLeaf className="absolute right-5 top-[44%] z-10" />
 
-        <div className="relative z-10 px-6 pb-8 pt-[4.5rem]">
-          <div className="relative w-full">
-            {/* Staggered Layer 1: Headline & Floating Badge */}
-            <div className="flex w-full items-start justify-between gap-3">
-              <h1 className="hero-enter-headline font-heading min-w-0 flex-1 text-[clamp(1.85rem,8.2vw,2.35rem)] font-extrabold leading-[1.08] tracking-tight text-[#1A1A1A]">
-                <span className="block">{headlineFirst}</span>
-                <span className="block">
-                  {headlineLast}
-                  <span className="text-kobbo-yellow">.</span>
-                </span>
-              </h1>
+        <div className="relative z-10 px-6 pb-8 pt-[5.75rem] min-[420px]:px-8">
+          <div className="relative w-full max-w-[34rem]">
+            <p className="hero-enter-pill inline-flex min-h-9 items-center rounded-full border border-kobbo-black/15 bg-white/70 px-4 font-heading text-xs font-bold uppercase tracking-[0.12em] text-kobbo-black backdrop-blur-xs">
+              Made for 2–5 years
+            </p>
 
-              <div className="animate-badge-bob mt-4 shrink-0">
-                <ScreenFreeBadge
-                  title={imageBadgeTitle}
-                  subtitle={imageBadgeSubtitle}
-                  compact
-                />
-              </div>
-            </div>
+            {/* Staggered Layer 1: Headline */}
+            <h1 className="hero-enter-headline mt-5 font-heading text-[clamp(3.25rem,13.5vw,4.5rem)] font-extrabold leading-[0.98] tracking-tight text-[#1A1A1A]">
+              <span className="block">{headlineFirst}</span>
+              <span className="block">
+                {headlineLast}
+                <span className="text-kobbo-yellow">.</span>
+              </span>
+            </h1>
 
             {/* Staggered Layer 2: Description */}
-            <p className="hero-enter-desc mt-3 max-w-[17rem] text-[clamp(0.8125rem,3.4vw,0.875rem)] font-medium leading-snug text-[#3A3A3A]">
+            <p className="hero-enter-desc mt-5 max-w-[27rem] text-[clamp(0.9375rem,4vw,1.125rem)] font-medium leading-[1.45] text-[#3A3A3A]">
               {description}
             </p>
 
             <HeroAgeButtons ageGroups={ageGroups} compact />
-
-            {/* Staggered Layer 4: Trust Items */}
-            <div className="hero-enter-trust mt-4 flex flex-col items-start gap-2">
-              {trustItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-1.5">
-                  {(item.icon as string) === "shield" ? (
-                    <ShieldCheck
-                      className="h-3.5 w-3.5 shrink-0 text-kobbo-black"
-                      strokeWidth={2}
-                    />
-                  ) : (item.icon as string) === "sparkles" ? (
-                    <Sparkles
-                      className="h-3.5 w-3.5 shrink-0 text-kobbo-black"
-                      strokeWidth={2}
-                    />
-                  ) : (
-                    <Leaf
-                      className="h-3.5 w-3.5 shrink-0 text-kobbo-green"
-                      strokeWidth={2}
-                    />
-                  )}
-                  <span className="text-[11px] font-semibold leading-none text-[#1A1A1A]">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

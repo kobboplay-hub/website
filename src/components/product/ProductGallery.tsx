@@ -23,6 +23,7 @@ export default function ProductGallery({
   const { isWishlisted, toggleWishlist } = useWishlist();
   const wishlisted = productHandle ? isWishlisted(productHandle) : false;
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const thumbnailStripRef = useRef<HTMLDivElement | null>(null);
   const hasImages = images.length > 0;
   const hasMultiple = hasImages && images.length > 1;
 
@@ -39,10 +40,13 @@ export default function ProductGallery({
   const goNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
 
   useEffect(() => {
-    thumbRefs.current[activeIndex]?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
+    const strip = thumbnailStripRef.current;
+    const thumbnail = thumbRefs.current[activeIndex];
+    if (!strip || !thumbnail) return;
+
+    strip.scrollTo({
+      left: strip.scrollLeft + thumbnail.getBoundingClientRect().left - strip.getBoundingClientRect().left + thumbnail.offsetWidth / 2 - strip.clientWidth / 2,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
     });
   }, [activeIndex]);
 
@@ -111,7 +115,7 @@ export default function ProductGallery({
       </div>
 
       {hasMultiple && (
-        <div className="mt-3 flex gap-2 overflow-x-auto scroll-smooth py-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-2.5">
+        <div ref={thumbnailStripRef} className="mt-3 flex gap-2 overflow-x-auto scroll-smooth py-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-2.5">
           {images.map((image, index) => (
             <button
               key={`${image}-${index}`}
