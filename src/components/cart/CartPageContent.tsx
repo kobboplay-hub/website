@@ -20,7 +20,6 @@ export default function CartPageContent() {
     subtotal,
     currencyCode,
     error,
-    clearError,
   } = useCart();
 
   const isEmpty = !cart || cart.lines.length === 0;

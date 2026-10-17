@@ -62,7 +62,7 @@ async function fetchCartNode(cartId: string): Promise<ShopifyCartNode | null> {
   return data.cart;
 }
 
-export async function createCart(): Promise<Cart> {
+export async function createCart(lines: Array<{ merchandiseId: string; quantity: number }> = []): Promise<Cart> {
   const data = await shopifyFetch<{
     cartCreate: {
       cart: ShopifyCartNode | null;
@@ -70,7 +70,7 @@ export async function createCart(): Promise<Cart> {
     };
   }>({
     query: CART_CREATE_MUTATION,
-    variables: { input: {} },
+    variables: { input: lines.length > 0 ? { lines } : {} },
     ...CART_FETCH_OPTIONS,
   });
 
@@ -90,8 +90,7 @@ export async function buyNowCart(
   merchandiseId: string,
   quantity: number,
 ): Promise<Cart> {
-  const newCart = await createCart();
-  return addToCart(newCart.id, merchandiseId, quantity);
+  return createCart([{ merchandiseId, quantity }]);
 }
 
 export async function addToCart(

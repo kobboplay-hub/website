@@ -29,8 +29,11 @@ export default function RecentlyViewed({ currentProduct }: RecentlyViewedProps) 
     trackRecentlyViewed(currentProduct);
 
     // 3) Show others only — never the product you're already on
-    setItems(previous);
-    setReady(true);
+    const frame = requestAnimationFrame(() => {
+      setItems(previous);
+      setReady(true);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [currentProduct]);
 
   const scroll = (direction: "left" | "right") => {

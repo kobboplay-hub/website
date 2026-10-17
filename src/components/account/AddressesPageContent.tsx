@@ -61,7 +61,7 @@ export default function AddressesPageContent() {
   };
 
   useEffect(() => {
-    loadAddresses();
+    queueMicrotask(() => { void loadAddresses(); });
   }, []);
 
   const openCreateForm = () => {

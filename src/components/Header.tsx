@@ -140,12 +140,9 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
   const ageGroups = useAgeGroups();
   const hasAgeMenu = ageGroups.length > 0;
 
-  const accountHref = isLoggedIn ? "/account" : "/login";
-
   const closeMobile = () => {
     setMobileOpen(false);
     setMobileAgeOpen(false);
-    document.body.style.overflow = "";
   };
 
   const handleNavClick = (href: string) => {
@@ -167,9 +164,10 @@ export default function Header({ immersive = false }: { immersive?: boolean }) {
   }, [mobileOpen]);
 
   useEffect(() => {
-    setMobileOpen(false);
-    setMobileAgeOpen(false);
-    document.body.style.overflow = "";
+    queueMicrotask(() => {
+      setMobileOpen(false);
+      setMobileAgeOpen(false);
+    });
   }, [pathname]);
 
   useEffect(() => {

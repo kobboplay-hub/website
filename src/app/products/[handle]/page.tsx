@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import SiteLayout from "@/components/SiteLayout";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
@@ -14,9 +15,9 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import ProductReviews from "@/components/reviews/ProductReviews";
 import FAQSection from "@/components/product/FAQSection";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
-import { getProductByHandle, getProducts } from "@/lib/shopify";
-import { getProductImageUrls } from "@/lib/shopify/types";
-import { getProductReviewSummaries, getProductReviewSummary } from "@/lib/judgeme";
+import { getHomepageAgeProducts, getProductByHandle, getProducts } from "@/lib/shopify";
+import { getProductImageUrls, type Product } from "@/lib/shopify/types";
+import { getProductReviewSummaries } from "@/lib/judgeme";
 import {
   defaultWhyParentsLove,
   getProductFaqs,
@@ -33,12 +34,14 @@ interface ProductPageProps {
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  try {
-    const products = await getProducts(20);
-    return products.map((product) => ({ handle: product.handle }));
-  } catch {
-    return [];
-  }
+  const results = await Promise.allSettled([
+    getProducts(20),
+    getHomepageAgeProducts(),
+  ]);
+  const handles = new Set(
+    results.flatMap((result) => result.status === "fulfilled" ? result.value.map((product) => product.handle) : []),
+  );
+  return [...handles].map((handle) => ({ handle }));
 }
 
 export async function generateMetadata({
@@ -61,17 +64,33 @@ export async function generateMetadata({
   }
 }
 
+async function RelatedProductsSection({ product }: { product: Product }) {
+  let relatedProducts: Product[];
+  let reviewSummaries;
+  try {
+    const allProducts = await getProducts(20);
+    relatedProducts = allProducts
+      .filter((item) => item.handle !== product.handle)
+      .slice(0, 4);
+    if (relatedProducts.length === 0) return null;
+
+    reviewSummaries = await getProductReviewSummaries(
+      relatedProducts.map((item) => item.id),
+    );
+  } catch (error) {
+    console.error("Failed to load related products:", error);
+    return null;
+  }
+  return <RelatedProducts products={relatedProducts} reviewSummaries={reviewSummaries} />;
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { handle } = await params;
 
   let product;
-  let allProducts = [];
 
   try {
-    [product, allProducts] = await Promise.all([
-      getProductByHandle(handle),
-      getProducts(20),
-    ]);
+    product = await getProductByHandle(handle);
   } catch (error) {
     console.error("Failed to fetch product:", error);
     notFound();
@@ -79,21 +98,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) notFound();
 
-  const [productReviewSummary, reviewSummaries] = await Promise.all([
-    getProductReviewSummary(product.id),
-    getProductReviewSummaries(
-      allProducts
-        .filter((p) => p.handle !== product.handle)
-        .slice(0, 4)
-        .map((p) => p.id),
-    ),
-  ]);
-
   const images = getProductImageUrls(product);
   const imageAltTexts = product.images.map((img) => img.altText);
-  const relatedProducts = allProducts
-    .filter((p) => p.handle !== product.handle)
-    .slice(0, 4);
 
   const tabsContent = getProductTabsContent(product);
   const videos = getProductVideos(product);
@@ -118,7 +124,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <div className="min-w-0">
                 <ProductInfo
                   product={product}
-                  reviewSummary={productReviewSummary}
                 />
               </div>
             </div>
@@ -139,15 +144,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductTabs content={tabsContent} />
         )}
         <WhyParentsLoveIt items={defaultWhyParentsLove} />
-        <RelatedProducts
-          products={relatedProducts}
-          reviewSummaries={reviewSummaries}
-        />
-        <ProductReviews
-          productId={product.id}
-          productHandle={product.handle}
-          productTitle={product.title}
-        />
+        <Suspense fallback={null}>
+          <RelatedProductsSection product={product} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <ProductReviews
+            productId={product.id}
+            productHandle={product.handle}
+            productTitle={product.title}
+          />
+        </Suspense>
         <FAQSection faqs={productFaqs} />
         <RecentlyViewed currentProduct={product} />
       </div>

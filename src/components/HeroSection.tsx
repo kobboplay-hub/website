@@ -6,6 +6,7 @@ import { Fragment, useEffect, useRef } from "react";
 import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
 import type { AgeGroup } from "@/lib/shopify/types";
+import { useAgeGroups } from "@/context/age-groups-context";
 import HeroButterflyFlight from "@/components/home/HeroButterflyFlight";
 import TrustBadges from "@/components/TrustBadges";
 
@@ -148,7 +149,10 @@ function HeroAgeButtons({ ageGroups, compact = false }: { ageGroups: AgeGroup[];
             key={label}
             href="#play-kits"
             onClick={() => {
-              if (group) window.dispatchEvent(new CustomEvent("kobbo:select-play-kit-age", { detail: group.id }));
+              if (group) {
+                window.sessionStorage.setItem("kobbo:pending-play-kit-age", group.id);
+                window.dispatchEvent(new CustomEvent("kobbo:select-play-kit-age", { detail: group.id }));
+              }
             }}
             className={`inline-flex items-center justify-center rounded-full bg-kobbo-yellow font-bold text-kobbo-black shadow-soft transition-all hover:-translate-y-0.5 hover:bg-kobbo-yellow-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black ${compact ? "min-h-12 min-w-0 flex-1 gap-1.5 px-2 text-[clamp(0.8125rem,3.7vw,1rem)]" : "min-h-11 px-7 text-sm"}`}
           >
@@ -161,7 +165,8 @@ function HeroAgeButtons({ ageGroups, compact = false }: { ageGroups: AgeGroup[];
   );
 }
 
-export default function HeroSection({ ageGroups }: { ageGroups: AgeGroup[] }) {
+export default function HeroSection() {
+  const ageGroups = useAgeGroups();
   const {
     headline,
     description,
@@ -265,7 +270,7 @@ export default function HeroSection({ ageGroups }: { ageGroups: AgeGroup[] }) {
         <div className="relative z-10 px-6 pb-8 pt-[5.75rem] min-[420px]:px-8">
           <div className="relative w-full max-w-[34rem]">
             <p className="hero-enter-pill inline-flex min-h-9 items-center rounded-full border border-kobbo-black/15 bg-white/70 px-4 font-heading text-xs font-bold uppercase tracking-[0.12em] text-kobbo-black backdrop-blur-xs">
-              Made for 2–5 years
+              Learn through play
             </p>
 
             {/* Staggered Layer 1: Headline */}

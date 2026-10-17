@@ -53,10 +53,10 @@ export async function POST(request: Request) {
           );
         }
 
-        let id = cartId as string | undefined;
+        const id = cartId as string | undefined;
         if (!id) {
-          const newCart = await withCustomerIdentity(await createCart());
-          id = newCart.id;
+          const cart = await withCustomerIdentity(await createCart([{ merchandiseId, quantity }]));
+          return NextResponse.json({ cart });
         }
 
         try {
@@ -64,11 +64,11 @@ export async function POST(request: Request) {
             await addToCart(id, merchandiseId, quantity),
           );
           return NextResponse.json({ cart });
-        } catch {
-          const newCart = await withCustomerIdentity(await createCart());
-          const cart = await withCustomerIdentity(
-            await addToCart(newCart.id, merchandiseId, quantity),
-          );
+        } catch (error) {
+          // Preserve an existing cart when Shopify rejects a line (for example,
+          // because the variant sold out). Recreate only an expired cart.
+          if (await getCart(id)) throw error;
+          const cart = await withCustomerIdentity(await createCart([{ merchandiseId, quantity }]));
           return NextResponse.json({ cart });
         }
       }

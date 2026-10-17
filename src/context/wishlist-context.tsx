@@ -48,13 +48,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          setHandles(parsed.filter((h) => typeof h === "string"));
+          queueMicrotask(() => setHandles(parsed.filter((h) => typeof h === "string")));
         }
       } catch {
         localStorage.removeItem(WISHLIST_STORAGE_KEY);
       }
     }
-    setHydrated(true);
+    queueMicrotask(() => setHydrated(true));
   }, []);
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (hydrated) {
-      refreshItems();
+      queueMicrotask(() => { void refreshItems(); });
     }
   }, [hydrated, refreshItems]);
 

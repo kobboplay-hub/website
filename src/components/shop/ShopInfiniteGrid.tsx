@@ -4,14 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import ProductGrid from "@/components/shop/ProductGrid";
 import type { Product } from "@/lib/shopify/types";
-import type { JudgeMeProductSummary } from "@/lib/judgeme";
 import type { ShopSortOption } from "@/lib/shopify";
 
 const PAGE_SIZE = 12;
 
 interface ShopInfiniteGridProps {
   initialProducts: Product[];
-  initialReviewSummaries?: Record<string, JudgeMeProductSummary>;
   initialCursor: string | null;
   initialHasNextPage: boolean;
   searchQuery: string;
@@ -20,17 +18,12 @@ interface ShopInfiniteGridProps {
 
 export default function ShopInfiniteGrid({
   initialProducts,
-  initialReviewSummaries = {},
   initialCursor,
   initialHasNextPage,
   searchQuery,
   sort,
 }: ShopInfiniteGridProps) {
   const [products, setProducts] = useState(initialProducts);
-  const [reviewSummaries, setReviewSummaries] = useState(
-    initialReviewSummaries,
-  );
-  const [cursor, setCursor] = useState(initialCursor);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,25 +32,6 @@ export default function ShopInfiniteGrid({
   const loadingRef = useRef(false);
   const cursorRef = useRef(initialCursor);
   const hasNextRef = useRef(initialHasNextPage);
-
-  useEffect(() => {
-    setProducts(initialProducts);
-    setReviewSummaries(initialReviewSummaries);
-    setCursor(initialCursor);
-    setHasNextPage(initialHasNextPage);
-    cursorRef.current = initialCursor;
-    hasNextRef.current = initialHasNextPage;
-    setError(null);
-    setIsLoading(false);
-    loadingRef.current = false;
-  }, [
-    initialProducts,
-    initialReviewSummaries,
-    initialCursor,
-    initialHasNextPage,
-    searchQuery,
-    sort,
-  ]);
 
   const loadMore = useCallback(async () => {
     if (loadingRef.current || !hasNextRef.current || !cursorRef.current) {
@@ -81,7 +55,6 @@ export default function ShopInfiniteGrid({
         products?: Product[];
         endCursor?: string | null;
         hasNextPage?: boolean;
-        reviewSummaries?: Record<string, JudgeMeProductSummary>;
         error?: string;
       };
 
@@ -97,16 +70,11 @@ export default function ShopInfiniteGrid({
           ...nextProducts.filter((product) => !existingIds.has(product.id)),
         ];
       });
-      setReviewSummaries((prev) => ({
-        ...prev,
-        ...(data.reviewSummaries ?? {}),
-      }));
 
       const nextCursor = data.endCursor ?? null;
       const nextHasMore = Boolean(data.hasNextPage);
       cursorRef.current = nextCursor;
       hasNextRef.current = nextHasMore;
-      setCursor(nextCursor);
       setHasNextPage(nextHasMore);
     } catch (err) {
       setError(
@@ -144,7 +112,7 @@ export default function ShopInfiniteGrid({
         {hasNextPage ? "+" : ""} products
       </p>
 
-      <ProductGrid products={products} reviewSummaries={reviewSummaries} />
+      <ProductGrid products={products} />
 
       <div ref={sentinelRef} className="h-8 w-full" aria-hidden />
 

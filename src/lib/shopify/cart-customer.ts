@@ -90,13 +90,9 @@ async function buildCartBuyerIdentity(): Promise<CartBuyerIdentityInput | null> 
   return identity;
 }
 
-async function attachCustomerToCart(cartId: string): Promise<Cart> {
+async function attachCustomerToCart(cart: Cart): Promise<Cart> {
   const buyerIdentity = await buildCartBuyerIdentity();
-  if (!buyerIdentity) {
-    const cart = await getCart(cartId);
-    if (!cart) throw new Error("Cart not found");
-    return cart;
-  }
+  if (!buyerIdentity) return cart;
 
   const data = await shopifyFetch<{
     cartBuyerIdentityUpdate: {
@@ -105,20 +101,20 @@ async function attachCustomerToCart(cartId: string): Promise<Cart> {
     };
   }>({
     query: CART_BUYER_IDENTITY_UPDATE_MUTATION,
-    variables: { cartId, buyerIdentity },
+    variables: { cartId: cart.id, buyerIdentity },
     ...CART_FETCH_OPTIONS,
   });
 
   parseUserErrors(data.cartBuyerIdentityUpdate.userErrors);
 
-  const cart = normalizeCart(data.cartBuyerIdentityUpdate.cart);
-  if (!cart) throw new Error("Failed to update checkout details");
-  return cart;
+  const updatedCart = normalizeCart(data.cartBuyerIdentityUpdate.cart);
+  if (!updatedCart) throw new Error("Failed to update checkout details");
+  return updatedCart;
 }
 
 export async function withCustomerIdentity(cart: Cart): Promise<Cart> {
   try {
-    return await attachCustomerToCart(cart.id);
+    return await attachCustomerToCart(cart);
   } catch {
     return cart;
   }
@@ -129,5 +125,5 @@ export async function prepareCheckout(cartId: string): Promise<Cart> {
   if (!cart) throw new Error("Cart not found");
   if (cart.lines.length === 0) throw new Error("Your cart is empty");
 
-  return attachCustomerToCart(cartId);
+  return attachCustomerToCart(cart);
 }

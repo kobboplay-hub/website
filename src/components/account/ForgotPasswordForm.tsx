@@ -6,10 +6,7 @@ import { Loader2, CheckCircle, Copy, Check } from "lucide-react";
 import { AuthCardShell } from "@/components/account/PageShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";
-import {
-  getPasswordResetEmailLink,
-  getSiteUrl,
-} from "@/lib/auth/reset-password";
+import { getPasswordResetEmailLink } from "@/lib/auth/reset-password";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -18,7 +15,6 @@ export default function ForgotPasswordForm() {
   const [sent, setSent] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const siteUrl = getSiteUrl();
   const emailTemplateLink = getPasswordResetEmailLink();
 
   const handleCopyTemplate = async () => {

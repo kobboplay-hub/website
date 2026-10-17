@@ -8,18 +8,20 @@ import { parseShopifyProductId } from "@/lib/judgeme";
 interface ProductCardRatingProps {
   productId: string;
   initialSummary?: JudgeMeProductSummary | null;
+  fetchIfMissing?: boolean;
 }
 
 export default function ProductCardRating({
   productId,
   initialSummary,
+  fetchIfMissing = true,
 }: ProductCardRatingProps) {
   const [summary, setSummary] = useState<JudgeMeProductSummary | null | undefined>(
     initialSummary,
   );
 
   useEffect(() => {
-    if (initialSummary) return;
+    if (initialSummary || !fetchIfMissing) return;
 
     const externalId = parseShopifyProductId(productId);
 
@@ -37,11 +39,11 @@ export default function ProductCardRating({
         }
       })
       .catch(() => setSummary(null));
-  }, [productId, initialSummary]);
+  }, [productId, initialSummary, fetchIfMissing]);
 
   return (
     <ProductRatingBadge
-      summary={summary ?? null}
+      summary={initialSummary ?? summary ?? null}
       variant="card"
       className="mt-1.5 min-h-[22px]"
     />

@@ -367,8 +367,8 @@ export async function getShopProductsByCursor(
           sortKey,
           reverse,
         },
-        revalidate: false,
-        cache: "no-store",
+        revalidate: CATALOG_REVALIDATE_SECONDS,
+        cache: "force-cache",
       })
     : await shopifyFetch<{
         products: {
@@ -383,8 +383,8 @@ export async function getShopProductsByCursor(
           sortKey,
           reverse,
         },
-        revalidate: false,
-        cache: "no-store",
+        revalidate: CATALOG_REVALIDATE_SECONDS,
+        cache: "force-cache",
       });
 
   return {
@@ -654,7 +654,7 @@ export async function getRecentProducts(limit = 5): Promise<Product[]> {
   return data.products.edges.map((edge) => normalizeProduct(edge.node));
 }
 
-export async function getProductByHandle(
+export const getProductByHandle = cache(async function getProductByHandle(
   handle: string,
 ): Promise<Product | null> {
   const data = await shopifyFetch<{
@@ -696,7 +696,7 @@ export async function getProductByHandle(
   }
 
   return product;
-}
+});
 
 export async function getCollections(limit = 20): Promise<Collection[]> {
   const data = await shopifyFetch<{

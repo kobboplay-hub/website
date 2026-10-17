@@ -30,22 +30,26 @@ const quickSuggestions = ["Puzzle", "Blocks", "Creative", "Learning"];
 export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const requestIdRef = useRef(0);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      setQuery("");
-      setResults([]);
-      requestAnimationFrame(() => {
+    const frame = requestAnimationFrame(() => {
+      if (open) {
+        requestIdRef.current += 1;
+        setQuery("");
+        setResults([]);
+        setLoading(false);
         setVisible(true);
         inputRef.current?.focus();
-      });
-    } else {
-      setVisible(false);
-    }
+      } else {
+        setVisible(false);
+      }
+    });
+    return () => cancelAnimationFrame(frame);
   }, [open]);
 
   useEffect(() => {
@@ -64,32 +68,31 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
     };
   }, [open, onClose]);
 
-  const runSearch = useCallback(async (value: string) => {
+  const runSearch = useCallback(async (value: string, requestId: number) => {
     const trimmed = value.trim();
     if (!trimmed) {
-      setResults([]);
       return;
     }
 
-    setLoading(true);
     try {
       const response = await fetch(
         `/api/search?q=${encodeURIComponent(trimmed)}`,
       );
       const data = (await response.json()) as { products: SearchResult[] };
-      setResults(data.products ?? []);
+      if (requestIdRef.current === requestId) setResults(data.products ?? []);
     } catch {
-      setResults([]);
+      if (requestIdRef.current === requestId) setResults([]);
     } finally {
-      setLoading(false);
+      if (requestIdRef.current === requestId) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    const requestId = ++requestIdRef.current;
+    if (!open || !query.trim()) return;
 
     const timer = setTimeout(() => {
-      void runSearch(query);
+      void runSearch(query, requestId);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -103,8 +106,14 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
   };
 
   const handleSuggestion = (term: string) => {
-    setQuery(term);
+    handleQueryChange(term);
     inputRef.current?.focus();
+  };
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    setResults([]);
+    setLoading(value.trim().length > 0);
   };
 
   if (!open) return null;
@@ -157,7 +166,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
               ref={inputRef}
               type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
               placeholder="Search toys..."
               className="w-full rounded-full border-2 border-kobbo-beige bg-kobbo-cream py-3.5 pl-12 pr-4 text-sm text-kobbo-black outline-none transition-all placeholder:text-kobbo-muted focus:border-kobbo-yellow focus:bg-kobbo-white focus:shadow-soft sm:text-base"
             />

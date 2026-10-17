@@ -13,10 +13,6 @@ import {
   parseShopSort,
 } from "@/lib/shopify";
 import type { AgeGroup, Product } from "@/lib/shopify/types";
-import {
-  getProductReviewSummaries,
-  type JudgeMeProductSummary,
-} from "@/lib/judgeme";
 import { buildMetadata, buildPageTitle, ageGroupMetadata } from "@/data/seo";
 
 export const revalidate = 60;
@@ -48,18 +44,12 @@ export default async function ShopByAgePage({
 
   let ageGroup: AgeGroup | null = null;
   let products: Product[] = [];
-  let reviewSummaries: Record<string, JudgeMeProductSummary> = {};
   let hasError = false;
 
   try {
     ageGroup = await getAgeGroupByHandle(handle);
     if (ageGroup) {
       products = await getProductsByAgeGroup(ageGroup, sort);
-      if (products.length > 0) {
-        reviewSummaries = await getProductReviewSummaries(
-          products.map((product) => product.id),
-        );
-      }
     }
   } catch (error) {
     console.error("Failed to fetch Shop by Age products:", error);
@@ -106,7 +96,6 @@ export default async function ShopByAgePage({
               <div className="mt-5 sm:mt-6">
                 <ProductGrid
                   products={products}
-                  reviewSummaries={reviewSummaries}
                 />
               </div>
             </>

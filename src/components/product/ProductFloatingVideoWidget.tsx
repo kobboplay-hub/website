@@ -27,7 +27,8 @@ export default function ProductFloatingVideoWidget({
 
   useEffect(() => {
     const key = `${SESSION_KEY_PREFIX}${productHandle}`;
-    setShowWidget(sessionStorage.getItem(key) !== "1");
+    const frame = requestAnimationFrame(() => setShowWidget(sessionStorage.getItem(key) !== "1"));
+    return () => cancelAnimationFrame(frame);
   }, [productHandle]);
 
   useEffect(() => {

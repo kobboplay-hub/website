@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import type { Product } from "@/lib/shopify/types";
 
@@ -24,6 +24,7 @@ function formatPrice(amount: number, currencyCode: string): string {
 
 export default function PlayKitCard({ product, ageName, index, count }: PlayKitCardProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isOpeningKit, setIsOpeningKit] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const thumbnailStripRef = useRef<HTMLDivElement>(null);
   const merchandiseId = product.variants.find((variant) => variant.availableForSale)?.id ?? null;
@@ -42,6 +43,12 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
     });
   }, [activeImageIndex]);
+
+  useEffect(() => {
+    if (!isOpeningKit) return;
+    const timeout = window.setTimeout(() => setIsOpeningKit(false), 15000);
+    return () => window.clearTimeout(timeout);
+  }, [isOpeningKit]);
 
   function showAdjacentImage(direction: number) {
     setActiveImageIndex((current) => (current + direction + images.length) % images.length);
@@ -140,8 +147,17 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
             label={product.availableForSale ? "Add to Cart" : "Sold Out"}
             className="min-h-11 px-5"
           />
-          <Link href={`/products/${product.handle}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-kobbo-beige bg-kobbo-white px-5 text-sm font-bold text-kobbo-black transition-colors hover:border-kobbo-yellow">
-            View Kit <ArrowRight className="size-4" aria-hidden />
+          <Link
+            href={`/products/${product.handle}`}
+            onClick={(event) => {
+              if (isOpeningKit) event.preventDefault();
+              else setIsOpeningKit(true);
+            }}
+            aria-busy={isOpeningKit}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-kobbo-beige bg-kobbo-white px-5 text-sm font-bold text-kobbo-black transition-colors hover:border-kobbo-yellow"
+          >
+            {isOpeningKit ? "Opening kit…" : "View Kit"}
+            {isOpeningKit ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ArrowRight className="size-4" aria-hidden />}
           </Link>
         </div>
       </div>

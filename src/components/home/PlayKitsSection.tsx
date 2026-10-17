@@ -24,9 +24,16 @@ export default function PlayKitsSection({ ageGroups, products }: PlayKitsSection
   );
 
   useEffect(() => {
+    const pendingAgeId = window.sessionStorage.getItem("kobbo:pending-play-kit-age");
+    if (pendingAgeId && ageGroups.some((group) => group.id === pendingAgeId)) {
+      window.sessionStorage.removeItem("kobbo:pending-play-kit-age");
+      queueMicrotask(() => setSelectedAgeId(pendingAgeId));
+    }
+
     const selectHeroAge = (event: Event) => {
       const ageId = (event as CustomEvent<string>).detail;
       if (!ageGroups.some((group) => group.id === ageId)) return;
+      window.sessionStorage.removeItem("kobbo:pending-play-kit-age");
       setSelectedAgeId(ageId);
       setActiveIndex(0);
       carouselRef.current?.scrollTo({ left: 0, behavior: "instant" });

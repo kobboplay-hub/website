@@ -10,7 +10,6 @@ import {
   parseShopSort,
   SHOP_PRODUCTS_PER_PAGE,
 } from "@/lib/shopify";
-import { getProductReviewSummaries } from "@/lib/judgeme";
 import { shopMetadata } from "@/data/seo";
 import { emptyStates } from "@/data/empty-states";
 
@@ -32,7 +31,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   let result;
   let hasError = false;
-  let reviewSummaries = {};
 
   try {
     result = await getShopProductsByCursor(
@@ -42,11 +40,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       null,
     );
 
-    if (result.products.length > 0) {
-      reviewSummaries = await getProductReviewSummaries(
-        result.products.map((p) => p.id),
-      );
-    }
   } catch (error) {
     console.error("Failed to fetch shop products:", error);
     hasError = true;
@@ -80,8 +73,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           ) : (
             <div className="mt-5 sm:mt-6">
               <ShopInfiniteGrid
+                key={`${searchQuery}:${sort}`}
                 initialProducts={products}
-                initialReviewSummaries={reviewSummaries}
                 initialCursor={endCursor}
                 initialHasNextPage={hasNextPage}
                 searchQuery={searchQuery}

@@ -18,20 +18,11 @@ export default function ShopByCategories({
   collections = [],
 }: ShopByCategoriesProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  // If there are no real collections returned from Shopify, do not show section
-  if (!collections || collections.length === 0) {
-    return null;
-  }
 
   const checkScroll = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     const maxScroll = scrollWidth - clientWidth;
     if (maxScroll > 0) {
       setScrollProgress(scrollLeft / maxScroll);
@@ -58,6 +49,8 @@ export default function ShopByCategories({
       window.removeEventListener("resize", checkScroll);
     };
   }, [collections]);
+
+  if (collections.length === 0) return null;
 
   return (
     <section className="bg-kobbo-cream py-5 sm:py-8 lg:py-10">
@@ -97,7 +90,6 @@ export default function ShopByCategories({
                       fill
                       sizes="(max-width: 640px) 210px, (max-width: 1024px) 260px, 280px"
                       className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                      priority
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-kobbo-yellow/30 via-kobbo-beige to-kobbo-cream font-heading text-3xl font-extrabold text-kobbo-black/30">

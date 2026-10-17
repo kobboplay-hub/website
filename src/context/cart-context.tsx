@@ -186,13 +186,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           merchandiseId,
           quantity,
         });
-        const prepared = await postCart({
-          action: "prepareCheckout",
-          cartId: checkoutCart.id,
-        });
-        setCart(prepared);
-        saveCartId(prepared.id);
-        return prepared.checkoutUrl;
+        setCart(checkoutCart);
+        saveCartId(checkoutCart.id);
+        return checkoutCart.checkoutUrl;
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Could not start checkout",
@@ -229,6 +225,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setError(
           err instanceof Error ? err.message : "Could not add item to cart",
         );
+        if (options?.openDrawer !== false) setIsDrawerOpen(true);
         return null;
       } finally {
         setPendingAction(null);

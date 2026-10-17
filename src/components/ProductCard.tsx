@@ -27,6 +27,7 @@ interface ProductCardProps {
   /** `featured`: discount % and a full-width Add to Cart button */
   layout?: "compact" | "featured";
   imageSizes?: string;
+  deferRating?: boolean;
 }
 
 export default function ProductCard({
@@ -35,6 +36,7 @@ export default function ProductCard({
   badge,
   layout = "compact",
   imageSizes = DEFAULT_IMAGE_SIZES,
+  deferRating = false,
 }: ProductCardProps) {
   const isFeaturedLayout = layout === "featured";
   const hasDiscount =
@@ -55,11 +57,7 @@ export default function ProductCard({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const cardRef = useRef<HTMLElement | null>(null);
   const [showVideo, setShowVideo] = useState(false);
-  const [canHover, setCanHover] = useState(false);
-
-  useEffect(() => {
-    setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
-  }, []);
+  const canHover = typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   useEffect(() => {
     if (!videoUrl || canHover) return;
@@ -141,7 +139,7 @@ export default function ProductCard({
             muted
             playsInline
             loop
-            preload="metadata"
+            preload="none"
             aria-hidden
           />
         )}
@@ -181,6 +179,7 @@ export default function ProductCard({
         <ProductCardRating
           productId={product.id}
           initialSummary={reviewSummary}
+          fetchIfMissing={!deferRating}
         />
         {isFeaturedLayout ? (
           <div className="mt-auto pt-2">

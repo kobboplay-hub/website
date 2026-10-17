@@ -6,7 +6,6 @@ import SiteLayout from "@/components/SiteLayout";
 import ProductGrid from "@/components/shop/ProductGrid";
 import EmptyState from "@/components/ui/EmptyState";
 import { getCollectionProducts } from "@/lib/shopify";
-import { getProductReviewSummaries } from "@/lib/judgeme";
 
 interface CollectionPageProps {
   params: Promise<{ handle: string }>;
@@ -40,7 +39,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   const { handle } = await params;
 
   let collectionData;
-  let reviewSummaries = {};
 
   try {
     collectionData = await getCollectionProducts(handle, 50);
@@ -53,11 +51,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   const { collection, products } = collectionData;
   const festive = isGanpati(collection.title, collection.handle);
 
-  if (products.length > 0) {
-    reviewSummaries = await getProductReviewSummaries(
-      products.map((product) => product.id),
-    );
-  }
 
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
@@ -111,7 +104,6 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             <div className="mt-4 sm:mt-6">
               <ProductGrid
                 products={products}
-                reviewSummaries={reviewSummaries}
               />
             </div>
           )}

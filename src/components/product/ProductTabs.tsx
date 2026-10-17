@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { hasTabContent, type ProductTabsContent } from "@/lib/productPageContent";
 
 type TabId = "description" | "features" | "specifications" | "care";
@@ -26,11 +26,9 @@ export default function ProductTabs({ content }: ProductTabsProps) {
     visibleTabs[0]?.id ?? "description",
   );
 
-  useEffect(() => {
-    if (!visibleTabs.some((tab) => tab.id === activeTab)) {
-      setActiveTab(visibleTabs[0]?.id ?? "description");
-    }
-  }, [activeTab, visibleTabs]);
+  const displayedTab = visibleTabs.some((tab) => tab.id === activeTab)
+    ? activeTab
+    : visibleTabs[0]?.id ?? "description";
 
   if (visibleTabs.length === 0) return null;
 
@@ -45,7 +43,7 @@ export default function ProductTabs({ content }: ProductTabsProps) {
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`shrink-0 px-4 py-3.5 text-xs font-semibold transition-colors sm:px-6 sm:py-4 sm:text-sm ${
-                  activeTab === tab.id
+                  displayedTab === tab.id
                     ? "border-b-2 border-kobbo-yellow text-kobbo-black"
                     : "text-kobbo-muted hover:text-kobbo-black"
                 }`}
@@ -56,14 +54,14 @@ export default function ProductTabs({ content }: ProductTabsProps) {
           </div>
 
           <div className="p-4 sm:p-6 lg:p-8">
-            {activeTab === "description" && (
+            {displayedTab === "description" && (
               <div
                 className="prose-sm max-w-none text-sm leading-relaxed text-kobbo-muted sm:text-base [&_li]:mb-1.5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5"
                 dangerouslySetInnerHTML={{ __html: content.descriptionHtml }}
               />
             )}
 
-            {activeTab === "features" && (
+            {displayedTab === "features" && (
               <ul className="grid gap-2.5 sm:grid-cols-2">
                 {content.features.map((feature) => (
                   <li
@@ -77,7 +75,7 @@ export default function ProductTabs({ content }: ProductTabsProps) {
               </ul>
             )}
 
-            {activeTab === "specifications" && (
+            {displayedTab === "specifications" && (
               <div className="overflow-hidden rounded-xl border border-kobbo-beige/80 bg-kobbo-white">
                 <dl>
                   {content.specifications.map((spec, index) => (
@@ -99,7 +97,7 @@ export default function ProductTabs({ content }: ProductTabsProps) {
               </div>
             )}
 
-            {activeTab === "care" && (
+            {displayedTab === "care" && (
               <ul className="space-y-2.5">
                 {content.careInstructions.map((instruction) => (
                   <li

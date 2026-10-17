@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Minus,
@@ -15,12 +16,6 @@ import ProductDetailRating from "@/components/product/ProductDetailRating";
 import ProductShareButton from "@/components/product/ProductShareButton";
 import ProductHighlights from "@/components/product/ProductHighlights";
 import { useProductPurchase } from "@/components/product/ProductPurchaseContext";
-import type { JudgeMeProductSummary } from "@/lib/judgeme";
-
-interface ProductInfoProps {
-  product: Product;
-  reviewSummary?: JudgeMeProductSummary | null;
-}
 
 /** Shopify product tag that shows the "7 days Replacement" badge. Add/remove this tag to toggle. */
 export const ELECTRONICS_TAG = "electronics";
@@ -58,9 +53,10 @@ function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
   );
 }
 
-export default function ProductInfo({ product, reviewSummary }: ProductInfoProps) {
+export default function ProductInfo({ product }: { product: Product }) {
   const { quantity, setQuantity, selectedVariantId, setSelectedVariantId } = useProductPurchase();
-  const { buyNow, isBuyNowLoading } = useCart();
+  const { buyNow, isBuyNowLoading, error } = useCart();
+  const [buyNowFailed, setBuyNowFailed] = useState(false);
 
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ??
@@ -93,9 +89,12 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
 
   const handleBuyNow = async () => {
     if (!selectedVariant?.id) return;
+    setBuyNowFailed(false);
     const checkoutUrl = await buyNow(selectedVariant.id, quantity);
     if (checkoutUrl) {
       window.location.href = checkoutUrl;
+    } else {
+      setBuyNowFailed(true);
     }
   };
 
@@ -120,7 +119,7 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
             </div>
           </div>
 
-          <ProductDetailRating summary={reviewSummary} />
+          <ProductDetailRating productId={product.id} />
 
           {product.vendor && (
             <p className="mt-1.5 text-xs text-kobbo-muted sm:text-sm">
@@ -218,6 +217,11 @@ export default function ProductInfo({ product, reviewSummary }: ProductInfoProps
             {buyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Buy Now
           </button>
+          {buyNowFailed && (
+            <p role="alert" className="text-center text-sm text-red-700">
+              {error ?? "Checkout could not open. Please try again."}
+            </p>
+          )}
           {product.isKit && (
             <p className="rounded-2xl border border-kobbo-yellow/60 bg-kobbo-yellow/15 px-4 py-3 text-center font-heading text-base font-extrabold leading-snug text-kobbo-black sm:text-lg">
               ₹150 OFF on Prepaid Orders + A FREE GIFT 🎁
