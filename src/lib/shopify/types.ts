@@ -164,10 +164,6 @@ export interface ShopifyProductNode {
   insidePlayKitItems?: {
     references: { edges: { node: ShopifyKitItemNode }[] } | null;
   } | null;
-  insidePlayKit?: {
-    reference: ShopifyKitItemNode | null;
-    references: { edges: { node: ShopifyKitItemNode }[] } | null;
-  } | null;
 }
 
 export interface ShopifyAgeGroupNode {
