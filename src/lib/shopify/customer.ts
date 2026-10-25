@@ -583,15 +583,16 @@ function lineItemMatchesProduct(
   targetId: string | null,
   productTitle?: string,
 ): boolean {
-  if (item.productHandle?.toLowerCase() === targetHandle) {
-    return true;
+  if (targetId && item.productId) {
+    return parseShopifyProductNumericId(item.productId) === targetId;
   }
 
-  if (targetId && item.productId) {
-    if (parseShopifyProductNumericId(item.productId) === targetId) {
-      return true;
-    }
+  if (item.productHandle) {
+    return item.productHandle.toLowerCase() === targetHandle;
   }
+
+  // A known product ID should never be matched against an unrelated line item by title.
+  if (targetId) return false;
 
   if (productTitle && item.title) {
     const normalizedProduct = normalizeComparableText(productTitle);

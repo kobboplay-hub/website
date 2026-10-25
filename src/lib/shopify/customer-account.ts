@@ -4,6 +4,7 @@ import {
   normalizeIndianProvince,
 } from "@/lib/data/india-provinces";
 import { CustomerApiError } from "@/lib/shopify/customer-errors";
+import { shopifyFetch } from "@/lib/shopify";
 import type {
   CustomerAddress,
   CustomerAddressInput,
@@ -209,8 +210,10 @@ const CUSTOMER_ORDERS_QUERY = `
           }
           lineItems(first: 20) {
             nodes {
+              name
               title
               quantity
+              productId
               image {
                 url
               }
@@ -221,6 +224,47 @@ const CUSTOMER_ORDERS_QUERY = `
     }
   }
 `;
+
+const PRODUCT_HANDLES_QUERY = `
+  query CustomerOrderProductHandles($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        id
+        handle
+      }
+    }
+  }
+`;
+
+async function getProductHandles(productIds: string[]): Promise<Map<string, string>> {
+  const handles = new Map<string, string>();
+  const uniqueIds = [...new Set(productIds)];
+
+  // Shopify limits GraphQL input arrays. Resolve public product handles in batches.
+  for (let offset = 0; offset < uniqueIds.length; offset += 100) {
+    const ids = uniqueIds.slice(offset, offset + 100);
+    try {
+      const data = await shopifyFetch<{
+        nodes: ({ id: string; handle: string } | null)[];
+      }>({
+        query: PRODUCT_HANDLES_QUERY,
+        variables: { ids },
+        revalidate: 60,
+      });
+
+      for (const product of data.nodes) {
+        if (product?.id && product.handle) {
+          handles.set(product.id, product.handle);
+        }
+      }
+    } catch (error) {
+      // Keep order history available when product lookup is temporarily unavailable.
+      console.error("Could not resolve order product handles", error);
+    }
+  }
+
+  return handles;
+}
 
 export async function getCustomerAccountProfile(
   accessToken: string,
@@ -271,8 +315,10 @@ export async function getCustomerAccountOrders(
           totalPrice: { amount: string; currencyCode: string };
           lineItems: {
             nodes: {
+              name: string;
               title: string;
               quantity: number;
+              productId: string | null;
               image: { url: string } | null;
             }[];
           };
@@ -285,6 +331,11 @@ export async function getCustomerAccountOrders(
     throw new CustomerApiError("Session expired. Please log in again.");
   }
 
+  const productIds = data.customer.orders.nodes.flatMap((order) =>
+    order.lineItems.nodes.flatMap((item) => item.productId ? [item.productId] : []),
+  );
+  const productHandles = await getProductHandles(productIds);
+
   return data.customer.orders.nodes.map((order) => ({
     id: order.id,
     orderNumber: order.number,
@@ -294,11 +345,13 @@ export async function getCustomerAccountOrders(
     totalPrice: parseFloat(order.totalPrice.amount),
     currencyCode: order.totalPrice.currencyCode,
     lineItems: order.lineItems.nodes.map((item) => ({
-      title: item.title,
+      title: item.name || item.title,
       quantity: item.quantity,
       imageUrl: item.image?.url ?? null,
-      productHandle: null,
-      productId: null,
+      productHandle: item.productId
+        ? productHandles.get(item.productId) ?? null
+        : null,
+      productId: item.productId,
     })),
   }));
 }

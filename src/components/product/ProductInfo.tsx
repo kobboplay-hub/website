@@ -18,17 +18,6 @@ import ProductShareButton from "@/components/product/ProductShareButton";
 import ProductHighlights from "@/components/product/ProductHighlights";
 import { useProductPurchase } from "@/components/product/ProductPurchaseContext";
 
-/** Shopify product tag that shows the "7 days Replacement" badge. Add/remove this tag to toggle. */
-export const ELECTRONICS_TAG = "electronics";
-
-function isElectronicToy(product: Product): boolean {
-  const tags = product.tags.map((tag) => tag.trim().toLowerCase());
-  if (tags.includes(ELECTRONICS_TAG)) return true;
-  // Fallback: Product type set to Electronics / Electronic Toy in Shopify Admin
-  const type = product.productType.trim().toLowerCase();
-  return type.includes("electronic");
-}
-
 /** Amazon-style box + return arrow icon */
 function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
   return (
@@ -100,7 +89,6 @@ export default function ProductInfo({ product }: { product: Product }) {
   };
 
   const priceDisplay = formatPrice(displayPrice, currencyCode);
-  const hasReplacement = isElectronicToy(product);
 
   return (
     <>
@@ -232,18 +220,16 @@ export default function ProductInfo({ product }: { product: Product }) {
         </div>
 
         <div className="mt-5 border-t border-kobbo-beige/80 pt-4">
-          <div className={`grid gap-2.5 ${hasReplacement ? "grid-cols-2" : "grid-cols-1"}`}>
-            {hasReplacement && (
-              <Link
-                href="/return-policy"
-                className="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-kobbo-beige bg-kobbo-white/75 px-2.5 py-2.5 text-xs font-semibold leading-snug text-kobbo-black transition-colors hover:border-kobbo-yellow sm:gap-3 sm:px-4 sm:text-sm"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-kobbo-yellow/15 sm:size-9">
-                  <ReplacementIcon className="size-4.5 text-[#c96921] sm:size-5" strokeWidth={1.75} />
-                </span>
-                <span>7 days Replacement</span>
-              </Link>
-            )}
+          <div className="grid grid-cols-2 gap-2.5">
+            <Link
+              href="/return-policy"
+              className="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-kobbo-beige bg-kobbo-white/75 px-2.5 py-2.5 text-xs font-semibold leading-snug text-kobbo-black transition-colors hover:border-kobbo-yellow sm:gap-3 sm:px-4 sm:text-sm"
+            >
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-kobbo-yellow/15 sm:size-9">
+                <ReplacementIcon className="size-4.5 text-[#c96921] sm:size-5" strokeWidth={1.75} />
+              </span>
+              <span>7 days Replacement</span>
+            </Link>
             <div className="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-kobbo-beige bg-kobbo-white/75 px-2.5 py-2.5 text-xs font-semibold leading-snug text-kobbo-black sm:gap-3 sm:px-4 sm:text-sm">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-kobbo-yellow/15 sm:size-9">
                 <ShieldCheck className="size-4.5 text-kobbo-black sm:size-5" strokeWidth={1.75} aria-hidden="true" />

@@ -5,7 +5,6 @@ import { apiErrorResponse } from "@/lib/auth/errors";
 import { getCurrentCustomer } from "@/lib/shopify/customer";
 import { submitProductReview } from "@/lib/judgeme";
 import { getReviewEligibility } from "@/lib/review-eligibility";
-import { getProductByHandle } from "@/lib/shopify";
 
 export async function POST(request: Request) {
   const token = await getCustomerToken();
@@ -31,11 +30,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const product = await getProductByHandle(productHandle);
     const eligibility = await getReviewEligibility(
       productHandle,
       productId,
-      product?.title,
     );
 
     if (!eligibility.eligible) {

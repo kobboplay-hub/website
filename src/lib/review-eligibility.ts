@@ -6,6 +6,7 @@ import {
 import {
   customerHasReviewedProduct,
   isJudgeMeConfigured,
+  parseShopifyProductId,
 } from "@/lib/judgeme";
 import { getProductByHandle } from "@/lib/shopify";
 
@@ -28,7 +29,6 @@ export interface ReviewEligibilityResult {
 export async function getReviewEligibility(
   productHandle: string,
   productId?: string,
-  productTitle?: string,
 ): Promise<ReviewEligibilityResult> {
   if (!productHandle) {
     return { eligible: false, reason: "invalid_product" };
@@ -49,15 +49,15 @@ export async function getReviewEligibility(
       return { eligible: false, reason: "not_authenticated" };
     }
 
-    const product =
-      productTitle !== undefined
-        ? { title: productTitle }
-        : await getProductByHandle(productHandle);
+    const product = await getProductByHandle(productHandle);
+    if (!product || (productId &&
+      parseShopifyProductId(productId) !== parseShopifyProductId(product.id))) {
+      return { eligible: false, reason: "invalid_product" };
+    }
 
     const purchaseStatus = await getCustomerProductReviewPurchaseStatus(
       productHandle,
-      productId,
-      product?.title,
+      product.id,
     );
 
     if (purchaseStatus === "not_purchased") {
@@ -72,15 +72,13 @@ export async function getReviewEligibility(
       return { eligible: false, reason: "not_fulfilled" };
     }
 
-    if (productId) {
-      const alreadyReviewed = await customerHasReviewedProduct(
-        productId,
-        customer.email,
-      );
+    const alreadyReviewed = await customerHasReviewedProduct(
+      product.id,
+      customer.email,
+    );
 
-      if (alreadyReviewed) {
-        return { eligible: false, reason: "already_reviewed" };
-      }
+    if (alreadyReviewed) {
+      return { eligible: false, reason: "already_reviewed" };
     }
 
     return { eligible: true, reason: "eligible" };

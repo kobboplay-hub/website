@@ -25,10 +25,8 @@ export default async function ProductReviews({
   try {
     data = await getProductReviews(productId);
   } catch {
-    // Hide the section when reviews cannot be loaded.
+    // Keep the review action accessible if published reviews cannot be loaded.
   }
-
-  if (data.reviewCount === 0) return null;
 
   return (
     <section id="product-reviews" className="bg-kobbo-white py-4 sm:py-5">
@@ -44,18 +42,24 @@ export default async function ProductReviews({
           />
         </div>
 
-        <div className="mt-6 grid gap-8 lg:grid-cols-3">
-          <ReviewSummary
-            averageRating={data.averageRating}
-            reviewCount={data.reviewCount}
-            ratingBreakdown={data.ratingBreakdown}
-          />
-          <div className="space-y-4 lg:col-span-2">
-            {data.reviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
+        {data.reviewCount > 0 ? (
+          <div className="mt-6 grid gap-8 lg:grid-cols-3">
+            <ReviewSummary
+              averageRating={data.averageRating}
+              reviewCount={data.reviewCount}
+              ratingBreakdown={data.ratingBreakdown}
+            />
+            <div className="space-y-4 lg:col-span-2">
+              {data.reviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className="mt-4 text-sm text-kobbo-muted">
+            No reviews yet. Be the first to share your experience.
+          </p>
+        )}
       </div>
     </section>
   );
