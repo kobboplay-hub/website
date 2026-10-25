@@ -4,7 +4,6 @@ import Link from "next/link";
 import { X, Loader2 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { formatPrice } from "@/lib/shopify/types";
-import { FREE_SHIPPING_THRESHOLD } from "@/lib/shopify/cart";
 import CartLineItem from "./CartLineItem";
 import EmptyState from "@/components/ui/EmptyState";
 import { emptyStates } from "@/data/empty-states";
@@ -108,11 +107,6 @@ export default function CartDrawer() {
                     {formatPrice(subtotal, currencyCode)}
                   </span>
                 </div>
-                <p className="text-xs text-kobbo-muted">
-                  {subtotal >= FREE_SHIPPING_THRESHOLD
-                    ? "You qualify for free shipping!"
-                    : `Free shipping on orders above ₹${FREE_SHIPPING_THRESHOLD.toLocaleString("en-IN")}`}
-                </p>
               </div>
 
               <div className="mt-4 flex flex-col gap-2.5">

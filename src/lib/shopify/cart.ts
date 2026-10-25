@@ -178,5 +178,3 @@ export function getDefaultMerchandiseId(product: Product): string | null {
 }
 
 export const CART_STORAGE_KEY = "kobbo-cart-id";
-
-export const FREE_SHIPPING_THRESHOLD = 999;

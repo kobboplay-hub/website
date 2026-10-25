@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
 import { formatPrice } from "@/lib/shopify/types";
-import { FREE_SHIPPING_THRESHOLD } from "@/lib/shopify/cart";
 import CartLineItem from "@/components/cart/CartLineItem";
 import EmptyState from "@/components/ui/EmptyState";
 import ErrorState from "@/components/ui/ErrorState";
@@ -23,7 +22,6 @@ export default function CartPageContent() {
   } = useCart();
 
   const isEmpty = !cart || cart.lines.length === 0;
-  const qualifiesForFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   const handleCheckout = async () => {
     // Shopify-hosted checkout: form fields and payment labels are controlled by Shopify.
@@ -83,12 +81,6 @@ export default function CartPageContent() {
               {formatPrice(subtotal, currencyCode)}
             </dd>
           </div>
-          <div className="flex justify-between">
-            <dt className="text-kobbo-muted">Estimated Shipping</dt>
-            <dd className="font-medium text-kobbo-black">
-              {qualifiesForFreeShipping ? "Free" : "Calculated at checkout"}
-            </dd>
-          </div>
           <div className="flex justify-between border-t border-kobbo-beige pt-3">
             <dt className="font-bold text-kobbo-black">Total</dt>
             <dd className="text-lg font-bold text-kobbo-black">
@@ -96,12 +88,6 @@ export default function CartPageContent() {
             </dd>
           </div>
         </dl>
-
-        <p className="mt-3 text-xs text-kobbo-muted">
-          {qualifiesForFreeShipping
-            ? "You qualify for free shipping!"
-            : `Free shipping on orders above ₹${FREE_SHIPPING_THRESHOLD.toLocaleString("en-IN")}`}
-        </p>
 
         <button
           type="button"
