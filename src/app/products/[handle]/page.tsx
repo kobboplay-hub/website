@@ -6,7 +6,6 @@ import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductFloatingVideoWidget from "@/components/product/ProductFloatingVideoWidget";
 import ProductInfo from "@/components/product/ProductInfo";
-import ProductVideo from "@/components/product/ProductVideo";
 import ProductTabs from "@/components/product/ProductTabs";
 import InsidePlayKit from "@/components/product/InsidePlayKit";
 import { ProductPurchaseProvider } from "@/components/product/ProductPurchaseContext";
@@ -22,7 +21,6 @@ import {
   defaultWhyParentsLove,
   getProductFaqs,
   getProductTabsContent,
-  getProductVideos,
   getPrimaryProductVideo,
 } from "@/lib/productPageContent";
 import { productMetadata, buildPageTitle } from "@/data/seo";
@@ -102,7 +100,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const imageAltTexts = product.images.map((img) => img.altText);
 
   const tabsContent = getProductTabsContent(product);
-  const videos = getProductVideos(product);
   const primaryVideo = getPrimaryProductVideo(product);
   const productFaqs = getProductFaqs(product);
 
@@ -137,7 +134,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
         )}
 
-        <ProductVideo videos={videos} />
         {product.isKit ? (
           <InsidePlayKit items={product.playKitItems} />
         ) : (

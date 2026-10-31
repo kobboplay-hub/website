@@ -24,8 +24,7 @@ export default function CartPageContent() {
   const isEmpty = !cart || cart.lines.length === 0;
 
   const handleCheckout = async () => {
-    // Shopify-hosted checkout: form fields and payment labels are controlled by Shopify.
-    // This storefront only redirects to cart.checkoutUrl from the Storefront API.
+    // Eligible Play Kit carts use Magic Checkout when enabled; other carts use Shopify.
     const url = await proceedToCheckout();
     if (url) {
       window.location.href = url;

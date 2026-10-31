@@ -11,6 +11,7 @@ import {
   prepareCheckout,
   withCustomerIdentity,
 } from "@/lib/shopify/cart-customer";
+import { getCheckoutUrl } from "@/lib/razorpay/magic";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -112,7 +113,7 @@ export async function POST(request: Request) {
         const cart = await withCustomerIdentity(
           await buyNowCart(merchandiseId, quantity),
         );
-        return NextResponse.json({ cart });
+        return NextResponse.json({ cart: { ...cart, checkoutUrl: getCheckoutUrl(cart) } });
       }
 
       case "prepareCheckout": {
@@ -124,7 +125,7 @@ export async function POST(request: Request) {
           );
         }
         const cart = await prepareCheckout(cartId);
-        return NextResponse.json({ cart });
+        return NextResponse.json({ cart: { ...cart, checkoutUrl: getCheckoutUrl(cart) } });
       }
 
       default:

@@ -28,8 +28,12 @@ const CART_FRAGMENT = `
                 currencyCode
               }
               product {
+                id
                 title
                 handle
+                kitFlag: metafield(namespace: "custom", key: "kit") {
+                  value
+                }
                 featuredImage {
                   url
                   altText

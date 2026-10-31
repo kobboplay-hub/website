@@ -331,7 +331,10 @@ async function fetchReviewsList(
 ): Promise<JudgeMeReview[]> {
   const data = await judgeMeFetch<{ reviews?: JudgeMeApiReview[] }>(
     "/reviews",
-    getReviewFetchParams(shopifyProductId, internalProductId, perPage),
+    {
+      ...getReviewFetchParams(shopifyProductId, internalProductId, perPage),
+      published: "true",
+    },
   );
 
   return (data?.reviews ?? [])

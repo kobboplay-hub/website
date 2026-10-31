@@ -9,7 +9,8 @@ import type { ProductVideoItem } from "@/lib/productPageContent";
 const SESSION_KEY_PREFIX = "kobbo-video-widget-dismissed:";
 const EDGE_MARGIN = 16;
 const STICKY_BAR_GAP = 24;
-const WIDGET_WIDTH = 92;
+const WIDGET_WIDTH_MOBILE = 92;
+const WIDGET_WIDTH_DESKTOP = 160;
 const MOBILE_BUY_BAR_ID = "product-mobile-buy-bar";
 
 interface ProductFloatingVideoWidgetProps {
@@ -24,6 +25,7 @@ export default function ProductFloatingVideoWidget({
   const [showWidget, setShowWidget] = useState<boolean | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(EDGE_MARGIN);
+  const [widgetWidth, setWidgetWidth] = useState(WIDGET_WIDTH_MOBILE);
 
   useEffect(() => {
     const key = `${SESSION_KEY_PREFIX}${productHandle}`;
@@ -33,7 +35,10 @@ export default function ProductFloatingVideoWidget({
 
   useEffect(() => {
     const updateOffset = () => {
-      if (window.innerWidth >= 768) {
+      const isDesktop = window.innerWidth >= 768;
+      setWidgetWidth(isDesktop ? WIDGET_WIDTH_DESKTOP : WIDGET_WIDTH_MOBILE);
+
+      if (isDesktop) {
         setBottomOffset(EDGE_MARGIN);
         return;
       }
@@ -85,11 +90,11 @@ export default function ProductFloatingVideoWidget({
   return (
     <>
       <div
-        className="fixed z-50 md:hidden"
+        className="fixed z-50"
         style={{
           right: `${EDGE_MARGIN}px`,
           bottom: `${bottomOffset}px`,
-          width: `${WIDGET_WIDTH}px`,
+          width: `${widgetWidth}px`,
         }}
       >
         <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-kobbo-black shadow-[0_8px_24px_rgba(0,0,0,0.18)] ring-1 ring-black/5">
@@ -103,13 +108,13 @@ export default function ProductFloatingVideoWidget({
               src={video.thumbnail}
               alt={video.label ?? "Product video preview"}
               fill
-              sizes="96px"
+              sizes="(min-width: 768px) 160px, 96px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-kobbo-black/15" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-soft">
-                <Play className="h-4 w-4 fill-kobbo-black text-kobbo-black" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-soft md:h-12 md:w-12">
+                <Play className="h-4 w-4 fill-kobbo-black text-kobbo-black md:h-5 md:w-5" />
               </div>
             </div>
           </button>

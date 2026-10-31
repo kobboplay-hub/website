@@ -2,6 +2,8 @@ export interface CartLine {
   id: string;
   quantity: number;
   merchandiseId: string;
+  productId: string;
+  isKit: boolean;
   variantTitle: string;
   productTitle: string;
   productHandle: string;
@@ -36,8 +38,10 @@ export interface ShopifyCartLineNode {
     availableForSale: boolean;
     price: { amount: string; currencyCode: string };
     product: {
+      id: string;
       title: string;
       handle: string;
+      kitFlag: { value: string } | null;
       featuredImage: { url: string; altText: string | null } | null;
     };
   };

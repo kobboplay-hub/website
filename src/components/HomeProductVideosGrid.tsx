@@ -81,7 +81,7 @@ export default function HomeProductVideosGrid({ videos }: HomeProductVideosGridP
 
   return (
     <>
-      <div className="mt-6 flex justify-end gap-2" aria-label="Browse product videos">
+      <div className="mt-3 flex justify-end gap-2" aria-label="Browse product videos">
         <button type="button" onClick={() => scrollCards(-1)} aria-label="Previous product videos" className="flex size-10 items-center justify-center rounded-full border border-kobbo-beige bg-kobbo-white text-kobbo-black transition-colors hover:border-kobbo-yellow sm:size-11">
           <ChevronLeft className="size-5" aria-hidden />
         </button>
@@ -90,7 +90,7 @@ export default function HomeProductVideosGrid({ videos }: HomeProductVideosGridP
         </button>
       </div>
 
-      <div ref={carouselRef} role="region" aria-roledescription="carousel" aria-label="Product videos" className="scrollbar-none -mx-4 mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-4 sm:-mx-6 sm:gap-4 sm:px-6 lg:mx-0 lg:px-0">
+      <div ref={carouselRef} role="region" aria-roledescription="carousel" aria-label="Product videos" className="scrollbar-none -mx-4 mt-2 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-4 sm:-mx-6 sm:gap-4 sm:px-6 lg:mx-0 lg:px-0">
         {videos.map((item, index) => (
           <article key={item.id} data-video-index={index} className="group w-[78vw] max-w-[320px] shrink-0 snap-start overflow-hidden rounded-2xl bg-kobbo-white shadow-soft sm:w-[46%] sm:max-w-none lg:w-[24%]">
             <button type="button" onClick={() => handlePlay(item)} aria-label={`Play video for ${item.title}`} className="relative block w-full text-left">

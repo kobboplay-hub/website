@@ -28,6 +28,8 @@ function normalizeCartLine(node: ShopifyCartNode["lines"]["edges"][0]["node"]): 
     id: node.id,
     quantity: node.quantity,
     merchandiseId: merchandise.id,
+    productId: merchandise.product.id,
+    isKit: merchandise.product.kitFlag?.value?.toLowerCase() === "true",
     variantTitle: merchandise.title,
     productTitle: merchandise.product.title,
     productHandle: merchandise.product.handle,

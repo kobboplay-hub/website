@@ -156,10 +156,10 @@ export default function PlayKitsSection({ ageGroups, products }: PlayKitsSection
           </p>
         )}
 
-        <div className="mt-9 flex justify-center sm:mt-11">
+        <div className="mt-5 flex justify-center sm:mt-7">
           <Link
             href="/shop"
-            className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-kobbo-black bg-kobbo-black px-8 py-3 text-sm font-bold text-kobbo-white transition-colors hover:bg-kobbo-black/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:text-base"
+            className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-kobbo-yellow bg-kobbo-yellow px-8 py-3 text-sm font-bold text-kobbo-black transition-colors hover:bg-kobbo-yellow-light hover:border-kobbo-yellow-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:text-base"
           >
             Shop all toys
           </Link>
