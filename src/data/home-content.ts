@@ -30,7 +30,7 @@ export const heroContent = {
     "Play kits for ages 2-3 and 3-5, with every toy chosen for what your child is learning right now",
   trustItems: [
     { id: "age-kits", label: "Age-based kits", icon: "sparkles" as const },
-    { id: "learn-play", label: "Learn through play", icon: "leaf" as const },
+    { id: "learn-play", label: "Learn through play", icon: "book-open" as const },
   ],
   imageBadgeTitle: "Stage-Based",
   imageBadgeSubtitle: "Learning Kits",

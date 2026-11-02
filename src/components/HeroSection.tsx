@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useRef } from "react";
-import { ArrowRight, Leaf, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, ShieldCheck, Sparkles } from "lucide-react";
 import { heroContent } from "@/data/home-content";
 import type { AgeGroup } from "@/lib/shopify/types";
 import { useAgeGroups } from "@/context/age-groups-context";
@@ -396,8 +396,8 @@ export default function HeroSection() {
                         strokeWidth={2}
                       />
                     ) : (
-                      <Leaf
-                        className="h-4 w-4 shrink-0 text-kobbo-green"
+                      <BookOpen
+                        className="h-4 w-4 shrink-0 text-kobbo-black"
                         strokeWidth={2}
                       />
                     )}

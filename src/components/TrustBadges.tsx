@@ -1,8 +1,8 @@
-import { Sparkles, Puzzle, Heart, Truck } from "lucide-react";
+import { ToyBrick, Puzzle, Heart, Truck } from "lucide-react";
 
 const badges = [
   {
-    icon: Sparkles,
+    icon: ToyBrick,
     title: "Curated Toys",
     subtitle: "Handpicked for development",
   },

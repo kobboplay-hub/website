@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, ImageOff, Loader2 } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import type { Product } from "@/lib/shopify/types";
 
@@ -24,6 +24,8 @@ function formatPrice(amount: number, currencyCode: string): string {
 
 export default function PlayKitCard({ product, ageName, index, count }: PlayKitCardProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({ 0: true });
+  const [erroredImages, setErroredImages] = useState<Record<number, boolean>>({});
   const [isOpeningKit, setIsOpeningKit] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const thumbnailStripRef = useRef<HTMLDivElement>(null);
@@ -31,7 +33,21 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
   const images = product.featuredImage
     ? [product.featuredImage, ...product.images.filter((image) => image.url !== product.featuredImage?.url)]
     : product.images;
-  const activeImage = images[activeImageIndex] ?? images[0];
+
+  // Background prefetch all images for this card
+  useEffect(() => {
+    if (typeof window === "undefined" || images.length <= 1) return;
+    const preloaded: HTMLImageElement[] = [];
+    images.forEach((img, i) => {
+      if (i === 0) return;
+      const el = new window.Image();
+      el.src = img.url;
+      preloaded.push(el);
+    });
+    return () => {
+      preloaded.length = 0;
+    };
+  }, [images]);
 
   useEffect(() => {
     const strip = thumbnailStripRef.current;
@@ -75,41 +91,87 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
           onTouchEnd={handleImageTouchEnd}
           onTouchCancel={() => { touchStartX.current = null; }}
         >
-          {activeImage ? (
-            <Image
-              src={activeImage.url}
-              alt={activeImage.altText || `${product.title} image ${activeImageIndex + 1}`}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 35vw"
-              className="object-contain p-3 sm:p-4"
-              draggable={false}
-            />
+          {images.length > 0 ? (
+            <>
+              {/* Subtle shimmer while active image finishes loading */}
+              {!loadedImages[activeImageIndex] && !erroredImages[activeImageIndex] && (
+                <div
+                  aria-hidden
+                  className="absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-b from-kobbo-cream/30 via-kobbo-beige/40 to-kobbo-cream/30 animate-pulse"
+                >
+                  <Loader2 className="h-5 w-5 animate-spin text-kobbo-muted/60" />
+                  <span className="text-[11px] font-semibold text-kobbo-muted/70">Loading…</span>
+                </div>
+              )}
+
+              {/* Stacked Images for instant switching and silky-smooth crossfade */}
+              {images.map((img, imgIndex) => {
+                const isCurrent = activeImageIndex === imgIndex;
+                const isErrored = erroredImages[imgIndex];
+
+                return (
+                  <div
+                    key={`${img.url}-${imgIndex}`}
+                    aria-hidden={!isCurrent}
+                    className={`absolute inset-0 transition-opacity duration-300 ease-out ${
+                      isCurrent ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
+                    }`}
+                  >
+                    {isErrored ? (
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 p-4 text-center text-kobbo-muted">
+                        <ImageOff className="h-8 w-8 text-kobbo-muted/60" />
+                        <span className="text-xs">Image unavailable</span>
+                      </div>
+                    ) : (
+                      <Image
+                        src={img.url}
+                        alt={img.altText || `${product.title} image ${imgIndex + 1}`}
+                        fill
+                        priority={index === 0 && imgIndex === 0}
+                        loading={imgIndex <= 1 ? "eager" : "lazy"}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 35vw"
+                        className="object-contain p-3 px-11 sm:p-4 sm:px-14"
+                        draggable={false}
+                        onLoad={() => {
+                          setLoadedImages((prev) => (prev[imgIndex] ? prev : { ...prev, [imgIndex]: true }));
+                        }}
+                        onError={() => {
+                          setErroredImages((prev) => (prev[imgIndex] ? prev : { ...prev, [imgIndex]: true }));
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </>
           ) : (
             <span className="flex h-full items-center justify-center p-6 text-center font-heading text-2xl font-bold text-kobbo-black">
               {product.title}
             </span>
           )}
+
           {images.length > 1 && (
             <>
               <button
                 type="button"
                 onClick={() => showAdjacentImage(-1)}
                 aria-label={`Previous image of ${product.title}`}
-                className="absolute left-2 top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-kobbo-black shadow-soft transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black"
+                className="absolute left-1.5 top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-kobbo-black shadow-soft transition-all hover:bg-white hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:left-2 sm:size-9"
               >
-                <ChevronLeft className="size-5" aria-hidden />
+                <ChevronLeft className="size-4 sm:size-5" aria-hidden />
               </button>
               <button
                 type="button"
                 onClick={() => showAdjacentImage(1)}
                 aria-label={`Next image of ${product.title}`}
-                className="absolute right-2 top-1/2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-kobbo-black shadow-soft transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black"
+                className="absolute right-1.5 top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-kobbo-black shadow-soft transition-all hover:bg-white hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:right-2 sm:size-9"
               >
-                <ChevronRight className="size-5" aria-hidden />
+                <ChevronRight className="size-4 sm:size-5" aria-hidden />
               </button>
             </>
           )}
         </div>
+
         {images.length > 1 && (
           <div ref={thumbnailStripRef} className="scrollbar-none relative mt-3 flex gap-2 overflow-x-hidden" role="group" aria-label={`${product.title} images`}>
             {images.map((image, imageIndex) => (

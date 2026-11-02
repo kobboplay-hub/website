@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Heart, ImageOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, ImageOff, Loader2 } from "lucide-react";
 import ProductShareButton from "@/components/product/ProductShareButton";
 import { useWishlist } from "@/context/wishlist-context";
 
@@ -20,12 +20,30 @@ export default function ProductGallery({
   altTexts = [],
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({ 0: true });
+  const [erroredImages, setErroredImages] = useState<Record<number, boolean>>({});
   const { isWishlisted, toggleWishlist } = useWishlist();
   const wishlisted = productHandle ? isWishlisted(productHandle) : false;
   const thumbRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const thumbnailStripRef = useRef<HTMLDivElement | null>(null);
+  const touchStartX = useRef<number | null>(null);
   const hasImages = images.length > 0;
   const hasMultiple = hasImages && images.length > 1;
+
+  // Background prefetch all gallery images so clicks are instant
+  useEffect(() => {
+    if (typeof window === "undefined" || images.length <= 1) return;
+    const preloaded: HTMLImageElement[] = [];
+    images.forEach((url, i) => {
+      if (i === 0) return;
+      const img = new window.Image();
+      img.src = url;
+      preloaded.push(img);
+    });
+    return () => {
+      preloaded.length = 0;
+    };
+  }, [images]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -38,6 +56,20 @@ export default function ProductGallery({
 
   const goPrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
   const goNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
+
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    touchStartX.current = event.touches[0].clientX;
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    if (touchStartX.current === null || !hasMultiple) return;
+    const distance = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(distance) > 40) {
+      if (distance < 0) goNext();
+      else goPrev();
+    }
+  }
 
   useEffect(() => {
     const strip = thumbnailStripRef.current;
@@ -71,46 +103,95 @@ export default function ProductGallery({
             </button>
           </>
         ) : null}
-        <div className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-kobbo-white shadow-soft sm:rounded-3xl">
-        {hasImages ? (
-          <Image
-            src={images[activeIndex]}
-            alt={
-              altTexts[activeIndex] ??
-              `${productName} — image ${activeIndex + 1}`
-            }
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-3 sm:p-4"
-          />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-kobbo-muted">
-            <ImageOff className="h-10 w-10 sm:h-12 sm:w-12" />
-            <span className="text-xs sm:text-sm">No images available</span>
-          </div>
-        )}
 
-        {hasMultiple && (
-          <>
-            <button
-              type="button"
-              onClick={goPrev}
-              aria-label="Previous image"
-              className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/90 text-kobbo-black shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95 sm:left-3 sm:h-10 sm:w-10"
-            >
-              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2.25} />
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              aria-label="Next image"
-              className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/90 text-kobbo-black shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95 sm:right-3 sm:h-10 sm:w-10"
-            >
-              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2.25} />
-            </button>
-          </>
-        )}
+        <div
+          className="group relative aspect-square w-full touch-pan-y overflow-hidden rounded-2xl bg-kobbo-white shadow-soft sm:rounded-3xl"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={() => { touchStartX.current = null; }}
+        >
+          {hasImages ? (
+            <>
+              {/* Subtle Loading Shimmer while current active image is downloading */}
+              {!loadedImages[activeIndex] && !erroredImages[activeIndex] && (
+                <div
+                  aria-hidden
+                  className="absolute inset-0 z-0 flex flex-col items-center justify-center gap-2.5 bg-gradient-to-b from-kobbo-cream/30 via-kobbo-beige/40 to-kobbo-cream/30 animate-pulse"
+                >
+                  <Loader2 className="h-6 w-6 animate-spin text-kobbo-muted/60" />
+                  <span className="text-xs font-semibold text-kobbo-muted/70">Loading view…</span>
+                </div>
+              )}
+
+              {/* Stacked Images for instant switching and silky-smooth crossfade */}
+              {images.map((img, index) => {
+                const isCurrent = activeIndex === index;
+                const isErrored = erroredImages[index];
+
+                return (
+                  <div
+                    key={`${img}-${index}`}
+                    aria-hidden={!isCurrent}
+                    className={`absolute inset-0 transition-opacity duration-300 ease-out ${
+                      isCurrent ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
+                    }`}
+                  >
+                    {isErrored ? (
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center text-kobbo-muted">
+                        <ImageOff className="h-10 w-10 text-kobbo-muted/60" />
+                        <span className="text-xs font-semibold">Image unavailable</span>
+                      </div>
+                    ) : (
+                      <Image
+                        src={img}
+                        alt={
+                          altTexts[index] ??
+                          `${productName} — image ${index + 1}`
+                        }
+                        fill
+                        priority={index === 0}
+                        loading={index <= 2 ? "eager" : "lazy"}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+                        className="object-contain p-3 px-11 sm:p-4 sm:px-14"
+                        onLoad={() => {
+                          setLoadedImages((prev) => (prev[index] ? prev : { ...prev, [index]: true }));
+                        }}
+                        onError={() => {
+                          setErroredImages((prev) => (prev[index] ? prev : { ...prev, [index]: true }));
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-kobbo-muted">
+              <ImageOff className="h-10 w-10 sm:h-12 sm:w-12" />
+              <span className="text-xs sm:text-sm">No images available</span>
+            </div>
+          )}
+
+          {hasMultiple && (
+            <>
+              <button
+                type="button"
+                onClick={goPrev}
+                aria-label="Previous image"
+                className="absolute left-1.5 top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-kobbo-black shadow-md backdrop-blur-sm transition-all hover:bg-white hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:left-2 sm:size-9"
+              >
+                <ChevronLeft className="size-4 sm:size-5" aria-hidden />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                aria-label="Next image"
+                className="absolute right-1.5 top-1/2 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full border border-black/5 bg-white/95 text-kobbo-black shadow-md backdrop-blur-sm transition-all hover:bg-white hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:right-2 sm:size-9"
+              >
+                <ChevronRight className="size-4 sm:size-5" aria-hidden />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
