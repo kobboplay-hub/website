@@ -1,14 +1,15 @@
-# Play Kit Magic Checkout rollout
+# Razorpay Magic Checkout
 
-The headless storefront has an opt-in Magic Checkout path for carts containing only products with the Shopify `custom.kit` metafield set to `true`. All other carts keep using Shopify checkout. This path is disabled until the account and credentials are ready.
+The headless storefront sends every INR cart to Razorpay Magic Checkout when the feature flag and credentials are set. Shopify checkout is used only as a fallback when Magic Checkout cannot start before payment.
 
-## Razorpay and Shopify prerequisites
+## Razorpay and Shopify configuration
 
-1. Confirm Razorpay's Magic Checkout app is connected to the Shopify store and the merchant ID. The headless API returns `Authorization Failed` until Razorpay completes this link.
-2. Complete shipping setup in Razorpay Magic Checkout. Check the rates against Shopify checkout before launch.
-3. Have Razorpay enable Partial COD for this account. In Magic Checkout → Setup & Settings → Cash on Delivery, enable COD, then configure Partial COD for the desired buyer categories. Use **Custom Value** to set or change the advance as a rupee amount or percentage. Do not put the advance amount in storefront code.
-4. Review the existing Razorpay prepaid offer. At the time of implementation, the enabled offer was a flat ₹150 discount with a ₹2,999 minimum payment and no product restriction. Confirm it appears only where intended before launch. Razorpay offers cannot be edited; disable and replace an offer if its terms need to change.
-5. Check that Razorpay's offer and COD configuration produces matching Shopify order totals, payment status, refund amount, and remaining COD balance. Razorpay warns that Shopify can show the full order amount as captured when an offer reduces the actual Razorpay payment.
+1. Razorpay's Magic Checkout app must stay connected to the Shopify store and the merchant ID. The headless API returns `Authorization Failed` if this link is removed.
+2. Every product must be a physical product in Shopify (**Shipping → Physical product**). Razorpay hides COD for orders that do not require shipping.
+3. Shipping uses Razorpay **Magic Shipping** (Magic Checkout → Setup & Settings → Shipping Setup). The Domestic zone is free and allows COD, matching the storefront shipping policy.
+4. COD is enabled in Magic Checkout → Setup & Settings → Cash on Delivery. The **OTP for all COD orders** workflow (Advanced COD Workflows) asks for an OTP on every COD order.
+5. Partial COD applies only to Play Kits through the **Partial COD - Play Kits** slab, which targets the **Play Kits** catalog segment (Magic Checkout → Segments). Add a new kit's Shopify product ID to that segment, or it will get full COD only. Change the advance amount on the slab in the dashboard, not in storefront code.
+6. The `PREPAID150` coupon gives ₹150 off on Play Kits, restricts COD, applies once per order, and is not auto-applied. The older Razorpay payment offer for prepaid orders is disabled so the discount cannot stack.
 
 ## Storefront configuration
 
@@ -20,20 +21,19 @@ RAZORPAY_MAGIC_KEY_SECRET=<secret stored only in the hosting environment>
 RAZORPAY_MAGIC_CHECKOUT_ENABLED=true
 ```
 
-Keep the flag off until an end-to-end test passes. Never commit the key secret. The existing Razorpay key cannot be reconstructed from its public key ID; use the securely stored original secret or create a separate key in Razorpay with the account owner's approval.
+Remove the flag or set it to anything other than `true` to send customers back to Shopify checkout. Never commit the key secret.
 
 ## Checkout behavior
 
-- A fresh Shopify cart is read on the server before starting Magic Checkout. Product IDs, variant IDs, quantities, and the kit flag come from Shopify, not from browser input.
-- The Magic Checkout SDK opens only for INR carts whose items are all Play Kits. If setup fails before payment, the customer can use the normal Shopify checkout.
+- A fresh Shopify cart is read on the server before starting Magic Checkout. Product IDs, variant IDs, and quantities come from Shopify, not from browser input.
+- If setup fails before payment, the customer can use the regular Shopify checkout.
 - After payment, the server verifies Razorpay's signature before calling its Shopify order completion API. If that completion fails, the screen shows the payment ID and **does not** start a second checkout, preventing a duplicate charge.
 
-## Required launch tests
+## Launch tests
 
-- One kit, multiple kits, mixed kit/toy cart, and toy-only cart.
-- Full prepaid with ₹150 discount; cart below and above the ₹2,999 offer threshold.
-- Partial COD with both a rupee amount and a percentage in a test environment, including a low-value cart where Razorpay's 50% advance cap applies.
-- Cancelled checkout, failed payment, successful payment, Shopify order creation, order email, refund, and remaining COD collection.
-- Ensure the discount is unavailable on toy-only orders. If the existing Razorpay offer remains available on the native Shopify Razorpay gateway, disable or replace it before launch.
+- Kit-only cart: `PREPAID150` is offered, COD shows the Partial COD advance, and COD asks for an OTP.
+- Toy-only cart: no `PREPAID150` discount, COD without a Partial COD advance, and an OTP on COD.
+- Mixed kit and toy cart: the discount applies only to the kit.
+- Successful prepaid, Partial COD, and COD orders appear in Shopify Admin with matching totals and payment status.
 
 References: [Razorpay headless Shopify integration](https://razorpay.com/docs/payments/magic-checkout/shopify/custom/web-integration-nextjs), [Razorpay Shopify features and Partial COD](https://razorpay.com/docs/payments/magic-checkout/shopify/features).

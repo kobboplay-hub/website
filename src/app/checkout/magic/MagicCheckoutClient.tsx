@@ -120,7 +120,7 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
       <div className="w-full max-w-md rounded-3xl border border-amber-200 bg-white p-7 text-center shadow-sm">
         <h1 className="text-2xl font-bold text-neutral-900">Kobbo secure checkout</h1>
         <p className="mt-3 text-sm text-neutral-600" role="status">
-          {state === "loading" && "Preparing your Play Kit checkout…"}
+          {state === "loading" && "Preparing your checkout…"}
           {state === "open" && "Complete your order in the secure payment window."}
           {state === "cancelled" && "You closed the payment window. Your cart is still available."}
           {state === "failed" && "The payment window could not open. You can use the regular checkout."}

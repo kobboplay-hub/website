@@ -23,7 +23,7 @@ export function isMagicEligible(cart: Cart): boolean {
   return (
     cart.currencyCode === "INR" &&
     cart.lines.length > 0 &&
-    cart.lines.every((line) => line.isKit && line.quantity > 0)
+    cart.lines.every((line) => line.quantity > 0)
   );
 }
 
