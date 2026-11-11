@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
+import { Check, Loader2, Lock } from "lucide-react";
 
 import { CART_STORAGE_KEY } from "@/lib/shopify/cart";
 
@@ -19,7 +20,20 @@ interface RazorpayWindow extends Window {
   Razorpay?: new (options: Record<string, unknown>) => RazorpayCheckout;
 }
 
+interface CompletedOrder {
+  orderNumber: string;
+  paymentMethod: string | null;
+  totalAmount: number | null;
+}
+
 type CheckoutState = "loading" | "open" | "cancelled" | "failed" | "confirming" | "pending";
+
+function confirmationUrl(order: CompletedOrder): string {
+  const params = new URLSearchParams({ order: order.orderNumber });
+  if (order.paymentMethod) params.set("method", order.paymentMethod);
+  if (order.totalAmount !== null) params.set("total", String(order.totalAmount));
+  return `/checkout/success?${params}`;
+}
 
 export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
   const [scriptReady, setScriptReady] = useState(false);
@@ -62,11 +76,12 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
                 body: JSON.stringify(payment),
               });
               if (!completed.ok) throw new Error("Order confirmation pending");
-              const result = (await completed.json()) as { orderStatusUrl: string };
+              const order = (await completed.json()) as CompletedOrder;
               if (localStorage.getItem(CART_STORAGE_KEY) === cartId) {
                 localStorage.removeItem(CART_STORAGE_KEY);
               }
-              window.location.assign(result.orderStatusUrl);
+              // A full navigation resets the in-memory cart, and replace keeps Back from reopening checkout.
+              window.location.replace(confirmationUrl(order));
             } catch {
               // Never redirect to another checkout after a payment was captured.
               setState("pending");
@@ -94,25 +109,37 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
   };
 
   return (
-    <main className="flex min-h-[70vh] items-center justify-center bg-[#fff9e9] px-4 py-16">
+    <main className="flex min-h-[70vh] items-center justify-center bg-kobbo-cream px-4 py-16">
       <Script
         src="https://checkout.razorpay.com/v1/magic-checkout.js"
         strategy="afterInteractive"
         onReady={() => setScriptReady(true)}
         onError={() => setState("failed")}
       />
-      <div className="w-full max-w-md rounded-3xl border border-amber-200 bg-white p-7 text-center shadow-sm">
-        <h1 className="text-2xl font-bold text-neutral-900">Kobbo secure checkout</h1>
-        <p className="mt-3 text-sm text-neutral-600" role="status">
-          {state === "loading" && "Preparing your checkout…"}
-          {state === "open" && "Complete your order in the secure payment window."}
-          {state === "cancelled" && "You closed the payment window. Your cart is still available."}
-          {state === "failed" && "The payment window could not open. Please try again."}
-          {state === "confirming" && "Payment received. Confirming your order…"}
-          {state === "pending" && "Payment was received, but order confirmation is pending. Please contact us with your payment ID before trying again."}
-        </p>
+      <div className="w-full max-w-md rounded-3xl border border-kobbo-beige bg-kobbo-white p-7 text-center shadow-soft sm:p-8">
+        {state === "confirming" ? (
+          <ConfirmingOrder />
+        ) : (
+          <>
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-kobbo-yellow/20">
+              {state === "loading" || state === "open" ? (
+                <Loader2 className="size-6 animate-spin text-kobbo-black" aria-hidden />
+              ) : (
+                <Lock className="size-6 text-kobbo-black" aria-hidden />
+              )}
+            </div>
+            <h1 className="mt-4 font-heading text-2xl font-extrabold text-kobbo-black">Kobbo secure checkout</h1>
+            <p className="mt-2 text-sm text-kobbo-muted" role="status">
+              {state === "loading" && "Preparing your checkout…"}
+              {state === "open" && "Complete your order in the secure payment window."}
+              {state === "cancelled" && "You closed the payment window. Your cart is still available."}
+              {state === "failed" && "The payment window could not open. Please try again."}
+              {state === "pending" && "Payment was received, but order confirmation is pending. Please contact us with your payment ID before trying again."}
+            </p>
+          </>
+        )}
         {state === "pending" && paymentId && (
-          <p className="mt-3 select-all rounded-lg bg-amber-50 p-3 text-sm font-medium text-neutral-900">
+          <p className="mt-4 select-all rounded-xl bg-kobbo-cream p-3 text-sm font-semibold text-kobbo-black">
             Payment ID: {paymentId}
           </p>
         )}
@@ -121,13 +148,13 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
             <button
               type="button"
               onClick={retry}
-              className="rounded-full bg-[#ffc400] px-5 py-3 font-semibold text-neutral-900"
+              className="rounded-full bg-kobbo-yellow px-5 py-3 font-semibold text-kobbo-black transition-colors hover:bg-kobbo-yellow-light"
             >
               Try again
             </button>
             <a
               href="/cart"
-              className="rounded-full border border-neutral-300 px-5 py-3 font-semibold text-neutral-900"
+              className="rounded-full border border-kobbo-beige px-5 py-3 font-semibold text-kobbo-black transition-colors hover:border-kobbo-yellow"
             >
               Return to cart
             </a>
@@ -135,5 +162,35 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
         )}
       </div>
     </main>
+  );
+}
+
+function ConfirmingOrder() {
+  return (
+    <div role="status" aria-live="polite">
+      <div className="relative mx-auto size-20">
+        <span className="absolute inset-0 rounded-full border-4 border-kobbo-beige" />
+        <span className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-kobbo-yellow" />
+        <span className="absolute inset-3 flex items-center justify-center rounded-full bg-kobbo-yellow/20">
+          <Lock className="size-6 text-kobbo-black" aria-hidden />
+        </span>
+      </div>
+      <h1 className="mt-5 font-heading text-2xl font-extrabold text-kobbo-black">Confirming your order</h1>
+      <p className="mt-2 text-sm text-kobbo-muted">This takes just a moment. Please don&apos;t close or refresh this page.</p>
+      <ol className="mx-auto mt-6 max-w-xs space-y-3 text-left text-sm">
+        <li className="flex items-center gap-3 font-semibold text-kobbo-black">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-kobbo-green text-kobbo-white">
+            <Check className="size-4" strokeWidth={3} aria-hidden />
+          </span>
+          Payment details received
+        </li>
+        <li className="flex items-center gap-3 font-semibold text-kobbo-black">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-kobbo-yellow/30">
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          </span>
+          Placing your order
+        </li>
+      </ol>
+    </div>
   );
 }

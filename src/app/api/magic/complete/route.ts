@@ -52,15 +52,21 @@ export async function POST(request: Request) {
     );
 
     if (!response.ok) throw new Error("Razorpay order completion failed");
-    const result = (await response.json()) as { order_status_url?: unknown };
-    if (
-      typeof result.order_status_url !== "string" ||
-      new URL(result.order_status_url).protocol !== "https:"
-    ) {
-      throw new Error("Order status URL missing");
+    // COD orders come back without an order_status_url, so the Shopify order number is the success signal.
+    const result = (await response.json()) as {
+      order_id?: unknown;
+      payment_method?: unknown;
+      total_amount?: unknown;
+    };
+    if (typeof result.order_id !== "string" || !result.order_id) {
+      throw new Error("Shopify order number missing");
     }
 
-    return NextResponse.json({ orderStatusUrl: result.order_status_url });
+    return NextResponse.json({
+      orderNumber: result.order_id.replace(/^#/, ""),
+      paymentMethod: typeof result.payment_method === "string" ? result.payment_method : null,
+      totalAmount: typeof result.total_amount === "number" ? result.total_amount : null,
+    });
   } catch (error) {
     console.error("Magic Checkout payment completed, Shopify order pending:", error);
     return NextResponse.json(
