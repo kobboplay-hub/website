@@ -97,11 +97,7 @@ export async function POST(request: Request) {
       throw new Error("Razorpay order id missing");
     }
 
-    return NextResponse.json({
-      keyId: config.keyId,
-      orderId: order.order_id,
-      fallbackUrl: cart.checkoutUrl,
-    });
+    return NextResponse.json({ keyId: config.keyId, orderId: order.order_id });
   } catch (error) {
     console.error("Magic Checkout initialization failed:", error);
     return NextResponse.json(

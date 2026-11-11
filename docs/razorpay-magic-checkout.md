@@ -1,6 +1,6 @@
 # Razorpay Magic Checkout
 
-The headless storefront sends every INR cart to Razorpay Magic Checkout when the feature flag and credentials are set. Shopify checkout is used only as a fallback when Magic Checkout cannot start before payment.
+The headless storefront sends every INR cart to Razorpay Magic Checkout when the feature flag and credentials are set. Customers are not offered Shopify checkout from the Magic Checkout page.
 
 ## Razorpay and Shopify configuration
 
@@ -26,7 +26,7 @@ Remove the flag or set it to anything other than `true` to send customers back t
 ## Checkout behavior
 
 - A fresh Shopify cart is read on the server before starting Magic Checkout. Product IDs, variant IDs, and quantities come from Shopify, not from browser input.
-- If setup fails before payment, the customer can use the regular Shopify checkout.
+- If the payment window is closed or fails to open, the customer can try again or return to the cart.
 - After payment, the server verifies Razorpay's signature before calling its Shopify order completion API. If that completion fails, the screen shows the payment ID and **does not** start a second checkout, preventing a duplicate charge.
 
 ## Launch tests

@@ -25,7 +25,6 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
   const [scriptReady, setScriptReady] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<CheckoutState>("loading");
-  const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const started = useRef(false);
 
@@ -42,13 +41,8 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
           body: JSON.stringify({ cartId }),
         });
         if (!response.ok) throw new Error("Checkout could not be started");
-        const data = (await response.json()) as {
-          keyId: string;
-          orderId: string;
-          fallbackUrl: string;
-        };
+        const data = (await response.json()) as { keyId: string; orderId: string };
         if (disposed) return;
-        setFallbackUrl(data.fallbackUrl);
 
         const Razorpay = (window as RazorpayWindow).Razorpay;
         if (!Razorpay) throw new Error("Payment form did not load");
@@ -85,17 +79,7 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
         setState("open");
         checkout.open();
       } catch {
-        if (disposed) return;
-        setState("failed");
-        try {
-          const response = await fetch(`/api/cart?cartId=${encodeURIComponent(cartId)}`);
-          if (response.ok) {
-            const result = await response.json();
-            setFallbackUrl(result.cart?.checkoutUrl ?? null);
-          }
-        } catch {
-          // The cart page remains available if the Shopify checkout URL cannot be fetched.
-        }
+        if (!disposed) setState("failed");
       }
     }
 
@@ -123,7 +107,7 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
           {state === "loading" && "Preparing your checkout…"}
           {state === "open" && "Complete your order in the secure payment window."}
           {state === "cancelled" && "You closed the payment window. Your cart is still available."}
-          {state === "failed" && "The payment window could not open. You can use the regular checkout."}
+          {state === "failed" && "The payment window could not open. Please try again."}
           {state === "confirming" && "Payment received. Confirming your order…"}
           {state === "pending" && "Payment was received, but order confirmation is pending. Please contact us with your payment ID before trying again."}
         </p>
@@ -139,13 +123,13 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
               onClick={retry}
               className="rounded-full bg-[#ffc400] px-5 py-3 font-semibold text-neutral-900"
             >
-              Try Magic Checkout again
+              Try again
             </button>
             <a
-              href={fallbackUrl ?? "/cart"}
+              href="/cart"
               className="rounded-full border border-neutral-300 px-5 py-3 font-semibold text-neutral-900"
             >
-              {fallbackUrl ? "Continue with regular checkout" : "Return to cart"}
+              Return to cart
             </a>
           </div>
         )}
