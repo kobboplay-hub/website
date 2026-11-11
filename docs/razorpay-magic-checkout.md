@@ -19,6 +19,7 @@ Set these server environment variables in the hosting project, then redeploy:
 RAZORPAY_MAGIC_KEY_ID=rzp_live_...
 RAZORPAY_MAGIC_KEY_SECRET=<secret stored only in the hosting environment>
 RAZORPAY_MAGIC_CHECKOUT_ENABLED=true
+RAZORPAY_WEBHOOK_SECRET=<same secret as the Razorpay webhook>
 ```
 
 Remove the flag or set it to anything other than `true` to send customers back to Shopify checkout. Never commit the key secret.
@@ -27,7 +28,13 @@ Remove the flag or set it to anything other than `true` to send customers back t
 
 - A fresh Shopify cart is read on the server before starting Magic Checkout. Product IDs, variant IDs, and quantities come from Shopify, not from browser input.
 - If the payment window is closed or fails to open, the customer can try again or return to the cart.
-- After payment, the server verifies Razorpay's signature before calling its Shopify order completion API. If that completion fails, the screen shows the payment ID and **does not** start a second checkout, preventing a duplicate charge.
+- After payment, the server verifies Razorpay's signature before calling its Shopify order completion API. Razorpay returns the same Shopify order when a payment is completed again, so retries never duplicate an order.
+- The browser saves the payment response before confirming. A refresh or reopened tab resumes confirmation for that cart and never opens a second checkout. Confirmation is retried automatically; if it still fails, the screen shows the payment ID and a retry button.
+- Successful orders go to `/checkout/success`, replacing the checkout page in history so Back cannot reopen it.
+
+## Webhook backup
+
+Razorpay Dashboard → Account & Settings → Webhooks has a webhook for `https://www.kobbo.in/api/razorpay/webhook` with the `payment.captured`, `payment.pending`, and `order.paid` events. It completes the Shopify order when a customer closes the tab after paying. It only acts on Magic Checkout payments (payments with Shopify cart notes) and verifies the `X-Razorpay-Signature` header with `RAZORPAY_WEBHOOK_SECRET`.
 
 ## Launch tests
 

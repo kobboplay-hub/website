@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -81,6 +82,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // Disabled buttons only update after a render, so a fast double click needs a synchronous guard.
+  const checkoutInFlight = useRef(false);
 
   const saveCartId = useCallback((cartId: string) => {
     localStorage.setItem(CART_STORAGE_KEY, cartId);
@@ -153,8 +156,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const proceedToCheckout = useCallback(async (): Promise<string | null> => {
     const cartId = cart?.id ?? localStorage.getItem(CART_STORAGE_KEY);
-    if (!cartId) return null;
+    if (!cartId || checkoutInFlight.current) return null;
 
+    checkoutInFlight.current = true;
     setPendingAction({ type: "checkout" });
     setError(null);
 
@@ -172,12 +176,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
       return null;
     } finally {
+      checkoutInFlight.current = false;
       setPendingAction(null);
     }
   }, [cart?.id, saveCartId]);
 
   const buyNow = useCallback(
     async (merchandiseId: string, quantity = 1): Promise<string | null> => {
+      if (checkoutInFlight.current) return null;
+      checkoutInFlight.current = true;
       setPendingAction({ type: "buyNow", merchandiseId });
       setError(null);
       try {
@@ -195,6 +202,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         );
         return null;
       } finally {
+        checkoutInFlight.current = false;
         setPendingAction(null);
       }
     },
