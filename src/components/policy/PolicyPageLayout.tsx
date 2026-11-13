@@ -36,14 +36,14 @@ const relatedPolicies = [
   },
 ] as const;
 
-function sectionId(title: string) {
+export function sectionId(title: string) {
   return title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
 
-function getBlocks(section: PolicySection): PolicyBlock[] {
+export function getBlocks(section: PolicySection): PolicyBlock[] {
   if (section.blocks?.length) return section.blocks;
   const blocks: PolicyBlock[] = [];
   for (const paragraph of section.paragraphs ?? []) {

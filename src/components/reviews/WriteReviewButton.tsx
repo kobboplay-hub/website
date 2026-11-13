@@ -11,7 +11,14 @@ interface WriteReviewButtonProps {
   productHandle: string;
   productTitle: string;
   className?: string;
+  /** Replaces the default Toys button styling (colours, radius, typography) */
+  buttonClassName?: string;
+  /** "toy" on the Toys storefront, "product" on Lifestyle */
+  productNoun?: string;
 }
+
+const DEFAULT_BUTTON_CLASS =
+  "rounded-full bg-kobbo-yellow px-5 py-2.5 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light";
 
 type ModalState =
   | "form"
@@ -28,6 +35,8 @@ export default function WriteReviewButton({
   productHandle,
   productTitle,
   className = "",
+  buttonClassName = DEFAULT_BUTTON_CLASS,
+  productNoun = "toy",
 }: WriteReviewButtonProps) {
   const { isLoggedIn, isLoading: authLoading } = useAuth();
   const router = useRouter();
@@ -97,7 +106,7 @@ export default function WriteReviewButton({
         type="button"
         onClick={handleClick}
         disabled={authLoading || checking}
-        className={`inline-flex items-center justify-center gap-2 rounded-full bg-kobbo-yellow px-5 py-2.5 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-70 ${className}`}
+        className={`inline-flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-70 ${buttonClassName} ${className}`}
       >
         {checking ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -112,6 +121,7 @@ export default function WriteReviewButton({
         productTitle={productTitle}
         productId={productId}
         productHandle={productHandle}
+        productNoun={productNoun}
         onClose={() => setModal(null)}
         onSuccess={handleSuccess}
       />
@@ -166,7 +176,7 @@ export default function WriteReviewButton({
               Purchase required
             </h3>
             <p className="mt-2 text-sm text-kobbo-muted">
-              You can only review toys you&apos;ve purchased from Kobbo.
+              You can only review {productNoun}s you&apos;ve purchased from Kobbo.
             </p>
             <button
               type="button"
@@ -259,7 +269,7 @@ export default function WriteReviewButton({
               Review already submitted
             </h3>
             <p className="mt-2 text-sm text-kobbo-muted">
-              You&apos;ve already shared your review for this toy. Thank you!
+              You&apos;ve already shared your review for this {productNoun}. Thank you!
             </p>
             <button
               type="button"

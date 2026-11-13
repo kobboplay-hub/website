@@ -8,6 +8,7 @@ interface WriteReviewModalProps {
   productTitle: string;
   productId: string;
   productHandle: string;
+  productNoun?: string;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -17,6 +18,7 @@ export default function WriteReviewModal({
   productTitle,
   productId,
   productHandle,
+  productNoun = "toy",
   onClose,
   onSuccess,
 }: WriteReviewModalProps) {
@@ -153,7 +155,11 @@ export default function WriteReviewModal({
               value={body}
               onChange={(event) => setBody(event.target.value)}
               rows={4}
-              placeholder="Tell other parents what you loved about this toy..."
+              placeholder={
+                productNoun === "toy"
+                  ? "Tell other parents what you loved about this toy..."
+                  : `Tell other customers what you loved about this ${productNoun}...`
+              }
               className="mt-1.5 w-full resize-none rounded-2xl border-2 border-kobbo-beige bg-kobbo-cream px-4 py-3 text-sm outline-none transition-colors focus:border-kobbo-yellow"
             />
           </div>

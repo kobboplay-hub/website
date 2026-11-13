@@ -197,8 +197,19 @@ export function normalizeProduct(node: ShopifyProductNode): Product {
       : null,
     merchandising: normalizeMerchandisingFlags(node.merchandisingFlags),
     isKit: node.kitFlag?.value?.toLowerCase() === "true",
+    isLifestyle: node.lifestyleFlag?.value?.toLowerCase() === "true",
+    category: node.category?.name ?? null,
+    options: (node.options ?? []).map((option) => ({
+      name: option.name,
+      values: option.optionValues.map((value) => value.name),
+    })),
     playKitItems: normalizePlayKitItems(node),
   };
+}
+
+/** Every existing catalogue fetcher serves the Toys storefront and must never return Lifestyle products. */
+function toysOnly(products: Product[]): Product[] {
+  return products.filter((product) => !product.isLifestyle);
 }
 
 function normalizeCollection(node: ShopifyCollectionNode): Collection {
@@ -219,7 +230,7 @@ export async function getProducts(limit = 20): Promise<Product[]> {
     variables: { first: limit },
   });
 
-  return data.products.edges.map((edge) => normalizeProduct(edge.node));
+  return toysOnly(data.products.edges.map((edge) => normalizeProduct(edge.node)));
 }
 
 export const SHOP_PRODUCTS_PER_PAGE = 12;
@@ -336,45 +347,58 @@ export async function getShopProductsByCursor(
     return { ...page, searchQuery: trimmedQuery, sort };
   }
 
-  const data = hasSearch
-    ? await shopifyFetch<{
-        products: {
-          pageInfo: { hasNextPage: boolean; endCursor: string | null };
-          edges: { node: ShopifyProductNode }[];
-        };
-      }>({
-        query: SEARCH_PRODUCTS_PAGINATED_QUERY,
-        variables: {
-          query: shopifyQuery,
-          first,
-          after,
-          sortKey,
-          reverse,
-        },
-        revalidate: CATALOG_REVALIDATE_SECONDS,
-        cache: "force-cache",
-      })
-    : await shopifyFetch<{
-        products: {
-          pageInfo: { hasNextPage: boolean; endCursor: string | null };
-          edges: { node: ShopifyProductNode }[];
-        };
-      }>({
-        query: PRODUCTS_SORTED_PAGINATED_QUERY,
-        variables: {
-          first,
-          after,
-          sortKey,
-          reverse,
-        },
-        revalidate: CATALOG_REVALIDATE_SECONDS,
-        cache: "force-cache",
-      });
+  const fetchPage = (cursor: string | null) =>
+    hasSearch
+      ? shopifyFetch<{
+          products: {
+            pageInfo: { hasNextPage: boolean; endCursor: string | null };
+            edges: { node: ShopifyProductNode }[];
+          };
+        }>({
+          query: SEARCH_PRODUCTS_PAGINATED_QUERY,
+          variables: {
+            query: shopifyQuery,
+            first,
+            after: cursor,
+            sortKey,
+            reverse,
+          },
+          revalidate: CATALOG_REVALIDATE_SECONDS,
+          cache: "force-cache",
+        })
+      : shopifyFetch<{
+          products: {
+            pageInfo: { hasNextPage: boolean; endCursor: string | null };
+            edges: { node: ShopifyProductNode }[];
+          };
+        }>({
+          query: PRODUCTS_SORTED_PAGINATED_QUERY,
+          variables: {
+            first,
+            after: cursor,
+            sortKey,
+            reverse,
+          },
+          revalidate: CATALOG_REVALIDATE_SECONDS,
+          cache: "force-cache",
+        });
+
+  // Lifestyle products are removed per page; keep paging while a page is entirely Lifestyle
+  // so infinite scroll never stops early on an empty page.
+  let cursor = after;
+  let products: Product[] = [];
+  let pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  do {
+    const data = await fetchPage(cursor);
+    products = toysOnly(data.products.edges.map((edge) => normalizeProduct(edge.node)));
+    pageInfo = data.products.pageInfo;
+    cursor = pageInfo.endCursor;
+  } while (products.length === 0 && pageInfo.hasNextPage && cursor);
 
   return {
-    products: data.products.edges.map((edge) => normalizeProduct(edge.node)),
-    endCursor: data.products.pageInfo.endCursor,
-    hasNextPage: data.products.pageInfo.hasNextPage,
+    products,
+    endCursor: pageInfo.endCursor,
+    hasNextPage: pageInfo.hasNextPage,
     searchQuery: trimmedQuery,
     sort,
   };
@@ -449,7 +473,7 @@ export const getAllProducts = cache(
       });
 
       collected.push(
-        ...data.products.edges.map((edge) => normalizeProduct(edge.node)),
+        ...toysOnly(data.products.edges.map((edge) => normalizeProduct(edge.node))),
       );
 
       if (!data.products.pageInfo.hasNextPage) return collected;
@@ -482,8 +506,7 @@ export const getHomepageAgeProducts = cache(async (): Promise<Product[]> => {
     });
 
     products.push(
-      ...data.products.edges
-        .map((edge) => normalizeProduct(edge.node))
+      ...toysOnly(data.products.edges.map((edge) => normalizeProduct(edge.node)))
         .filter((product) => product.ageGroup !== null),
     );
 
@@ -582,7 +605,7 @@ export async function getProductsPage(
     });
 
     const batch = data.products.edges.map((edge) => normalizeProduct(edge.node));
-    collected.push(...batch);
+    collected.push(...toysOnly(batch));
     hasNextPage = data.products.pageInfo.hasNextPage;
     cursor = data.products.pageInfo.endCursor ?? undefined;
 
@@ -616,7 +639,7 @@ export async function getProductsWithVideos(): Promise<Product[]> {
       revalidate: CATALOG_REVALIDATE_SECONDS,
     });
 
-    products.push(...data.products.edges.map((edge) => normalizeProduct(edge.node)));
+    products.push(...toysOnly(data.products.edges.map((edge) => normalizeProduct(edge.node))));
     const nextCursor = data.products.pageInfo.endCursor;
     if (!data.products.pageInfo.hasNextPage || !nextCursor || nextCursor === after) break;
     after = nextCursor;
@@ -635,7 +658,7 @@ export async function getRecentProducts(limit = 5): Promise<Product[]> {
     revalidate: 60,
   });
 
-  return data.products.edges.map((edge) => normalizeProduct(edge.node));
+  return toysOnly(data.products.edges.map((edge) => normalizeProduct(edge.node)));
 }
 
 export const getProductByHandle = cache(async function getProductByHandle(
@@ -683,10 +706,9 @@ export async function getCollectionProducts(
 
   return {
     collection: normalizeCollection(data.collection),
-    products:
-      data.collection.products?.edges.map((edge) =>
-        normalizeProduct(edge.node),
-      ) ?? [],
+    products: toysOnly(
+      data.collection.products?.edges.map((edge) => normalizeProduct(edge.node)) ?? [],
+    ),
   };
 }
 
@@ -749,8 +771,8 @@ export async function searchProducts(
       revalidate: 300,
     });
 
-    const results = data.products.edges.map((edge) =>
-      normalizeProduct(edge.node),
+    const results = toysOnly(
+      data.products.edges.map((edge) => normalizeProduct(edge.node)),
     );
 
     if (results.length > 0) return results;

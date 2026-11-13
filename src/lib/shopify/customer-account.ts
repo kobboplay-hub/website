@@ -231,13 +231,21 @@ const PRODUCT_HANDLES_QUERY = `
       ... on Product {
         id
         handle
+        lifestyleFlag: metafield(namespace: "custom", key: "is_lifestyle") {
+          value
+        }
       }
     }
   }
 `;
 
-async function getProductHandles(productIds: string[]): Promise<Map<string, string>> {
-  const handles = new Map<string, string>();
+interface OrderProductRef {
+  handle: string;
+  isLifestyle: boolean;
+}
+
+async function getProductHandles(productIds: string[]): Promise<Map<string, OrderProductRef>> {
+  const handles = new Map<string, OrderProductRef>();
   const uniqueIds = [...new Set(productIds)];
 
   // Shopify limits GraphQL input arrays. Resolve public product handles in batches.
@@ -245,7 +253,7 @@ async function getProductHandles(productIds: string[]): Promise<Map<string, stri
     const ids = uniqueIds.slice(offset, offset + 100);
     try {
       const data = await shopifyFetch<{
-        nodes: ({ id: string; handle: string } | null)[];
+        nodes: ({ id: string; handle: string; lifestyleFlag: { value: string } | null } | null)[];
       }>({
         query: PRODUCT_HANDLES_QUERY,
         variables: { ids },
@@ -254,7 +262,10 @@ async function getProductHandles(productIds: string[]): Promise<Map<string, stri
 
       for (const product of data.nodes) {
         if (product?.id && product.handle) {
-          handles.set(product.id, product.handle);
+          handles.set(product.id, {
+            handle: product.handle,
+            isLifestyle: product.lifestyleFlag?.value?.toLowerCase() === "true",
+          });
         }
       }
     } catch (error) {
@@ -349,8 +360,11 @@ export async function getCustomerAccountOrders(
       quantity: item.quantity,
       imageUrl: item.image?.url ?? null,
       productHandle: item.productId
-        ? productHandles.get(item.productId) ?? null
+        ? productHandles.get(item.productId)?.handle ?? null
         : null,
+      productIsLifestyle: item.productId
+        ? productHandles.get(item.productId)?.isLifestyle ?? false
+        : false,
       productId: item.productId,
     })),
   }));

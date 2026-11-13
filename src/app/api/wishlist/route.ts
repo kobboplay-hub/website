@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         image: getProductImageUrl(product!),
         merchandiseId: getDefaultMerchandiseId(product!),
         availableForSale: product!.availableForSale,
+        isLifestyle: product!.isLifestyle,
       }));
 
     return NextResponse.json({ items });

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import ResetPasswordPageContent from "@/components/account/ResetPasswordPageContent";
+import { StorefrontProvider } from "@/components/storefront/StorefrontContext";
+import { getRequestStorefront } from "@/lib/storefront/server";
 
 export const metadata: Metadata = {
   title: "Reset Password — Kobbo",
@@ -16,10 +18,12 @@ function ResetFallback() {
   );
 }
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
   return (
-    <Suspense fallback={<ResetFallback />}>
-      <ResetPasswordPageContent />
-    </Suspense>
+    <StorefrontProvider storefront={await getRequestStorefront()}>
+      <Suspense fallback={<ResetFallback />}>
+        <ResetPasswordPageContent />
+      </Suspense>
+    </StorefrontProvider>
   );
 }

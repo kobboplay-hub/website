@@ -34,6 +34,9 @@ const CART_FRAGMENT = `
                 kitFlag: metafield(namespace: "custom", key: "kit") {
                   value
                 }
+                lifestyleFlag: metafield(namespace: "custom", key: "is_lifestyle") {
+                  value
+                }
                 featuredImage {
                   url
                   altText

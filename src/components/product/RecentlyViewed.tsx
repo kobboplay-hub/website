@@ -11,6 +11,7 @@ import {
   trackRecentlyViewed,
   type RecentlyViewedItem,
 } from "@/lib/recently-viewed";
+import { getProductPath } from "@/lib/storefront/product-routing";
 
 interface RecentlyViewedProps {
   currentProduct: Product;
@@ -83,7 +84,7 @@ export default function RecentlyViewed({ currentProduct }: RecentlyViewedProps) 
           {items.map((item) => (
             <Link
               key={item.handle}
-              href={`/products/${item.handle}`}
+              href={getProductPath(item)}
               className="group w-40 shrink-0 overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg sm:w-48"
             >
               <div className="relative aspect-square bg-kobbo-white">

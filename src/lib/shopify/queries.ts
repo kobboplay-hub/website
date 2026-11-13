@@ -16,6 +16,12 @@ export const PRODUCT_CARD_FRAGMENT = `
     vendor
     productType
     tags
+    lifestyleFlag: metafield(namespace: "custom", key: "is_lifestyle") {
+      value
+    }
+    category {
+      name
+    }
     ageGroup: metafield(namespace: "custom", key: "age_group") {
       reference {
         ... on Metaobject {
@@ -87,6 +93,12 @@ export const PRODUCT_CARD_FRAGMENT = `
             name
             value
           }
+          image {
+            url
+            altText
+            width
+            height
+          }
         }
       }
     }
@@ -126,6 +138,12 @@ export const PRODUCT_DETAIL_FRAGMENT = `
   fragment ProductDetail on Product {
     ...ProductCard
     descriptionHtml
+    options(first: 10) {
+      name
+      optionValues {
+        name
+      }
+    }
     kitFlag: metafield(namespace: "custom", key: "kit") {
       value
     }
@@ -318,6 +336,7 @@ export const GET_HOMEPAGE_AGE_PRODUCTS_QUERY = `
           vendor
           productType
           tags
+          lifestyleFlag: metafield(namespace: "custom", key: "is_lifestyle") { value }
           ageGroup: metafield(namespace: "custom", key: "age_group") {
             reference {
               ... on Metaobject {
@@ -468,6 +487,26 @@ export const GET_COLLECTIONS_QUERY = `
             altText
             width
             height
+          }
+        }
+      }
+    }
+  }
+`;
+
+/** Products of the automated collection driven by `custom.is_lifestyle = true`. */
+export const GET_LIFESTYLE_COLLECTION_PRODUCTS_QUERY = `
+  ${PRODUCT_CARD_FRAGMENT}
+  query GetLifestyleCollectionProducts($handle: String!, $first: Int!, $after: String) {
+    collection(handle: $handle) {
+      products(first: $first, after: $after, sortKey: COLLECTION_DEFAULT) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            ...ProductCard
           }
         }
       }

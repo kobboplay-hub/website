@@ -21,6 +21,7 @@ export interface WishlistItem {
   image: string | null;
   merchandiseId: string | null;
   availableForSale: boolean;
+  isLifestyle?: boolean;
 }
 
 interface WishlistContextValue {

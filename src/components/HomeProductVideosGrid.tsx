@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import ProductVideoModal from "@/components/product/ProductVideoModal";
 import type { HomeProductVideo } from "@/lib/productPageContent";
+import { getProductPath } from "@/lib/storefront/product-routing";
 
 interface HomeProductVideosGridProps {
   videos: HomeProductVideo[];
@@ -111,7 +112,7 @@ export default function HomeProductVideosGrid({ videos }: HomeProductVideosGridP
               </div>
             </button>
             <div className="border-t border-kobbo-beige/80 p-3">
-              <Link href={`/products/${item.handle}`} className="line-clamp-2 text-sm font-semibold leading-snug text-kobbo-black transition-colors hover:text-kobbo-black/70">
+              <Link href={getProductPath({ handle: item.handle })} className="line-clamp-2 text-sm font-semibold leading-snug text-kobbo-black transition-colors hover:text-kobbo-black/70">
                 {item.title}
               </Link>
             </div>

@@ -3,6 +3,10 @@ import Link from "next/link";
 import { Banknote, CheckCircle2, PackageCheck, Truck } from "lucide-react";
 
 import SiteLayout from "@/components/SiteLayout";
+import LifestyleShell from "@/components/lifestyle/LifestyleShell";
+import { footerBrand } from "@/data/footer";
+import { getLifestyleNavCategories } from "@/lib/shopify/lifestyle";
+import { getStorefrontHomePath, parseStorefront } from "@/lib/storefront/product-routing";
 
 export const metadata: Metadata = {
   title: "Order confirmed — Kobbo",
@@ -31,9 +35,10 @@ function formatRupees(paise: number): string {
 export default async function OrderConfirmedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ order?: string; method?: string; total?: string }>;
+  searchParams: Promise<{ order?: string; method?: string; total?: string; store?: string }>;
 }) {
-  const { order, method, total } = await searchParams;
+  const { order, method, total, store } = await searchParams;
+  const storefront = parseStorefront(store);
   const orderNumber = order && /^\d{1,12}$/.test(order) ? order : null;
   const paymentMethod = method && /^[a-z_]{1,20}$/.test(method) ? method : null;
   const totalPaise = total && /^\d{1,10}$/.test(total) ? Number(total) : null;
@@ -51,8 +56,7 @@ export default async function OrderConfirmedPage({
     },
   ];
 
-  return (
-    <SiteLayout mainClassName="bg-kobbo-cream">
+  const content = (
       <section className="px-4 py-10 sm:py-16">
         <div className="mx-auto max-w-xl">
           <div className="rounded-3xl border border-kobbo-beige bg-kobbo-white p-6 text-center shadow-soft-lg sm:p-10">
@@ -120,7 +124,7 @@ export default async function OrderConfirmedPage({
                   View my orders
                 </Link>
                 <Link
-                  href="/"
+                  href={getStorefrontHomePath(storefront)}
                   className="flex flex-1 items-center justify-center rounded-full border-2 border-kobbo-black px-6 py-3.5 font-bold text-kobbo-black transition-colors hover:bg-kobbo-yellow"
                 >
                   Continue shopping
@@ -131,12 +135,22 @@ export default async function OrderConfirmedPage({
 
           <p className="mt-6 text-center text-sm text-kobbo-muted">
             Need help with your order?{" "}
-            <Link href="/contact" className="font-semibold text-kobbo-black underline underline-offset-4">
-              Contact us
-            </Link>
+            {storefront === "lifestyle" ? (
+              <a href={`mailto:${footerBrand.email}`} className="font-semibold text-kobbo-black underline underline-offset-4">
+                {footerBrand.email}
+              </a>
+            ) : (
+              <Link href="/contact" className="font-semibold text-kobbo-black underline underline-offset-4">
+                Contact us
+              </Link>
+            )}
           </p>
         </div>
       </section>
-    </SiteLayout>
   );
+
+  if (storefront === "lifestyle") {
+    return <LifestyleShell categories={await getLifestyleNavCategories()}>{content}</LifestyleShell>;
+  }
+  return <SiteLayout mainClassName="bg-kobbo-cream">{content}</SiteLayout>;
 }

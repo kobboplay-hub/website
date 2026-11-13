@@ -529,6 +529,24 @@ export function getProductTabsContent(product: Product): ProductTabsContent {
   };
 }
 
+/**
+ * Lifestyle product details. Unlike the Toys tabs, features come only from the
+ * `custom.features` metafield because tags hold merchandising text, not features.
+ */
+export function getLifestyleProductDetails(product: Product): Omit<ProductTabsContent, "descriptionHtml"> {
+  const featuresValue = getMetafieldValue(product, "features");
+  const careValue = getMetafieldValue(product, "care_instructions");
+  const specifications: { label: string; value: string }[] = [];
+  if (product.vendor?.trim()) specifications.push({ label: "Brand", value: product.vendor.trim() });
+  specifications.push(...parseSpecificationsMetafield(getMetafieldValue(product, "specifications")));
+
+  return {
+    features: featuresValue ? parseListMetafield(featuresValue.replace(/\n/g, ",")) : [],
+    specifications,
+    careInstructions: careValue ? parseListMetafield(careValue.replace(/\n/g, ",")) : [],
+  };
+}
+
 export function hasTabContent(
   tabId: "description" | "features" | "specifications" | "care",
   content: ProductTabsContent,

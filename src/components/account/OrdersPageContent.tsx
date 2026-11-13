@@ -10,8 +10,11 @@ import { parseShopifyProductId } from "@/lib/judgeme";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { emptyStates, errorStates } from "@/data/empty-states";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
+import { lifestyleEmptyStates } from "@/data/lifestyle";
+import { useStorefront } from "@/components/storefront/StorefrontContext";
 
 export default function OrdersPageContent() {
+  const ordersEmpty = useStorefront() === "lifestyle" ? lifestyleEmptyStates.orders : emptyStates.orders;
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [reviewedProductIds, setReviewedProductIds] = useState<
     Record<string, boolean>
@@ -120,10 +123,10 @@ export default function OrdersPageContent() {
     return (
       <AccountLayoutShell title="Order History">
         <EmptyState
-          title={emptyStates.orders.title}
-          description={emptyStates.orders.description}
-          cta={emptyStates.orders.cta}
-          ctaHref={emptyStates.orders.ctaHref}
+          title={ordersEmpty.title}
+          description={ordersEmpty.description}
+          cta={ordersEmpty.cta}
+          ctaHref={ordersEmpty.ctaHref}
         />
       </AccountLayoutShell>
     );

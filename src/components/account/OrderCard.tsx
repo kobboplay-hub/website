@@ -9,6 +9,7 @@ import OrderStatusPanel from "@/components/account/OrderStatusPanel";
 import OrderLineItemReview from "@/components/account/OrderLineItemReview";
 import type { LucideIcon } from "lucide-react";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
+import { getProductPath } from "@/lib/storefront/product-routing";
 
 interface OrderCardProps {
   order: CustomerOrder;
@@ -90,7 +91,7 @@ export default function OrderCard({
                   <div className="min-w-0 flex-1">
                     {item.productHandle ? (
                       <Link
-                        href={`/products/${item.productHandle}`}
+                        href={getProductPath({ handle: item.productHandle, isLifestyle: item.productIsLifestyle })}
                         className="line-clamp-2 font-medium text-kobbo-black hover:underline"
                       >
                         {item.title}

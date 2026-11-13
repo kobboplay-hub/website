@@ -8,22 +8,32 @@ interface ReviewActionProps {
   productId: string;
   productHandle: string;
   productTitle: string;
+  /** "toy" on the Toys storefront, "product" on Lifestyle */
+  productNoun?: string;
+  className?: string;
+  buttonClassName?: string;
 }
 
 type Eligibility = "loading" | "eligible" | "not_purchased" | "payment_pending" | "not_fulfilled" | "already_reviewed" | "unavailable";
 
-const messages: Partial<Record<Eligibility, string>> = {
-  already_reviewed: "You've already shared your review for this toy.",
-  not_fulfilled: "You can leave a review once your order is delivered.",
-  payment_pending: "You can leave a review after your payment is confirmed.",
-  not_purchased: "Only customers who purchased this toy can leave a review.",
-};
+function eligibilityMessages(noun: string): Partial<Record<Eligibility, string>> {
+  return {
+    already_reviewed: `You've already shared your review for this ${noun}.`,
+    not_fulfilled: "You can leave a review once your order is delivered.",
+    payment_pending: "You can leave a review after your payment is confirmed.",
+    not_purchased: `Only customers who purchased this ${noun} can leave a review.`,
+  };
+}
 
 export default function ReviewAction({
   productId,
   productHandle,
   productTitle,
+  productNoun = "toy",
+  className = "text-sm font-medium text-kobbo-muted",
+  buttonClassName,
 }: ReviewActionProps) {
+  const messages = eligibilityMessages(productNoun);
   const { isLoggedIn, isLoading } = useAuth();
   const [eligibility, setEligibility] = useState<Eligibility>("loading");
 
@@ -44,7 +54,7 @@ export default function ReviewAction({
           reason?: string;
         };
         if (data.eligible) return "eligible" as const;
-        if (data.reason && data.reason in messages) {
+        if (data.reason && data.reason in eligibilityMessages("")) {
           return data.reason as Eligibility;
         }
         return "unavailable" as const;
@@ -64,7 +74,7 @@ export default function ReviewAction({
   if (isLoggedIn && eligibility !== "eligible") {
     const message = messages[eligibility];
     return message ? (
-      <p className="text-sm font-medium text-kobbo-muted">{message}</p>
+      <p className={className}>{message}</p>
     ) : null;
   }
 
@@ -73,6 +83,8 @@ export default function ReviewAction({
       productId={productId}
       productHandle={productHandle}
       productTitle={productTitle}
+      productNoun={productNoun}
+      buttonClassName={buttonClassName}
     />
   );
 }

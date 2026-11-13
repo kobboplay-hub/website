@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight, ImageOff, Loader2 } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import type { Product } from "@/lib/shopify/types";
+import { getProductPath } from "@/lib/storefront/product-routing";
 
 interface PlayKitCardProps {
   product: Product;
@@ -210,7 +211,7 @@ export default function PlayKitCard({ product, ageName, index, count }: PlayKitC
             className="min-h-11 px-5"
           />
           <Link
-            href={`/products/${product.handle}`}
+            href={getProductPath(product)}
             onClick={(event) => {
               if (isOpeningKit) event.preventDefault();
               else setIsOpeningKit(true);

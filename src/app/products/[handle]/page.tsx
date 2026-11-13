@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import SiteLayout from "@/components/SiteLayout";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import ProductGallery from "@/components/product/ProductGallery";
@@ -24,6 +24,7 @@ import {
   getPrimaryProductVideo,
 } from "@/lib/productPageContent";
 import { productMetadata, buildPageTitle } from "@/data/seo";
+import { getProductPath } from "@/lib/storefront/product-routing";
 
 interface ProductPageProps {
   params: Promise<{ handle: string }>;
@@ -51,6 +52,9 @@ export async function generateMetadata({
     const product = await getProductByHandle(handle);
     if (!product) {
       return { title: buildPageTitle("Product Not Found") };
+    }
+    if (product.isLifestyle) {
+      return { alternates: { canonical: getProductPath(product) } };
     }
 
     return productMetadata(
@@ -95,6 +99,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   if (!product) notFound();
+  // Lifestyle products have their own storefront; old generic links move there permanently.
+  if (product.isLifestyle) permanentRedirect(getProductPath(product));
 
   const images = getProductImageUrls(product);
   const imageAltTexts = product.images.map((img) => img.altText);

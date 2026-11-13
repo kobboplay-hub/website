@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle } from "lucide-react";
-import { AuthCardShell } from "@/components/account/PageShell";
+import { AuthCardShell } from "@/components/account/AuthCardShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import PasswordInput from "@/components/account/PasswordInput";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";

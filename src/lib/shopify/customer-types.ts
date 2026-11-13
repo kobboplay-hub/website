@@ -37,6 +37,7 @@ export interface CustomerOrderLineItem {
   quantity: number;
   imageUrl: string | null;
   productHandle: string | null;
+  productIsLifestyle: boolean;
   productId: string | null;
 }
 

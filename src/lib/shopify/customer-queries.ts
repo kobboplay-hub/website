@@ -240,6 +240,9 @@ export const GET_CUSTOMER_ORDERS_QUERY = `
                     product {
                       id
                       handle
+                      lifestyleFlag: metafield(namespace: "custom", key: "is_lifestyle") {
+                        value
+                      }
                     }
                   }
                 }

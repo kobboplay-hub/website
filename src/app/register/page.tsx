@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import RegisterForm from "@/components/account/RegisterForm";
+import { StorefrontProvider } from "@/components/storefront/StorefrontContext";
+import { getRequestStorefront } from "@/lib/storefront/server";
 
 export const metadata: Metadata = {
   title: "Create Account — Kobbo",
@@ -16,10 +18,12 @@ function RegisterFallback() {
   );
 }
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
   return (
-    <Suspense fallback={<RegisterFallback />}>
-      <RegisterForm />
-    </Suspense>
+    <StorefrontProvider storefront={await getRequestStorefront()}>
+      <Suspense fallback={<RegisterFallback />}>
+        <RegisterForm />
+      </Suspense>
+    </StorefrontProvider>
   );
 }

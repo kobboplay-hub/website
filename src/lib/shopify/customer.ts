@@ -521,7 +521,11 @@ export async function getCustomerOrders(
                   quantity: number;
                   variant: {
                     image: { url: string } | null;
-                    product: { id: string; handle: string } | null;
+                    product: {
+                      id: string;
+                      handle: string;
+                      lifestyleFlag?: { value: string } | null;
+                    } | null;
                   } | null;
                 };
               }[];
@@ -553,6 +557,8 @@ export async function getCustomerOrders(
       quantity: lineEdge.node.quantity,
       imageUrl: lineEdge.node.variant?.image?.url ?? null,
       productHandle: lineEdge.node.variant?.product?.handle ?? null,
+      productIsLifestyle:
+        lineEdge.node.variant?.product?.lifestyleFlag?.value?.toLowerCase() === "true",
       productId: lineEdge.node.variant?.product?.id ?? null,
     })),
   }));

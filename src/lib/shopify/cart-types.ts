@@ -4,6 +4,7 @@ export interface CartLine {
   merchandiseId: string;
   productId: string;
   isKit: boolean;
+  isLifestyle: boolean;
   variantTitle: string;
   productTitle: string;
   productHandle: string;
@@ -42,6 +43,7 @@ export interface ShopifyCartLineNode {
       title: string;
       handle: string;
       kitFlag: { value: string } | null;
+      lifestyleFlag?: { value: string } | null;
       featuredImage: { url: string; altText: string | null } | null;
     };
   };

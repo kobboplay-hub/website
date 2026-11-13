@@ -19,10 +19,13 @@ import { SummaryCard } from "@/components/account/OrderCard";
 import { formatOrderDate } from "@/data/account";
 import { getIndianProvinceName, isIndiaCountry } from "@/lib/data/india-provinces";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
+import { useStorefront } from "@/components/storefront/StorefrontContext";
+import { LIFESTYLE_BASE_PATH } from "@/lib/storefront/product-routing";
 
 export default function AccountDashboard() {
   const { user, logout } = useAuth();
   const { count: wishlistCount } = useWishlist();
+  const lifestyle = useStorefront() === "lifestyle";
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -207,14 +210,16 @@ export default function AccountDashboard() {
                 </h2>
               </div>
               <p className="mt-2.5 text-xs leading-relaxed text-kobbo-muted sm:text-sm">
-                Discover our curated collection of developmental toys designed for joyful, mindful play.
+                {lifestyle
+                  ? "Discover everyday essentials for your home and routine."
+                  : "Discover our curated collection of developmental toys designed for joyful, mindful play."}
               </p>
             </div>
             <Link
-              href="/shop"
+              href={lifestyle ? LIFESTYLE_BASE_PATH : "/shop"}
               className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-kobbo-black hover:underline sm:text-sm"
             >
-              <span>Browse toy collection</span>
+              <span>{lifestyle ? "Browse Lifestyle" : "Browse toy collection"}</span>
               <span>→</span>
             </Link>
           </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Loader2, CheckCircle, Copy, Check } from "lucide-react";
-import { AuthCardShell } from "@/components/account/PageShell";
+import { AuthCardShell } from "@/components/account/AuthCardShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { getPasswordResetEmailLink } from "@/lib/auth/reset-password";

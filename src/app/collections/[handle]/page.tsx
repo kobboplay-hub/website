@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ChevronLeft, Sparkles } from "lucide-react";
 import SiteLayout from "@/components/SiteLayout";
 import ProductGrid from "@/components/shop/ProductGrid";
 import EmptyState from "@/components/ui/EmptyState";
 import { getCollectionProducts } from "@/lib/shopify";
+import {
+  LIFESTYLE_BASE_PATH,
+  LIFESTYLE_COLLECTION_HANDLE,
+} from "@/lib/storefront/product-routing";
 
 interface CollectionPageProps {
   params: Promise<{ handle: string }>;
@@ -37,6 +41,7 @@ function isGanpati(title: string, handle: string): boolean {
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { handle } = await params;
+  if (handle === LIFESTYLE_COLLECTION_HANDLE) permanentRedirect(LIFESTYLE_BASE_PATH);
 
   let collectionData;
 

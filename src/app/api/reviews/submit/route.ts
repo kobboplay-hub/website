@@ -5,6 +5,7 @@ import { apiErrorResponse } from "@/lib/auth/errors";
 import { getCurrentCustomer } from "@/lib/shopify/customer";
 import { submitProductReview } from "@/lib/judgeme";
 import { getReviewEligibility } from "@/lib/review-eligibility";
+import { LIFESTYLE_BASE_PATH, getProductPath } from "@/lib/storefront/product-routing";
 
 export async function POST(request: Request) {
   const token = await getCustomerToken();
@@ -76,7 +77,10 @@ export async function POST(request: Request) {
       );
     }
 
-    revalidatePath(`/products/${productHandle}`);
+    // The review endpoint does not know the storefront, so both product URLs are refreshed.
+    revalidatePath(getProductPath({ handle: productHandle }));
+    revalidatePath(getProductPath({ handle: productHandle, isLifestyle: true }));
+    revalidatePath(LIFESTYLE_BASE_PATH);
 
     return NextResponse.json({
       success: true,

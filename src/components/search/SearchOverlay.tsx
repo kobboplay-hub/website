@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getProductPath } from "@/lib/storefront/product-routing";
 import {
   ArrowRight,
   ImageOff,
@@ -15,6 +16,7 @@ import {
 
 interface SearchResult {
   handle: string;
+  isLifestyle?: boolean;
   title: string;
   price: string;
   imageUrl: string | null;
@@ -228,7 +230,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 {results.map((product) => (
                   <li key={product.handle}>
                     <Link
-                      href={`/products/${product.handle}`}
+                      href={getProductPath(product)}
                       onClick={onClose}
                       className="group flex items-center gap-3 rounded-2xl border border-transparent bg-kobbo-cream/40 px-3 py-2.5 transition-all hover:border-kobbo-yellow/40 hover:bg-kobbo-white hover:shadow-soft"
                     >

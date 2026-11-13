@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       products: products.map((product) => ({
         handle: product.handle,
+        isLifestyle: product.isLifestyle,
         title: product.title,
         price: formatPrice(product.price, product.currencyCode),
         imageUrl: getProductImageUrl(product),

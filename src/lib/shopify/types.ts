@@ -17,6 +17,12 @@ export interface ShopifyVariant {
   price: ShopifyMoney;
   compareAtPrice: ShopifyMoney | null;
   selectedOptions: { name: string; value: string }[];
+  image?: ShopifyImage | null;
+}
+
+export interface ProductOption {
+  name: string;
+  values: string[];
 }
 
 /** Resolved file/media reference on a product metafield */
@@ -118,6 +124,12 @@ export interface Product {
   ageGroup: ProductAgeGroupReference | null;
   merchandising: ProductMerchandisingFlags;
   isKit: boolean;
+  /** `custom.is_lifestyle = true`; a missing or false value means the Toys storefront. */
+  isLifestyle: boolean;
+  /** Shopify standard product taxonomy category name */
+  category: string | null;
+  /** Populated on product detail fetches */
+  options: ProductOption[];
   playKitItems: PlayKitItem[];
 }
 
@@ -160,6 +172,9 @@ export interface ShopifyProductNode {
     reference: ShopifyAgeGroupNode | null;
   } | null;
   merchandisingFlags?: ({ key: string; value: string } | null)[];
+  lifestyleFlag?: { value: string } | null;
+  category?: { name: string } | null;
+  options?: { name: string; optionValues: { name: string }[] }[];
   kitFlag?: { value: string } | null;
   insidePlayKitItems?: {
     references: { edges: { node: ShopifyKitItemNode }[] } | null;

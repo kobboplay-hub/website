@@ -7,6 +7,9 @@ import { formatPrice } from "@/lib/shopify/types";
 import CartLineItem from "./CartLineItem";
 import EmptyState from "@/components/ui/EmptyState";
 import { emptyStates } from "@/data/empty-states";
+import { lifestyleEmptyStates } from "@/data/lifestyle";
+import { useStorefront } from "@/components/storefront/StorefrontContext";
+import { getStorefrontCartPath, withStorefrontParam } from "@/lib/storefront/product-routing";
 
 export default function CartDrawer() {
   const {
@@ -20,14 +23,17 @@ export default function CartDrawer() {
     error,
     clearError,
   } = useCart();
+  const storefront = useStorefront();
+  const lifestyle = storefront === "lifestyle";
+  const empty = lifestyle ? lifestyleEmptyStates.cart : emptyStates.cart;
 
   const isEmpty = !cart || cart.lines.length === 0;
 
   const handleCheckout = async () => {
-    // Eligible Play Kit carts use Magic Checkout when enabled; other carts use Shopify.
+    // Every INR cart uses Magic Checkout when enabled; the storefront lets payment pages link back correctly.
     const url = await proceedToCheckout();
     if (url) {
-      window.location.href = url;
+      window.location.href = withStorefrontParam(url, storefront);
     }
   };
 
@@ -51,7 +57,7 @@ export default function CartDrawer() {
         aria-label="Shopping cart"
       >
         <div className="flex items-center justify-between border-b border-kobbo-beige px-5 py-4">
-          <h2 className="font-heading text-lg font-extrabold text-kobbo-black">
+          <h2 className={lifestyle ? "text-lg font-semibold text-kobbo-black" : "font-heading text-lg font-extrabold text-kobbo-black"}>
             Cart
             {cart && cart.totalQuantity > 0 && (
               <span className="ml-1.5 text-kobbo-muted">
@@ -81,11 +87,11 @@ export default function CartDrawer() {
         {isEmpty ? (
           <div className="flex flex-1 flex-col justify-center px-5">
             <EmptyState
-              title={emptyStates.cart.title}
-              description={emptyStates.cart.description}
-              cta={emptyStates.cart.cta}
-              ctaHref={emptyStates.cart.ctaHref}
-              emoji={emptyStates.cart.emoji}
+              title={empty.title}
+              description={empty.description}
+              cta={empty.cta}
+              ctaHref={empty.ctaHref}
+              emoji={lifestyle ? undefined : emptyStates.cart.emoji}
             />
           </div>
         ) : (
@@ -110,9 +116,13 @@ export default function CartDrawer() {
 
               <div className="mt-4 flex flex-col gap-2.5">
                 <Link
-                  href="/cart"
+                  href={getStorefrontCartPath(storefront)}
                   onClick={closeCart}
-                  className="inline-flex items-center justify-center rounded-full border-2 border-kobbo-beige py-3 text-sm font-bold text-kobbo-black transition-all hover:border-kobbo-yellow hover:bg-kobbo-cream"
+                  className={
+                    lifestyle
+                      ? "inline-flex items-center justify-center rounded-[4px] border border-kobbo-black/25 py-3 text-sm font-medium text-kobbo-black transition-colors hover:border-kobbo-black"
+                      : "inline-flex items-center justify-center rounded-full border-2 border-kobbo-beige py-3 text-sm font-bold text-kobbo-black transition-all hover:border-kobbo-yellow hover:bg-kobbo-cream"
+                  }
                 >
                   View Cart
                 </Link>
@@ -120,7 +130,11 @@ export default function CartDrawer() {
                   type="button"
                   onClick={handleCheckout}
                   disabled={isCheckoutLoading}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-kobbo-yellow py-3 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-50"
+                  className={
+                    lifestyle
+                      ? "inline-flex items-center justify-center gap-2 rounded-[4px] bg-kobbo-black py-3 text-sm font-medium text-kobbo-white transition-colors hover:bg-kobbo-black/85 disabled:cursor-not-allowed disabled:opacity-50"
+                      : "inline-flex items-center justify-center gap-2 rounded-full bg-kobbo-yellow py-3 text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-50"
+                  }
                 >
                   {isCheckoutLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                   Proceed to Checkout

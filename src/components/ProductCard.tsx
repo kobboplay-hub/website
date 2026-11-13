@@ -14,6 +14,7 @@ import { getDefaultMerchandiseId } from "@/lib/shopify/cart";
 import { useWishlist } from "@/context/wishlist-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductCardRating from "@/components/reviews/ProductCardRating";
+import { getProductPath } from "@/lib/storefront/product-routing";
 import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 const DEFAULT_IMAGE_SIZES =
@@ -109,7 +110,7 @@ export default function ProductCard({
       onPointerLeave={handlePointerLeave}
     >
       <Link
-        href={`/products/${product.handle}`}
+        href={getProductPath(product)}
         className="relative aspect-square overflow-hidden bg-kobbo-white"
       >
         {imageUrl ? (
@@ -171,7 +172,7 @@ export default function ProductCard({
       </button>
 
       <div className="flex flex-1 flex-col p-3 sm:p-4">
-        <Link href={`/products/${product.handle}`}>
+        <Link href={getProductPath(product)}>
           <h3 className="font-heading line-clamp-2 text-sm font-bold text-kobbo-black transition-colors hover:text-kobbo-muted sm:text-base">
             {product.title}
           </h3>

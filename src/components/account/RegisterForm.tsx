@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";
-import { AuthCardShell } from "@/components/account/PageShell";
+import { AuthCardShell } from "@/components/account/AuthCardShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import PasswordInput from "@/components/account/PasswordInput";
 

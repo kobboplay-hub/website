@@ -2,22 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy, Link2, Share2 } from "lucide-react";
+import { getProductPath } from "@/lib/storefront/product-routing";
 
 interface ProductShareButtonProps {
   productTitle: string;
   productHandle: string;
+  isLifestyle?: boolean;
   /** Overlay on gallery (Amazon-style) vs inline next to title */
   variant?: "overlay" | "inline";
 }
 
-function getProductUrl(handle: string) {
+function getProductUrl(handle: string, isLifestyle: boolean) {
   if (typeof window === "undefined") return "";
-  return `${window.location.origin}/products/${handle}`;
+  return `${window.location.origin}${getProductPath({ handle, isLifestyle })}`;
 }
 
 export default function ProductShareButton({
   productTitle,
   productHandle,
+  isLifestyle = false,
   variant = "overlay",
 }: ProductShareButtonProps) {
   const [open, setOpen] = useState(false);
@@ -45,7 +48,7 @@ export default function ProductShareButton({
     return () => window.clearTimeout(timer);
   }, [copied]);
 
-  const shareUrl = () => getProductUrl(productHandle);
+  const shareUrl = () => getProductUrl(productHandle, isLifestyle);
   const shareText = `Check out ${productTitle} on Kobbo`;
 
   const copyLink = async () => {

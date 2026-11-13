@@ -9,10 +9,14 @@ import { useCart } from "@/context/cart-context";
 import EmptyState from "@/components/ui/EmptyState";
 import { ProductCardSkeleton } from "@/components/ui/SkeletonCard";
 import { emptyStates } from "@/data/empty-states";
+import { getProductPath } from "@/lib/storefront/product-routing";
+import { lifestyleEmptyStates } from "@/data/lifestyle";
+import { useStorefront } from "@/components/storefront/StorefrontContext";
 
 export default function WishlistGrid() {
   const { items, isLoading, removeFromWishlist } = useWishlist();
   const { addToCart, isAddingMerchandise } = useCart();
+  const storefront = useStorefront();
 
   const handleMoveToCart = async (merchandiseId: string | null) => {
     if (!merchandiseId) return;
@@ -30,12 +34,13 @@ export default function WishlistGrid() {
   }
 
   if (items.length === 0) {
+    const empty = storefront === "lifestyle" ? lifestyleEmptyStates.wishlist : emptyStates.wishlist;
     return (
       <EmptyState
-        title={emptyStates.wishlist.title}
-        description={emptyStates.wishlist.description}
-        cta={emptyStates.wishlist.cta}
-        ctaHref={emptyStates.wishlist.ctaHref}
+        title={empty.title}
+        description={empty.description}
+        cta={empty.cta}
+        ctaHref={empty.ctaHref}
       />
     );
   }
@@ -53,7 +58,7 @@ export default function WishlistGrid() {
             className="overflow-hidden rounded-2xl bg-kobbo-white shadow-soft"
           >
             <Link
-              href={`/products/${item.handle}`}
+              href={getProductPath(item)}
               className="relative block aspect-square bg-kobbo-white"
             >
               {item.image ? (
@@ -67,7 +72,7 @@ export default function WishlistGrid() {
               ) : null}
             </Link>
             <div className="p-3">
-              <Link href={`/products/${item.handle}`}>
+              <Link href={getProductPath(item)}>
                 <h3 className="font-heading line-clamp-2 text-sm font-bold text-kobbo-black">
                   {item.title}
                 </h3>

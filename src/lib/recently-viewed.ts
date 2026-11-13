@@ -15,6 +15,8 @@ export interface RecentlyViewedItem {
   currencyCode: string;
   imageUrl: string | null;
   viewedAt: number;
+  /** Missing on items stored before the Lifestyle storefront; those are Toys products. */
+  isLifestyle?: boolean;
 }
 
 function isValidItem(value: unknown): value is RecentlyViewedItem {
@@ -59,6 +61,7 @@ export function productToRecentlyViewedItem(
     currencyCode: product.currencyCode,
     imageUrl: getProductImageUrl(product),
     viewedAt: Date.now(),
+    isLifestyle: product.isLifestyle,
   };
 }
 
@@ -85,11 +88,14 @@ export function trackRecentlyViewed(product: Product): RecentlyViewedItem[] {
   return updated;
 }
 
+/** Recently viewed products from one storefront only, so Toys and Lifestyle never mix. */
 export function getRecentlyViewedForDisplay(
   excludeHandle?: string,
   limit = RECENTLY_VIEWED_MAX_DISPLAY,
+  isLifestyle = false,
 ): RecentlyViewedItem[] {
   return readRecentlyViewed()
+    .filter((item) => Boolean(item.isLifestyle) === isLifestyle)
     .filter((item) => (excludeHandle ? item.handle !== excludeHandle : true))
     .slice(0, limit);
 }

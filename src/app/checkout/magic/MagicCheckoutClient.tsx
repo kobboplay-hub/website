@@ -5,6 +5,11 @@ import Script from "next/script";
 import { Check, Loader2, Lock } from "lucide-react";
 
 import { CART_STORAGE_KEY } from "@/lib/shopify/cart";
+import {
+  getStorefrontCartPath,
+  withStorefrontParam,
+  type Storefront,
+} from "@/lib/storefront/product-routing";
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -55,11 +60,11 @@ function savePayment(cartId: string, payment: RazorpayResponse) {
   localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(saved));
 }
 
-function confirmationUrl(order: CompletedOrder): string {
+function confirmationUrl(order: CompletedOrder, storefront: Storefront): string {
   const params = new URLSearchParams({ order: order.orderNumber });
   if (order.paymentMethod) params.set("method", order.paymentMethod);
   if (order.totalAmount !== null) params.set("total", String(order.totalAmount));
-  return `/checkout/success?${params}`;
+  return withStorefrontParam(`/checkout/success?${params}`, storefront);
 }
 
 async function completeOrder(payment: RazorpayResponse): Promise<CompletedOrder> {
@@ -85,7 +90,7 @@ async function completeOrder(payment: RazorpayResponse): Promise<CompletedOrder>
   throw lastError;
 }
 
-export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
+export default function MagicCheckoutClient({ cartId, storefront }: { cartId: string; storefront: Storefront }) {
   const [scriptReady, setScriptReady] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<CheckoutState>("loading");
@@ -107,13 +112,13 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
           localStorage.removeItem(CART_STORAGE_KEY);
         }
         // A full navigation resets the in-memory cart, and replace keeps Back from reopening checkout.
-        window.location.replace(confirmationUrl(order));
+        window.location.replace(confirmationUrl(order, storefront));
       } catch {
         confirming.current = false;
         setState("pending");
       }
     },
-    [cartId],
+    [cartId, storefront],
   );
 
   // A payment saved before a refresh or crash is confirmed instead of opening a second checkout.
@@ -257,7 +262,7 @@ export default function MagicCheckoutClient({ cartId }: { cartId: string }) {
               Try again
             </button>
             <a
-              href="/cart"
+              href={getStorefrontCartPath(storefront)}
               className="rounded-full border border-kobbo-beige px-5 py-3 font-semibold text-kobbo-black transition-colors hover:border-kobbo-yellow"
             >
               Return to cart

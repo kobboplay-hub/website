@@ -1,6 +1,7 @@
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { StorefrontMarker } from "@/components/storefront/StorefrontContext";
 
 interface SiteLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export default function SiteLayout({
 }: SiteLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col overflow-x-clip">
+      <StorefrontMarker storefront="toys" />
       <AnnouncementBar />
       <div className="relative flex min-h-0 flex-1 flex-col">
         <Header immersive={immersiveHero} />
