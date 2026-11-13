@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import LoginForm from "@/components/account/LoginForm";
 import { Loader2 } from "lucide-react";
 import { StorefrontProvider } from "@/components/storefront/StorefrontContext";
-import { getRequestStorefront } from "@/lib/storefront/server";
+import { redirectToLifestyleAuthPage, type AuthSearchParams } from "@/lib/storefront/auth-routing";
 
 export const metadata: Metadata = {
   title: "Login — Kobbo",
@@ -18,9 +18,11 @@ function LoginFallback() {
   );
 }
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: AuthSearchParams }) {
+  await redirectToLifestyleAuthPage("/login", searchParams);
+
   return (
-    <StorefrontProvider storefront={await getRequestStorefront()}>
+    <StorefrontProvider storefront="toys">
       <Suspense fallback={<LoginFallback />}>
         <LoginForm />
       </Suspense>

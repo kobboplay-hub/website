@@ -7,6 +7,7 @@ import { AuthCardShell } from "@/components/account/AuthCardShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { getPasswordResetEmailLink } from "@/lib/auth/reset-password";
+import { useStorefrontPath } from "@/components/storefront/StorefrontContext";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function ForgotPasswordForm() {
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const [copied, setCopied] = useState(false);
+  const toStorefront = useStorefrontPath();
 
   const emailTemplateLink = getPasswordResetEmailLink();
 
@@ -104,7 +106,7 @@ export default function ForgotPasswordForm() {
           </details>
 
           <Link
-            href="/login"
+            href={toStorefront("/login")}
             className="mt-5 block text-center text-sm font-semibold text-kobbo-black hover:underline"
           >
             Back to Login
@@ -148,7 +150,7 @@ export default function ForgotPasswordForm() {
         </button>
         <p className="text-center text-sm text-kobbo-muted">
           <Link
-            href="/login"
+            href={toStorefront("/login")}
             className="font-semibold text-kobbo-black hover:underline"
           >
             Back to Login

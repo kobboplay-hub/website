@@ -49,7 +49,7 @@ export default function LifestyleFooter({ categories = [] }: { categories?: Life
           <nav aria-label="Customer care" className="lg:col-span-2">
             <h2 className="font-ls-display text-xs font-semibold uppercase tracking-[0.18em] text-ls-paper/50">Help</h2>
             <ul className="mt-5 space-y-3">
-              <li><Link href="/account/orders" className={linkClass}>Track Orders</Link></li>
+              <li><Link href={`${LIFESTYLE_BASE_PATH}/account/orders`} className={linkClass}>Track Orders</Link></li>
               {lifestylePolicyLinks.map((link) => (
                 <li key={link.slug}>
                   <Link href={`${LIFESTYLE_BASE_PATH}/${link.slug}`} className={linkClass}>{link.label}</Link>

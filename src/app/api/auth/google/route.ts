@@ -8,18 +8,14 @@ import {
   resolveCustomerAccountCallbackUrl,
 } from "@/lib/auth/customer-account-oauth";
 import { setOAuthSession, clearCustomerToken } from "@/lib/auth/session";
-
-function safeRedirectPath(value: string | null): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return "/account";
-  }
-  return value;
-}
+import { getPathStorefront, getStorefrontPath, safeRedirectPath } from "@/lib/storefront/product-routing";
 
 export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const redirectTo = safeRedirectPath(searchParams.get("redirect"));
+  const loginPath = getStorefrontPath(getPathStorefront(redirectTo), "/login");
+
   try {
-    const { searchParams } = new URL(request.url);
-    const redirectTo = safeRedirectPath(searchParams.get("redirect"));
     const callbackUri = resolveCustomerAccountCallbackUrl(request);
 
     // Clear any existing Kobbo session so login/sign-up always starts fresh
@@ -50,7 +46,7 @@ export async function GET(request: Request) {
         ? error.message
         : "Google sign-in is unavailable right now.";
     return NextResponse.redirect(
-      absoluteRedirect(request, "/login", { error: message }),
+      absoluteRedirect(request, loginPath, { error: message, redirect: redirectTo }),
     );
   }
 }

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import SiteLayout from "@/components/SiteLayout";
 import LifestyleShell from "@/components/lifestyle/LifestyleShell";
 import { useStorefront } from "@/components/storefront/StorefrontContext";
-import { getStorefrontHomePath } from "@/lib/storefront/product-routing";
+import { getStorefrontHomePath, isLifestylePath } from "@/lib/storefront/product-routing";
 
 interface AuthCardShellProps {
   children: React.ReactNode;
@@ -14,19 +15,20 @@ interface AuthCardShellProps {
 
 export function AuthCardShell({ children, title, subtitle }: AuthCardShellProps) {
   const storefront = useStorefront();
+  const pathname = usePathname();
 
   if (storefront === "lifestyle") {
-    return (
-      <LifestyleShell>
-        <section className="flex flex-1 items-center justify-center px-4 py-14 sm:px-6">
-          <div className="w-full max-w-md rounded-[4px] border border-ls-line bg-ls-paper p-6 sm:p-8">
-            <h1 className="font-ls-display text-2xl font-bold tracking-[-0.02em] text-ls-ink">{title}</h1>
-            {subtitle && <p className="mt-2 text-sm text-ls-muted">{subtitle}</p>}
-            <div className="mt-6">{children}</div>
-          </div>
-        </section>
-      </LifestyleShell>
+    const card = (
+      <section className="ls-account flex flex-1 items-center justify-center px-4 py-14 sm:px-6">
+        <div className="w-full max-w-md rounded-[4px] border border-ls-line bg-ls-paper p-6 sm:p-8">
+          <h1 className="font-ls-display text-2xl font-bold tracking-[-0.02em] text-ls-ink">{title}</h1>
+          {subtitle && <p className="mt-2 text-sm text-ls-muted">{subtitle}</p>}
+          <div className="mt-6">{children}</div>
+        </div>
+      </section>
     );
+    // Pages under /lifestyle already get the Lifestyle header and footer from the route layout.
+    return isLifestylePath(pathname) ? card : <LifestyleShell>{card}</LifestyleShell>;
   }
 
   return (

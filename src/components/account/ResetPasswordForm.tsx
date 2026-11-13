@@ -10,6 +10,7 @@ import PasswordInput from "@/components/account/PasswordInput";
 import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { useAuth } from "@/context/auth-context";
 import { parseShopifyResetUrl } from "@/lib/auth/reset-password";
+import { useStorefrontPath } from "@/components/storefront/StorefrontContext";
 
 interface ResetPasswordFormProps {
   resetUrl?: string | null;
@@ -35,6 +36,7 @@ export default function ResetPasswordForm({
   const [done, setDone] = useState(false);
   const router = useRouter();
   const { refreshUser } = useAuth();
+  const toStorefront = useStorefrontPath();
 
   const hasValidLink = Boolean(resetUrl || (customerId && resetToken));
 
@@ -85,7 +87,7 @@ export default function ResetPasswordForm({
 
       setDone(true);
       await refreshUser();
-      setTimeout(() => router.push("/account"), 1500);
+      setTimeout(() => router.push(toStorefront("/account")), 1500);
     } catch (err) {
       const raw =
         err instanceof Error
@@ -143,7 +145,7 @@ export default function ResetPasswordForm({
 
           <p className="text-center text-sm text-kobbo-muted">
             <Link
-              href="/forgot-password"
+              href={toStorefront("/forgot-password")}
               className="font-semibold text-kobbo-black hover:underline"
             >
               Request a new reset email
@@ -168,7 +170,7 @@ export default function ResetPasswordForm({
             Paste reset link manually →
           </Link>
           <Link
-            href="/forgot-password"
+            href={toStorefront("/forgot-password")}
             className="mt-6 inline-flex rounded-full bg-kobbo-yellow px-6 py-3 text-sm font-bold text-kobbo-black shadow-soft"
           >
             Request New Link

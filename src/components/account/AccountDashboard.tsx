@@ -19,13 +19,20 @@ import { SummaryCard } from "@/components/account/OrderCard";
 import { formatOrderDate } from "@/data/account";
 import { getIndianProvinceName, isIndiaCountry } from "@/lib/data/india-provinces";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
-import { useStorefront } from "@/components/storefront/StorefrontContext";
-import { LIFESTYLE_BASE_PATH } from "@/lib/storefront/product-routing";
+import { useStorefront, useStorefrontPath } from "@/components/storefront/StorefrontContext";
+import {
+  LIFESTYLE_BASE_PATH,
+  getStorefrontCartPath,
+  getStorefrontHomePath,
+  getStorefrontShopPath,
+} from "@/lib/storefront/product-routing";
 
 export default function AccountDashboard() {
   const { user, logout } = useAuth();
   const { count: wishlistCount } = useWishlist();
-  const lifestyle = useStorefront() === "lifestyle";
+  const storefront = useStorefront();
+  const toStorefront = useStorefrontPath();
+  const lifestyle = storefront === "lifestyle";
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,21 +73,21 @@ export default function AccountDashboard() {
         <SummaryCard
           title="Orders"
           value={loading ? "…" : String(orders.length)}
-          href="/account/orders"
+          href={toStorefront("/account/orders")}
           linkLabel="View"
           icon={Package}
         />
         <SummaryCard
           title="Wishlist"
           value={String(wishlistCount)}
-          href="/account/wishlist"
+          href={toStorefront("/account/wishlist")}
           linkLabel="View"
           icon={Heart}
         />
         <SummaryCard
           title="Addresses"
           value={String(addressCount)}
-          href="/account/addresses"
+          href={toStorefront("/account/addresses")}
           linkLabel="Manage"
           icon={MapPin}
         />
@@ -157,7 +164,7 @@ export default function AccountDashboard() {
               </p>
             </div>
             <Link
-              href="/account/addresses"
+              href={toStorefront("/account/addresses")}
               className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-kobbo-black hover:underline sm:text-sm"
             >
               <span>Manage all addresses</span>
@@ -191,7 +198,7 @@ export default function AccountDashboard() {
               </div>
             </div>
             <Link
-              href="/account/orders"
+              href={toStorefront("/account/orders")}
               className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-kobbo-black hover:underline sm:text-sm"
             >
               <span>View all orders</span>
@@ -233,10 +240,10 @@ export default function AccountDashboard() {
         </h2>
         <div className="mt-2.5 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
           {[
-            { href: "/shop", label: "Shop Toys", icon: Store },
-            { href: "/account/orders", label: "My Orders", icon: Package },
-            { href: "/account/wishlist", label: "My Wishlist", icon: Heart },
-            { href: "/cart", label: "View Cart", icon: ShoppingCart },
+            { href: getStorefrontShopPath(storefront), label: lifestyle ? "Shop Lifestyle" : "Shop Toys", icon: Store },
+            { href: toStorefront("/account/orders"), label: "My Orders", icon: Package },
+            { href: toStorefront("/account/wishlist"), label: "My Wishlist", icon: Heart },
+            { href: getStorefrontCartPath(storefront), label: "View Cart", icon: ShoppingCart },
           ].map((link) => (
             <Link
               key={link.href}
@@ -256,7 +263,7 @@ export default function AccountDashboard() {
       <div className="mt-6 border-t border-kobbo-beige/60 pt-4 lg:hidden">
         <button
           type="button"
-          onClick={() => logout("/")}
+          onClick={() => logout(getStorefrontHomePath(storefront))}
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50/70 py-2.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-100 active:bg-red-200 sm:text-sm"
         >
           <LogOut className="h-4 w-4" />

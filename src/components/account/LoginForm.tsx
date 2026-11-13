@@ -9,6 +9,8 @@ import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { AuthCardShell } from "@/components/account/AuthCardShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import PasswordInput from "@/components/account/PasswordInput";
+import { useStorefrontPath } from "@/components/storefront/StorefrontContext";
+import { safeRedirectPath } from "@/lib/storefront/product-routing";
 
 function GoogleIcon() {
   return (
@@ -30,13 +32,12 @@ export default function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/account";
+  const toStorefront = useStorefrontPath();
+  const redirectTo = safeRedirectPath(searchParams.get("redirect"), toStorefront("/account"));
   const oauthError = searchParams.get("error");
+  const redirectQuery = `?redirect=${encodeURIComponent(redirectTo)}`;
 
-  const googleSignInHref =
-    redirectTo !== "/account"
-      ? `/api/auth/google?redirect=${encodeURIComponent(redirectTo)}`
-      : "/api/auth/google";
+  const googleSignInHref = `/api/auth/google${redirectQuery}`;
 
   const clearError = () => { setError(""); setErrorFields([]); };
   const has = (field: "email" | "password") => errorFields.includes(field);
@@ -137,7 +138,7 @@ export default function LoginForm() {
 
           <div className="text-right">
             <Link
-              href="/forgot-password"
+              href={toStorefront("/forgot-password")}
               className="text-sm font-medium text-kobbo-muted hover:text-kobbo-black"
             >
               Forgot password?
@@ -156,11 +157,7 @@ export default function LoginForm() {
           <p className="text-center text-sm text-kobbo-muted">
             Don&apos;t have an account?{" "}
             <Link
-              href={
-                redirectTo !== "/account"
-                  ? `/register?redirect=${encodeURIComponent(redirectTo)}`
-                  : "/register"
-              }
+              href={`${toStorefront("/register")}${redirectQuery}`}
               className="font-semibold text-kobbo-black hover:underline"
             >
               Create account

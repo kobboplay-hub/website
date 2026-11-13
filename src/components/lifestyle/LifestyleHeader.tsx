@@ -7,9 +7,16 @@ import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 
 import { useCart } from "@/context/cart-context";
 import { useWishlist } from "@/context/wishlist-context";
-import { LIFESTYLE_BASE_PATH } from "@/lib/storefront/product-routing";
+import { useAuth } from "@/context/auth-context";
+import { LIFESTYLE_BASE_PATH, isLifestylePath } from "@/lib/storefront/product-routing";
 import LifestyleSearch from "./LifestyleSearch";
 import LifestyleWordmark from "./LifestyleWordmark";
+
+const LOGIN_PATH = `${LIFESTYLE_BASE_PATH}/login`;
+const ACCOUNT_PATH = `${LIFESTYLE_BASE_PATH}/account`;
+const WISHLIST_PATH = `${LIFESTYLE_BASE_PATH}/account/wishlist`;
+/** Signing in from these pages should land on the account, not loop back to the form. */
+const AUTH_PATHS = new Set(["/login", "/register", "/forgot-password"].map((path) => `${LIFESTYLE_BASE_PATH}${path}`));
 
 export interface LifestyleNavCategory {
   name: string;
@@ -37,6 +44,13 @@ export default function LifestyleHeader({ categories = [] }: { categories?: Life
   const pathname = usePathname();
   const { cartCount, openCart } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { isLoggedIn } = useAuth();
+  const returnTo = isLifestylePath(pathname) && !AUTH_PATHS.has(pathname) ? pathname : null;
+  const accountHref = isLoggedIn
+    ? ACCOUNT_PATH
+    : returnTo
+      ? `${LOGIN_PATH}?redirect=${encodeURIComponent(returnTo)}`
+      : LOGIN_PATH;
 
   const navLinks = [
     { label: "Home", href: LIFESTYLE_BASE_PATH },
@@ -103,10 +117,10 @@ export default function LifestyleHeader({ categories = [] }: { categories?: Life
             <button type="button" className={iconButton} aria-label="Search Lifestyle products" onClick={() => setSearchOpen(true)}>
               <Search className="size-5" strokeWidth={1.6} aria-hidden />
             </button>
-            <Link href="/account" className={`${iconButton} hidden sm:flex`} aria-label="Your account">
+            <Link href={accountHref} className={`${iconButton} hidden sm:flex`} aria-label={isLoggedIn ? "Your account" : "Sign in"}>
               <User className="size-5" strokeWidth={1.6} aria-hidden />
             </Link>
-            <Link href="/account/wishlist" className={`${iconButton} hidden sm:flex`} aria-label="Wishlist">
+            <Link href={WISHLIST_PATH} className={`${iconButton} hidden sm:flex`} aria-label="Wishlist">
               <Heart className="size-5" strokeWidth={1.6} aria-hidden />
               <CountBadge count={wishlistCount} label={`${wishlistCount} saved items`} />
             </Link>
@@ -162,12 +176,12 @@ export default function LifestyleHeader({ categories = [] }: { categories?: Life
           <div className="mt-8 border-t border-ls-line pt-6">
             <ul className="space-y-1 text-sm">
               <li>
-                <Link href="/account" onClick={closeMenu} className="flex items-center gap-3 rounded-lg px-3 py-3 text-ls-ink-soft hover:bg-ls-sand">
-                  <User className="size-[18px]" strokeWidth={1.6} aria-hidden /> Account
+                <Link href={accountHref} onClick={closeMenu} className="flex items-center gap-3 rounded-lg px-3 py-3 text-ls-ink-soft hover:bg-ls-sand">
+                  <User className="size-[18px]" strokeWidth={1.6} aria-hidden /> {isLoggedIn ? "Account" : "Sign in"}
                 </Link>
               </li>
               <li>
-                <Link href="/account/wishlist" onClick={closeMenu} className="flex items-center gap-3 rounded-lg px-3 py-3 text-ls-ink-soft hover:bg-ls-sand">
+                <Link href={WISHLIST_PATH} onClick={closeMenu} className="flex items-center gap-3 rounded-lg px-3 py-3 text-ls-ink-soft hover:bg-ls-sand">
                   <Heart className="size-[18px]" strokeWidth={1.6} aria-hidden /> Wishlist
                   {wishlistCount > 0 && <span className="ml-auto text-xs text-ls-muted">{wishlistCount}</span>}
                 </Link>

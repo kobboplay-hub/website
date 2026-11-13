@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import {
   STOREFRONT_COOKIE,
+  getStorefrontPath,
   isLifestylePath,
   parseStorefront,
   type Storefront,
@@ -35,6 +36,12 @@ export function useStorefront(): Storefront {
   if (provided) return provided;
   if (isLifestylePath(pathname)) return "lifestyle";
   return fromCookie ?? "toys";
+}
+
+/** Maps a shared login/account path (e.g. `/account/orders`) into the current storefront. */
+export function useStorefrontPath(): (path: string) => string {
+  const storefront = useStorefront();
+  return useCallback((path: string) => getStorefrontPath(storefront, path), [storefront]);
 }
 
 /** Records the storefront being browsed so shared pages can render the matching header and footer. */

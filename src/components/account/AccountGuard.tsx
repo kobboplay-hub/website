@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { getLoginPath } from "@/lib/storefront/product-routing";
 
 export default function AccountGuard({
   children,
@@ -16,9 +17,7 @@ export default function AccountGuard({
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
-      router.replace(
-        `/login?redirect=${encodeURIComponent(pathname)}`,
-      );
+      router.replace(getLoginPath(pathname));
     }
   }, [isLoggedIn, isLoading, router, pathname]);
 

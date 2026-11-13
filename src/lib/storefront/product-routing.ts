@@ -30,6 +30,33 @@ export function parseStorefront(value: string | null | undefined): Storefront {
   return value === "lifestyle" ? "lifestyle" : "toys";
 }
 
+/** Storefront that owns a path; anything outside `/lifestyle` belongs to Toys. */
+export function getPathStorefront(pathname: string | null | undefined): Storefront {
+  return isLifestylePath(pathname?.split(/[?#]/)[0]) ? "lifestyle" : "toys";
+}
+
+/**
+ * Login and account pages exist in both storefronts (`/login` and `/lifestyle/login`) so a
+ * visitor never leaves the store they are shopping in. They share the same APIs and session.
+ */
+export function getStorefrontPath(storefront: Storefront, path: string): string {
+  return storefront === "lifestyle" ? `${LIFESTYLE_BASE_PATH}${path}` : path;
+}
+
+/** Login URL that returns the visitor to `redirectTo`, inside the storefront that path belongs to. */
+export function getLoginPath(redirectTo?: string | null): string {
+  const loginPath = getStorefrontPath(getPathStorefront(redirectTo), "/login");
+  return redirectTo ? `${loginPath}?redirect=${encodeURIComponent(redirectTo)}` : loginPath;
+}
+
+/** Only same-site relative paths may be used as post-login destinations. */
+export function safeRedirectPath(value: string | null | undefined, fallback = "/account"): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) {
+    return fallback;
+  }
+  return value;
+}
+
 export function getStorefrontHomePath(storefront: Storefront): string {
   return storefront === "lifestyle" ? LIFESTYLE_BASE_PATH : "/";
 }

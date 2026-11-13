@@ -9,6 +9,8 @@ import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { AuthCardShell } from "@/components/account/AuthCardShell";
 import AuthAlert from "@/components/account/AuthAlert";
 import PasswordInput from "@/components/account/PasswordInput";
+import { useStorefrontPath } from "@/components/storefront/StorefrontContext";
+import { safeRedirectPath } from "@/lib/storefront/product-routing";
 
 type FieldError = "firstName" | "lastName" | "email" | "password" | "confirmPassword" | "general";
 
@@ -43,12 +45,11 @@ export default function RegisterForm() {
   const { register } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/account";
+  const toStorefront = useStorefrontPath();
+  const redirectTo = safeRedirectPath(searchParams.get("redirect"), toStorefront("/account"));
+  const redirectQuery = `?redirect=${encodeURIComponent(redirectTo)}`;
 
-  const googleSignUpHref =
-    redirectTo !== "/account"
-      ? `/api/auth/google?redirect=${encodeURIComponent(redirectTo)}`
-      : "/api/auth/google";
+  const googleSignUpHref = `/api/auth/google${redirectQuery}`;
 
   const setFieldError = (fields: FieldError[], message: string) => {
     setError(message);
@@ -211,11 +212,7 @@ export default function RegisterForm() {
           <p className="text-center text-sm text-kobbo-muted">
             Already have an account?{" "}
             <Link
-              href={
-                redirectTo !== "/account"
-                  ? `/login?redirect=${encodeURIComponent(redirectTo)}`
-                  : "/login"
-              }
+              href={`${toStorefront("/login")}${redirectQuery}`}
               className="font-semibold text-kobbo-black hover:underline"
             >
               Login

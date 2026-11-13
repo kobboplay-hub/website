@@ -2,6 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useStorefront } from "@/components/storefront/StorefrontContext";
+import { getStorefrontHomePath } from "@/lib/storefront/product-routing";
 import AccountSidebar from "./AccountSidebar";
 
 interface AccountLayoutShellProps {
@@ -15,10 +17,11 @@ export default function AccountLayoutShell({
 }: AccountLayoutShellProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const storefront = useStorefront();
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-[240px_1fr] lg:gap-8">
-      <AccountSidebar activePath={pathname} onLogout={() => logout("/")} />
+      <AccountSidebar activePath={pathname} onLogout={() => logout(getStorefrontHomePath(storefront))} />
       <div className="min-w-0 flex-1">
         {title && (
           <h1 className="mb-4 font-heading text-xl font-extrabold text-kobbo-black sm:mb-6 sm:text-2xl lg:text-3xl">

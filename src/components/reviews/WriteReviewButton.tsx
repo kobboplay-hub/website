@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { CheckCircle2, Clock, Loader2, PenLine, ShoppingBag, X } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import WriteReviewModal from "@/components/reviews/WriteReviewModal";
+import { getLoginPath } from "@/lib/storefront/product-routing";
 
 interface WriteReviewButtonProps {
   productId: string;
@@ -51,7 +52,7 @@ export default function WriteReviewButton({
       const redirect = pathname.includes("#")
         ? pathname
         : `${pathname}#product-reviews`;
-      router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
+      router.push(getLoginPath(redirect));
       return;
     }
 
@@ -64,9 +65,7 @@ export default function WriteReviewButton({
       const response = await fetch(`/api/reviews/eligibility?${params}`);
 
       if (response.status === 401) {
-        router.push(
-          `/login?redirect=${encodeURIComponent(`${pathname}#product-reviews`)}`,
-        );
+        router.push(getLoginPath(`${pathname}#product-reviews`));
         return;
       }
 

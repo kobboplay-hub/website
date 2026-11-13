@@ -6,7 +6,7 @@ import SiteLayout from "@/components/SiteLayout";
 import LifestyleShell from "@/components/lifestyle/LifestyleShell";
 import { footerBrand } from "@/data/footer";
 import { getLifestyleNavCategories } from "@/lib/shopify/lifestyle";
-import { getStorefrontHomePath, parseStorefront } from "@/lib/storefront/product-routing";
+import { getStorefrontHomePath, getStorefrontPath, parseStorefront } from "@/lib/storefront/product-routing";
 
 export const metadata: Metadata = {
   title: "Order confirmed — Kobbo",
@@ -118,7 +118,7 @@ export default async function OrderConfirmedPage({
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
-                  href="/account/orders"
+                  href={getStorefrontPath(storefront, "/account/orders")}
                   className="flex flex-1 items-center justify-center rounded-full bg-kobbo-black px-6 py-3.5 font-bold text-kobbo-white transition-colors hover:bg-kobbo-black/90"
                 >
                   View my orders

@@ -9,8 +9,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useWishlist } from "@/context/wishlist-context";
+import { useStorefrontPath } from "@/components/storefront/StorefrontContext";
 
-const links = [
+const accountLinks = [
   { href: "/account", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/account/orders", label: "Orders", icon: Package },
   { href: "/account/addresses", label: "Addresses", icon: MapPin },
@@ -27,6 +28,9 @@ export default function AccountSidebar({
   onLogout,
 }: AccountSidebarProps) {
   const { count: wishlistCount } = useWishlist();
+  const toStorefront = useStorefrontPath();
+  const links = accountLinks.map((link) => ({ ...link, href: toStorefront(link.href) }));
+  const wishlistHref = toStorefront("/account/wishlist");
 
   return (
     <>
@@ -41,7 +45,7 @@ export default function AccountSidebar({
               ? activePath === href
               : activePath.startsWith(href);
 
-            const isWishlist = href === "/account/wishlist";
+            const isWishlist = href === wishlistHref;
 
             return (
               <Link
@@ -88,7 +92,7 @@ export default function AccountSidebar({
               ? activePath === href
               : activePath.startsWith(href);
 
-            const isWishlist = href === "/account/wishlist";
+            const isWishlist = href === wishlistHref;
 
             return (
               <Link

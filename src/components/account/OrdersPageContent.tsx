@@ -11,10 +11,11 @@ import { mapAuthErrorMessage } from "@/lib/auth/messages";
 import { emptyStates, errorStates } from "@/data/empty-states";
 import type { CustomerOrder } from "@/lib/shopify/customer-types";
 import { lifestyleEmptyStates } from "@/data/lifestyle";
-import { useStorefront } from "@/components/storefront/StorefrontContext";
+import { useStorefront, useStorefrontPath } from "@/components/storefront/StorefrontContext";
 
 export default function OrdersPageContent() {
   const ordersEmpty = useStorefront() === "lifestyle" ? lifestyleEmptyStates.orders : emptyStates.orders;
+  const toStorefront = useStorefrontPath();
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [reviewedProductIds, setReviewedProductIds] = useState<
     Record<string, boolean>
@@ -113,7 +114,7 @@ export default function OrdersPageContent() {
           title={errorStates.orders.title}
           description={error}
           cta="Back to Account"
-          ctaHref="/account"
+          ctaHref={toStorefront("/account")}
         />
       </AccountLayoutShell>
     );
