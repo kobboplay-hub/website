@@ -35,7 +35,7 @@ export default async function LifestyleReviews({ products }: { products: Product
     <section aria-labelledby="lifestyle-reviews" className="py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <LifestyleSectionHeading id="lifestyle-reviews" eyebrow="Customer reviews" title="What customers are saying" />
-        <ul className="mt-10 grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-10 grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3 max-md:[&>li:nth-child(n+4)]:hidden">
           {reviews.map((review) => (
             <li key={review.id} className="flex flex-col border-t border-ls-line pt-6">
               <LifestyleRatingStars rating={review.rating} />

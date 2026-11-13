@@ -507,6 +507,13 @@ export const GET_LIFESTYLE_COLLECTION_PRODUCTS_QUERY = `
         edges {
           node {
             ...ProductCard
+            publishedAt
+            options(first: 3) {
+              name
+              optionValues {
+                name
+              }
+            }
           }
         }
       }

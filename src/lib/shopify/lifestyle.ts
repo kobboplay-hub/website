@@ -42,7 +42,7 @@ export const getLifestyleProducts = cache(async (): Promise<Product[]> => {
     }
 
     for (const edge of data.collection.products.edges) {
-      const product = normalizeProduct(edge.node);
+      const product: Product = { ...normalizeProduct(edge.node), publishedAt: edge.node.publishedAt ?? null };
       // The collection rule is the source of truth, but the flag is re-checked so a
       // misconfigured collection can never surface a Toys product.
       if (product.isLifestyle && !seen.has(product.id)) {

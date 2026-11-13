@@ -28,6 +28,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${baloo.variable} ${inter.variable} min-h-screen antialiased`}
     >
       <body className="min-h-screen bg-kobbo-cream text-kobbo-black antialiased">

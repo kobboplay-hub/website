@@ -17,26 +17,46 @@ export const lifestyleHero = {
   heading: "Everyday Essentials. Thoughtfully Chosen.",
   description: "Discover everyday favourites for your home, your routine and everything in between.",
   primaryCta: "Explore Collection",
-  secondaryCta: "Shop Featured",
+  secondaryCta: "Shop All Products",
+} as const;
+
+/** Hero trust row; avoids repeating every announcement-bar message. Support contact is listed in the footer. */
+export const lifestyleHeroTrust = [
+  { icon: "truck", label: "Delivery across India" },
+  { icon: "shield", label: "Secure checkout" },
+  { icon: "support", label: "Customer support" },
+] as const;
+
+export const lifestyleShop = {
+  categories: {
+    eyebrow: "Shop by category",
+    heading: "Discover Your Everyday Essentials",
+    description: "Thoughtfully selected favourites for everyday living.",
+  },
+  listing: {
+    eyebrow: "Everyday finds",
+    heading: "Shop Everyday Essentials",
+    description: "Explore our selection of everyday favourites.",
+  },
 } as const;
 
 export const lifestyleEditorial = {
   eyebrow: "The Lifestyle Edit",
   heading: "Little Things. Better Everyday Living.",
-  description: "Useful, well-made pieces for the moments that fill your day.",
-  cta: "Browse the collection",
+  description: "Discover thoughtful essentials that make everyday moments feel better.",
+  cta: "Shop the essentials",
 } as const;
 
 export const lifestyleTrustItems = [
   {
     icon: "shield",
-    title: "Secure checkout",
-    description: "Payments are processed securely by Razorpay.",
+    title: "Secure Payments",
+    description: "Every payment is processed securely by Razorpay.",
   },
   {
     icon: "truck",
-    title: "Free shipping across India",
-    description: "Orders are usually dispatched within 5 business days.",
+    title: "Free Shipping Across India",
+    description: "Free shipping on every order, usually dispatched within 5 business days.",
   },
   {
     icon: "wallet",
@@ -45,7 +65,7 @@ export const lifestyleTrustItems = [
   },
   {
     icon: "package",
-    title: "Track your orders",
+    title: "Order Tracking",
     description: "Follow every order from your Kobbo account.",
   },
 ] as const;

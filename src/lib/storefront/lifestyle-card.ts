@@ -16,6 +16,14 @@ export interface LifestyleCardProduct {
   /** Set only when the product can be added without choosing options. */
   quickAddVariantId: string | null;
   hasOptions: boolean;
+  /** e.g. "3 color options", from the first option with more than one value */
+  optionSummary: string | null;
+  publishedAt: string | null;
+}
+
+function getOptionSummary(product: Pick<Product, "options">): string | null {
+  const option = product.options.find((candidate) => candidate.values.length > 1);
+  return option ? `${option.values.length} ${option.name.toLowerCase()} options` : null;
 }
 
 export function hasSelectableOptions(product: Pick<Product, "variants">): boolean {
@@ -47,6 +55,8 @@ export function toLifestyleCard(product: Product): LifestyleCardProduct {
     images,
     quickAddVariantId: !hasOptions && firstAvailable ? firstAvailable.id : null,
     hasOptions,
+    optionSummary: getOptionSummary(product),
+    publishedAt: product.publishedAt ?? null,
   };
 }
 

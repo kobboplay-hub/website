@@ -128,8 +128,10 @@ export interface Product {
   isLifestyle: boolean;
   /** Shopify standard product taxonomy category name */
   category: string | null;
-  /** Populated on product detail fetches */
+  /** Populated on product detail fetches and the Lifestyle listing */
   options: ProductOption[];
+  /** Populated by the Lifestyle listing only */
+  publishedAt?: string | null;
   playKitItems: PlayKitItem[];
 }
 
@@ -175,6 +177,7 @@ export interface ShopifyProductNode {
   lifestyleFlag?: { value: string } | null;
   category?: { name: string } | null;
   options?: { name: string; optionValues: { name: string }[] }[];
+  publishedAt?: string;
   kitFlag?: { value: string } | null;
   insidePlayKitItems?: {
     references: { edges: { node: ShopifyKitItemNode }[] } | null;

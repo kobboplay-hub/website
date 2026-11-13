@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { StorefrontMarker, StorefrontProvider } from "@/components/storefront/StorefrontContext";
-import { manrope } from "./fonts";
+import { fraunces, manrope } from "./fonts";
 import LifestyleAnnouncementBar from "./LifestyleAnnouncementBar";
 import LifestyleFooter from "./LifestyleFooter";
 import LifestyleHeader, { type LifestyleNavCategory } from "./LifestyleHeader";
@@ -16,7 +16,7 @@ export default function LifestyleShell({ children, categories = [] }: LifestyleS
   return (
     <StorefrontProvider storefront="lifestyle">
       <div
-        className={`${manrope.variable} flex min-h-screen flex-col overflow-x-clip bg-ls-ivory font-ls-body text-ls-ink antialiased`}
+        className={`${manrope.variable} ${fraunces.variable} flex min-h-screen flex-col overflow-x-clip bg-ls-ivory font-ls-body text-ls-ink antialiased`}
       >
         <StorefrontMarker storefront="lifestyle" />
         <a

@@ -9,17 +9,26 @@ import { useWishlist } from "@/context/wishlist-context";
 import { getDiscountPercent, type LifestyleCardProduct } from "@/lib/storefront/lifestyle-card";
 import { getProductPath } from "@/lib/storefront/product-routing";
 import LifestylePrice from "./LifestylePrice";
+import LifestyleRatingStars from "./LifestyleRatingStars";
+
+export interface LifestyleCardRating {
+  averageRating: number;
+  reviewCount: number;
+}
 
 interface LifestyleProductCardProps {
   product: LifestyleCardProduct;
-  priority?: boolean;
+  /** Judge.me summary; nothing is shown until real reviews exist. */
+  rating?: LifestyleCardRating | null;
+  eager?: boolean;
   sizes?: string;
 }
 
 export default function LifestyleProductCard({
   product,
-  priority = false,
-  sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw",
+  rating = null,
+  eager = false,
+  sizes = "(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw",
 }: LifestyleProductCardProps) {
   const { addToCart, isAddingMerchandise } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -29,6 +38,7 @@ export default function LifestyleProductCard({
   const wishlisted = isWishlisted(product.handle);
   const adding = product.quickAddVariantId ? isAddingMerchandise(product.quickAddVariantId) : false;
   const canQuickAdd = product.availableForSale && Boolean(product.quickAddVariantId);
+  const hasRating = rating !== null && rating.reviewCount > 0 && rating.averageRating > 0;
 
   const quickAdd = async () => {
     if (!product.quickAddVariantId || adding) return;
@@ -36,8 +46,8 @@ export default function LifestyleProductCard({
   };
 
   return (
-    <article className="group relative flex flex-col">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-[4px] bg-ls-sand">
+    <article className="group relative flex h-full flex-col">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-[6px] bg-[#f1ece4]">
         <Link href={href} aria-label={product.title} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink">
           {primary ? (
             <>
@@ -46,8 +56,8 @@ export default function LifestyleProductCard({
                 alt={primary.altText || product.title}
                 fill
                 sizes={sizes}
-                priority={priority}
-                className={`object-cover transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] motion-reduce:group-hover:scale-100 ${
+                loading={eager ? "eager" : "lazy"}
+                className={`object-cover transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none group-hover:scale-[1.035] motion-reduce:group-hover:scale-100 ${
                   secondary ? "group-hover:opacity-0" : ""
                 }`}
               />
@@ -57,7 +67,7 @@ export default function LifestyleProductCard({
                   alt=""
                   fill
                   sizes={sizes}
-                  className="object-cover opacity-0 transition-opacity duration-500 ease-out motion-reduce:transition-none group-hover:opacity-100"
+                  className="object-cover opacity-0 transition-opacity duration-700 ease-out motion-reduce:transition-none group-hover:opacity-100"
                 />
               )}
             </>
@@ -70,12 +80,12 @@ export default function LifestyleProductCard({
 
         <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-start gap-1.5">
           {!product.availableForSale ? (
-            <span className="rounded-sm bg-ls-paper/95 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-ls-ink">
+            <span className="rounded-full bg-ls-paper/95 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-ls-ink">
               Sold out
             </span>
           ) : discount ? (
-            <span className="rounded-sm bg-ls-accent px-2 py-1 text-[11px] font-medium tracking-[0.04em] text-ls-paper">
-              −{discount}%
+            <span className="rounded-full bg-ls-accent px-2.5 py-1 text-[11px] font-semibold tracking-[0.02em] text-ls-paper">
+              {discount}% off
             </span>
           ) : null}
         </div>
@@ -85,26 +95,26 @@ export default function LifestyleProductCard({
           onClick={() => toggleWishlist(product.handle)}
           aria-label={wishlisted ? `Remove ${product.title} from wishlist` : `Save ${product.title} to wishlist`}
           aria-pressed={wishlisted}
-          className="absolute right-2.5 top-2.5 flex size-9 items-center justify-center rounded-full bg-ls-paper/90 text-ls-ink backdrop-blur-sm transition-opacity hover:bg-ls-paper focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ls-ink lg:opacity-0 lg:group-hover:opacity-100 lg:aria-pressed:opacity-100"
+          className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-ls-paper/90 text-ls-ink backdrop-blur-sm transition-opacity hover:bg-ls-paper focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ls-ink lg:opacity-0 lg:group-hover:opacity-100 lg:aria-pressed:opacity-100"
         >
           <Heart className={`size-4 ${wishlisted ? "fill-ls-ink" : ""}`} strokeWidth={1.7} aria-hidden />
         </button>
 
-        <div className="absolute inset-x-2.5 bottom-2.5 hidden translate-y-2 opacity-0 transition-all duration-300 motion-reduce:transition-none group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 lg:block">
+        <div className="absolute inset-x-3 bottom-3 hidden translate-y-2 opacity-0 transition-all duration-300 motion-reduce:transition-none group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 lg:block">
           {canQuickAdd ? (
             <button
               type="button"
               onClick={quickAdd}
               disabled={adding}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] bg-ls-ink text-sm font-medium text-ls-paper transition-colors hover:bg-ls-ink-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink disabled:opacity-70"
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-[4px] bg-ls-ink text-sm font-semibold text-ls-paper transition-colors hover:bg-ls-ink-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink disabled:opacity-70"
             >
-              {adding && <Loader2 className="size-4 animate-spin" aria-hidden />}
+              {adding ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Plus className="size-4" strokeWidth={2} aria-hidden />}
               Quick add
             </button>
           ) : product.availableForSale ? (
             <Link
               href={href}
-              className="flex h-10 w-full items-center justify-center rounded-[4px] bg-ls-paper text-sm font-medium text-ls-ink transition-colors hover:bg-ls-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink"
+              className="flex h-11 w-full items-center justify-center rounded-[4px] bg-ls-paper text-sm font-semibold text-ls-ink transition-colors hover:bg-ls-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink"
             >
               Choose options
             </Link>
@@ -117,24 +127,38 @@ export default function LifestyleProductCard({
             onClick={quickAdd}
             disabled={adding}
             aria-label={`Add ${product.title} to cart`}
-            className="absolute bottom-2.5 right-2.5 flex size-9 items-center justify-center rounded-full bg-ls-ink text-ls-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink disabled:opacity-70 lg:hidden"
+            className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-ls-ink text-ls-paper shadow-[0_6px_16px_-8px_rgba(29,28,26,0.6)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink disabled:opacity-70 lg:hidden"
           >
             {adding ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Plus className="size-4" strokeWidth={2} aria-hidden />}
           </button>
         )}
       </div>
 
-      <div className="mt-3 flex flex-1 flex-col gap-1">
+      <div className="mt-4 flex flex-1 flex-col">
         {product.category && (
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ls-muted">{product.category}</p>
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-ls-muted">{product.category}</p>
         )}
-        <h3 className="text-[15px] font-medium leading-snug text-ls-ink">
+        <h3 className="mt-1.5 font-ls-display text-[15px] font-semibold leading-snug text-ls-ink sm:text-base">
           <Link href={href} className="line-clamp-2 hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-ls-ink">
             {product.title}
           </Link>
         </h3>
-        <div className="mt-auto pt-1">
-          <LifestylePrice price={product.price} compareAtPrice={product.compareAtPrice} currencyCode={product.currencyCode} />
+        {hasRating && (
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-ls-muted">
+            <LifestyleRatingStars rating={rating.averageRating} />
+            <span className="tabular-nums">
+              {rating.averageRating.toFixed(1)} ({rating.reviewCount})
+            </span>
+          </p>
+        )}
+        {product.optionSummary && <p className="mt-1.5 text-xs text-ls-muted">{product.optionSummary}</p>}
+        <div className="mt-auto pt-2.5">
+          <LifestylePrice
+            price={product.price}
+            compareAtPrice={product.compareAtPrice}
+            currencyCode={product.currencyCode}
+            showSavings={false}
+          />
         </div>
       </div>
     </article>
