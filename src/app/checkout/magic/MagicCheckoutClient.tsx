@@ -4,6 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { Check, Loader2, Lock } from "lucide-react";
 
+import { fraunces, manrope } from "@/components/lifestyle/fonts";
+import { StorefrontMarker } from "@/components/storefront/StorefrontContext";
+import { footerBrand } from "@/data/footer";
 import { CART_STORAGE_KEY } from "@/lib/shopify/cart";
 import {
   getStorefrontCartPath,
@@ -97,6 +100,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const started = useRef(false);
   const confirming = useRef(false);
+  const lifestyle = storefront === "lifestyle";
 
   const confirmPayment = useCallback(
     async (payment: RazorpayResponse) => {
@@ -161,7 +165,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
 
         const checkout = new Razorpay({
           key: data.keyId,
-          name: "Kobbo",
+          name: storefront === "lifestyle" ? "Kobbo Lifestyle" : "Kobbo",
           order_id: data.orderId,
           show_coupons: true,
           handler: (payment: RazorpayResponse) => {
@@ -183,7 +187,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
 
     void start();
     return () => { disposed = true; };
-  }, [attempt, cartId, confirmPayment, scriptReady]);
+  }, [attempt, cartId, confirmPayment, scriptReady, storefront]);
 
   const retry = () => {
     started.current = false;
@@ -197,7 +201,12 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
   };
 
   return (
-    <main className="flex min-h-[70vh] items-center justify-center bg-kobbo-cream px-4 py-16">
+    <main
+      className={`flex items-center justify-center bg-kobbo-cream px-4 py-16 ${
+        lifestyle ? `${manrope.variable} ${fraunces.variable} ls-themed min-h-screen font-ls-body` : "min-h-[70vh]"
+      }`}
+    >
+      <StorefrontMarker storefront={storefront} />
       <Script
         src="https://checkout.razorpay.com/v1/magic-checkout.js"
         strategy="afterInteractive"
@@ -219,7 +228,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
               )}
             </div>
             <h1 className="mt-4 font-heading text-2xl font-extrabold text-kobbo-black">
-              {state === "pending" ? "We're still confirming your order" : "Kobbo secure checkout"}
+              {state === "pending" ? "We're still confirming your order" : lifestyle ? "Kobbo Lifestyle secure checkout" : "Kobbo secure checkout"}
             </h1>
             <p className="mt-2 text-sm text-kobbo-muted" role="status">
               {state === "loading" && "Preparing your checkout…"}
@@ -245,7 +254,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
               Try confirming again
             </button>
             <a
-              href="/contact"
+              href={lifestyle ? `mailto:${footerBrand.email}` : "/contact"}
               className="rounded-full border border-kobbo-beige px-5 py-3 font-semibold text-kobbo-black transition-colors hover:border-kobbo-yellow"
             >
               Contact us

@@ -8,10 +8,17 @@ import { footerBrand } from "@/data/footer";
 import { getLifestyleNavCategories } from "@/lib/shopify/lifestyle";
 import { getStorefrontHomePath, getStorefrontPath, parseStorefront } from "@/lib/storefront/product-routing";
 
-export const metadata: Metadata = {
-  title: "Order confirmed — Kobbo",
-  robots: { index: false },
-};
+interface OrderConfirmedPageProps {
+  searchParams: Promise<{ order?: string; method?: string; total?: string; store?: string }>;
+}
+
+export async function generateMetadata({ searchParams }: OrderConfirmedPageProps): Promise<Metadata> {
+  const { store } = await searchParams;
+  return {
+    title: parseStorefront(store) === "lifestyle" ? "Order confirmed | Kobbo Lifestyle" : "Order confirmed — Kobbo",
+    robots: { index: false },
+  };
+}
 
 const PAYMENT_LABELS: Record<string, string> = {
   cod: "Cash on Delivery",
@@ -32,11 +39,7 @@ function formatRupees(paise: number): string {
   }).format(paise / 100);
 }
 
-export default async function OrderConfirmedPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ order?: string; method?: string; total?: string; store?: string }>;
-}) {
+export default async function OrderConfirmedPage({ searchParams }: OrderConfirmedPageProps) {
   const { order, method, total, store } = await searchParams;
   const storefront = parseStorefront(store);
   const orderNumber = order && /^\d{1,12}$/.test(order) ? order : null;
@@ -57,7 +60,7 @@ export default async function OrderConfirmedPage({
   ];
 
   const content = (
-      <section className="px-4 py-10 sm:py-16">
+      <section className={`px-4 py-10 sm:py-16 ${storefront === "lifestyle" ? "ls-themed" : ""}`}>
         <div className="mx-auto max-w-xl">
           <div className="rounded-3xl border border-kobbo-beige bg-kobbo-white p-6 text-center shadow-soft-lg sm:p-10">
             <div className="order-success-badge mx-auto flex size-20 items-center justify-center rounded-full bg-kobbo-green/10">

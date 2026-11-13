@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import LifestyleImage from "./LifestyleImage";
 import Link from "next/link";
 import { ImageOff, Loader2, Search, X } from "lucide-react";
 
@@ -127,7 +127,7 @@ export default function LifestyleSearch({ open, onClose }: { open: boolean; onCl
                   >
                     <span className="relative size-14 shrink-0 overflow-hidden rounded-md bg-ls-sand">
                       {product.imageUrl ? (
-                        <Image src={product.imageUrl} alt="" fill sizes="56px" className="object-cover" />
+                        <LifestyleImage src={product.imageUrl} alt="" fill sizes="56px" className="object-cover transition-opacity duration-300" />
                       ) : (
                         <ImageOff className="absolute inset-0 m-auto size-5 text-ls-muted" aria-hidden />
                       )}

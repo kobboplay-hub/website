@@ -5,7 +5,7 @@
   --foreground: #1f1f1f;
 }
 
-/* Not inline: utilities read these through CSS variables so `.ls-account` can re-theme shared components. */
+/* Not inline: utilities read these through CSS variables so `.ls-themed` can re-theme shared components. */
 @theme {
   --color-kobbo-yellow: #ffc700;
   --color-kobbo-yellow-light: #ffd54a;
@@ -61,8 +61,38 @@
   }
 }
 
-/* Login and account components are shared with Toys; inside Lifestyle they take its palette and type. */
-.ls-account {
+/* Lifestyle loading placeholder: a light sweep moved with transform so it stays on the compositor. */
+@layer components {
+  .ls-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: #ece6db;
+  }
+
+  .ls-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.5), transparent);
+    animation: ls-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes ls-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ls-shimmer::after {
+    animation: none;
+  }
+}
+
+/* Login, account and checkout screens are shared with Toys; inside Lifestyle they take its palette and type. */
+.ls-themed {
   --color-kobbo-yellow: #e6d6c5;
   --color-kobbo-yellow-light: #efe4d8;
   --color-kobbo-cream: #f7f4ee;

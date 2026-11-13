@@ -22,7 +22,13 @@ function readStorefrontCookie(): Storefront | null {
   return match ? parseStorefront(decodeURIComponent(match[1])) : null;
 }
 
-const subscribeToNothing = () => () => {};
+const STOREFRONT_EVENT = "kobbo:storefront";
+
+/** Re-reads the cookie when a storefront page marks itself, e.g. the cart drawer on checkout pages. */
+function subscribeToStorefront(onChange: () => void) {
+  window.addEventListener(STOREFRONT_EVENT, onChange);
+  return () => window.removeEventListener(STOREFRONT_EVENT, onChange);
+}
 
 /**
  * The storefront the visitor is shopping in: an explicit provider wins, then the URL,
@@ -31,7 +37,7 @@ const subscribeToNothing = () => () => {};
 export function useStorefront(): Storefront {
   const provided = useContext(StorefrontContext);
   const pathname = usePathname();
-  const fromCookie = useSyncExternalStore(subscribeToNothing, readStorefrontCookie, () => null);
+  const fromCookie = useSyncExternalStore(subscribeToStorefront, readStorefrontCookie, () => null);
 
   if (provided) return provided;
   if (isLifestylePath(pathname)) return "lifestyle";
@@ -48,6 +54,7 @@ export function useStorefrontPath(): (path: string) => string {
 export function StorefrontMarker({ storefront }: { storefront: Storefront }) {
   useEffect(() => {
     document.cookie = `${STOREFRONT_COOKIE}=${storefront}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax`;
+    window.dispatchEvent(new Event(STOREFRONT_EVENT));
   }, [storefront]);
   return null;
 }

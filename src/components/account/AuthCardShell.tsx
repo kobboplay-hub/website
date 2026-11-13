@@ -19,7 +19,7 @@ export function AuthCardShell({ children, title, subtitle }: AuthCardShellProps)
 
   if (storefront === "lifestyle") {
     const card = (
-      <section className="ls-account flex flex-1 items-center justify-center px-4 py-14 sm:px-6">
+      <section className="ls-themed flex flex-1 items-center justify-center px-4 py-14 sm:px-6">
         <div className="w-full max-w-md rounded-[4px] border border-ls-line bg-ls-paper p-6 sm:p-8">
           <h1 className="font-ls-display text-2xl font-bold tracking-[-0.02em] text-ls-ink">{title}</h1>
           {subtitle && <p className="mt-2 text-sm text-ls-muted">{subtitle}</p>}

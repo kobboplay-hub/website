@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import LifestyleImage from "./LifestyleImage";
 import Link from "next/link";
 import { ImageOff } from "lucide-react";
 
@@ -38,7 +38,7 @@ export default function LifestyleRecentlyViewed({ currentProduct }: { currentPro
               <Link href={getProductPath(item)} className="group block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[4px] bg-ls-sand">
                   {item.imageUrl ? (
-                    <Image src={item.imageUrl} alt="" fill sizes="(max-width: 640px) 144px, 16vw" className="object-cover" />
+                    <LifestyleImage src={item.imageUrl} alt="" fill sizes="(max-width: 640px) 144px, 16vw" className="object-cover transition-opacity duration-500" />
                   ) : (
                     <ImageOff className="absolute inset-0 m-auto size-5 text-ls-muted" aria-hidden />
                   )}

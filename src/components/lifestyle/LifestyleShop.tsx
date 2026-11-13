@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 
 import { lifestyleShop } from "@/data/lifestyle";
 import type { ShopifyImage } from "@/lib/shopify/types";
 import type { LifestyleCardProduct } from "@/lib/storefront/lifestyle-card";
+import LifestyleImage from "./LifestyleImage";
 import LifestyleProductCard, { type LifestyleCardRating } from "./LifestyleProductCard";
 
 const PAGE_SIZE = 12;
@@ -241,12 +241,12 @@ export default function LifestyleShop({ products, categories, initialRatings, fa
                         }`}
                       >
                         {category.image ? (
-                          <Image
+                          <LifestyleImage
                             src={category.image.url}
                             alt=""
                             fill
                             sizes="(max-width: 640px) 44vw, (max-width: 1024px) 30vw, 20vw"
-                            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                            className="object-cover transition-[opacity,transform] duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                           />
                         ) : (
                           <ImageOff className="absolute inset-0 m-auto size-6 text-ls-muted" strokeWidth={1.5} aria-hidden />

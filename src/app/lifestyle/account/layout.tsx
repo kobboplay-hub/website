@@ -14,7 +14,7 @@ export const metadata: Metadata = lifestyleMetadata({
 /** Same customer session, orders and addresses as the Toys account, inside the Lifestyle storefront. */
 export default function LifestyleAccountLayout({ children }: { children: ReactNode }) {
   return (
-    <section className="ls-account py-6 sm:py-10">
+    <section className="ls-themed py-6 sm:py-10">
       <div className="mx-auto w-full max-w-7xl px-3.5 sm:px-6 lg:px-8">
         <AccountGuard>{children}</AccountGuard>
       </div>

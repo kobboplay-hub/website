@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ImageOff, Loader2, Plus } from "lucide-react";
@@ -8,6 +9,7 @@ import { useCart } from "@/context/cart-context";
 import { useWishlist } from "@/context/wishlist-context";
 import { getDiscountPercent, type LifestyleCardProduct } from "@/lib/storefront/lifestyle-card";
 import { getProductPath } from "@/lib/storefront/product-routing";
+import LifestyleImage from "./LifestyleImage";
 import LifestylePrice from "./LifestylePrice";
 import LifestyleRatingStars from "./LifestyleRatingStars";
 
@@ -39,6 +41,9 @@ export default function LifestyleProductCard({
   const adding = product.quickAddVariantId ? isAddingMerchandise(product.quickAddVariantId) : false;
   const canQuickAdd = product.availableForSale && Boolean(product.quickAddVariantId);
   const hasRating = rating !== null && rating.reviewCount > 0 && rating.averageRating > 0;
+  // The hover photo is fetched on first mouse hover only, so touch devices never download it.
+  const [showSecondary, setShowSecondary] = useState(false);
+  const [secondaryReady, setSecondaryReady] = useState(false);
 
   const quickAdd = async () => {
     if (!product.quickAddVariantId || adding) return;
@@ -46,27 +51,33 @@ export default function LifestyleProductCard({
   };
 
   return (
-    <article className="group relative flex h-full flex-col">
+    <article
+      className="group relative flex h-full flex-col"
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setShowSecondary(true);
+      }}
+    >
       <div className="relative aspect-[4/5] overflow-hidden rounded-[6px] bg-[#f1ece4]">
         <Link href={href} aria-label={product.title} className="absolute inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ls-ink">
           {primary ? (
             <>
-              <Image
+              <LifestyleImage
                 src={primary.url}
                 alt={primary.altText || product.title}
                 fill
                 sizes={sizes}
                 loading={eager ? "eager" : "lazy"}
                 className={`object-cover transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none group-hover:scale-[1.035] motion-reduce:group-hover:scale-100 ${
-                  secondary ? "group-hover:opacity-0" : ""
+                  secondaryReady ? "group-hover:opacity-0" : ""
                 }`}
               />
-              {secondary && (
+              {secondary && showSecondary && (
                 <Image
                   src={secondary.url}
                   alt=""
                   fill
                   sizes={sizes}
+                  onLoad={() => setSecondaryReady(true)}
                   className="object-cover opacity-0 transition-opacity duration-700 ease-out motion-reduce:transition-none group-hover:opacity-100"
                 />
               )}
