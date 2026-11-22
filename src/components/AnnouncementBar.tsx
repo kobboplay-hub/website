@@ -15,7 +15,7 @@ function AnnouncementItem({
       {item.icon === "truck" && (
         <Truck className="h-3.5 w-3.5 shrink-0 text-kobbo-muted" strokeWidth={2} />
       )}
-      {item.icon === "sparkles" && (
+      {(item.icon as string) === "sparkles" && (
         <Sparkles className="h-3.5 w-3.5 shrink-0 text-kobbo-black" strokeWidth={2} />
       )}
       {item.icon === "shield" && (
@@ -57,8 +57,9 @@ function AnnouncementItem({
 }
 
 export default function AnnouncementBar() {
-  // Duplicate track for seamless infinite scroll
-  const track = [...announcementBar.items, ...announcementBar.items];
+  // Ensure enough items for seamless infinite scroll across all screen widths
+  const repeatCount = Math.max(2, Math.ceil(6 / Math.max(1, announcementBar.items.length)));
+  const track = Array.from({ length: repeatCount }, () => announcementBar.items).flat();
 
   return (
     <div className="relative z-30 overflow-hidden border-b border-kobbo-beige/70 bg-[#f7f1e8] text-kobbo-black">

@@ -1,6 +1,7 @@
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import ReviewCard from "@/components/reviews/ReviewCard";
 import ReviewAction from "@/components/reviews/ReviewAction";
+import CustomerPhotoGallery from "@/components/reviews/CustomerPhotoGallery";
 import { getProductReviews } from "@/lib/judgeme";
 import type { JudgeMeProductReviewData } from "@/lib/judgeme";
 
@@ -43,18 +44,21 @@ export default async function ProductReviews({
         </div>
 
         {data.reviewCount > 0 ? (
-          <div className="mt-6 grid gap-8 lg:grid-cols-3">
-            <ReviewSummary
-              averageRating={data.averageRating}
-              reviewCount={data.reviewCount}
-              ratingBreakdown={data.ratingBreakdown}
-            />
-            <div className="space-y-4 lg:col-span-2">
-              {data.reviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
-              ))}
+          <>
+            <CustomerPhotoGallery reviews={data.reviews} />
+            <div className="mt-6 grid gap-8 lg:grid-cols-3">
+              <ReviewSummary
+                averageRating={data.averageRating}
+                reviewCount={data.reviewCount}
+                ratingBreakdown={data.ratingBreakdown}
+              />
+              <div className="space-y-4 lg:col-span-2">
+                {data.reviews.map((review) => (
+                  <ReviewCard key={review.id} review={review} />
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         ) : (
           <p className="mt-4 text-sm text-kobbo-muted">
             No reviews yet. Be the first to share your experience.

@@ -1,3 +1,8 @@
+export interface JudgeMeReviewImage {
+  thumbnail: string;
+  original: string;
+}
+
 export interface JudgeMeReview {
   id: number;
   rating: number;
@@ -7,6 +12,7 @@ export interface JudgeMeReview {
   verified: boolean;
   createdAt: string;
   images: string[];
+  imageDetails?: JudgeMeReviewImage[];
 }
 
 export interface JudgeMeRatingBreakdown {
@@ -29,7 +35,7 @@ export interface JudgeMeProductSummary {
 }
 
 const JUDGEME_API_BASE = "https://judge.me/api/v1";
-const REVALIDATE_SECONDS = 3600;
+const REVALIDATE_SECONDS = 30;
 
 interface JudgeMeConfig {
   privateToken: string;
@@ -107,17 +113,24 @@ function normalizeReview(review: JudgeMeApiReview): JudgeMeReview | null {
   const rating = extractRating(review);
   if (rating === 0) return null;
 
-  const images =
+  const imageDetails =
     review.pictures
       ?.filter((picture) => !picture.hidden)
-      .map(
-        (picture) =>
+      .map((picture) => ({
+        thumbnail:
           picture.urls?.compact ??
           picture.urls?.small ??
           picture.urls?.original ??
           "",
-      )
-      .filter(Boolean) ?? [];
+        original:
+          picture.urls?.huge ??
+          picture.urls?.original ??
+          picture.urls?.compact ??
+          "",
+      }))
+      .filter((img) => Boolean(img.thumbnail || img.original)) ?? [];
+
+  const images = imageDetails.map((img) => img.original || img.thumbnail);
 
   const verified =
     review.verified === true ||
@@ -133,6 +146,7 @@ function normalizeReview(review: JudgeMeApiReview): JudgeMeReview | null {
     verified,
     createdAt: review.created_at ?? new Date().toISOString(),
     images,
+    imageDetails,
   };
 }
 
@@ -508,6 +522,7 @@ export interface SubmitReviewInput {
   rating: number;
   title: string;
   body: string;
+  pictureUrls?: string[];
 }
 
 export interface SubmitReviewResult {
@@ -554,6 +569,9 @@ export async function submitProductReview(
         rating: input.rating,
         title: input.title.trim(),
         body: input.body.trim(),
+        ...(input.pictureUrls && input.pictureUrls.length > 0
+          ? { picture_urls: input.pictureUrls }
+          : {}),
       }),
       cache: "no-store",
     });

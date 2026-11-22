@@ -11,12 +11,6 @@ export const announcementBar = {
       icon: "truck" as const,
     },
     {
-      id: "age-focus",
-      label: "Made for 2–5 years",
-      icon: "sparkles" as const,
-      accent: true as const,
-    },
-    {
       id: "payments",
       label: "Secure Payments",
       icon: "shield" as const,

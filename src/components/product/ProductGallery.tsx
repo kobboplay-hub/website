@@ -30,21 +30,7 @@ export default function ProductGallery({
   const hasImages = images.length > 0;
   const hasMultiple = hasImages && images.length > 1;
 
-  // Background prefetch all gallery images so clicks are instant
-  useEffect(() => {
-    if (typeof window === "undefined" || images.length <= 1) return;
-    const preloaded: HTMLImageElement[] = [];
-    images.forEach((url, i) => {
-      if (i === 0) return;
-      const img = new window.Image();
-      img.src = url;
-      preloaded.push(img);
-    });
-    return () => {
-      preloaded.length = 0;
-    };
-  }, [images]);
-
+  // Active image handles primary view; Next.js optimizes and lazily streams other gallery frames
   const goTo = useCallback(
     (index: number) => {
       if (!hasMultiple) return;
@@ -150,7 +136,7 @@ export default function ProductGallery({
                         }
                         fill
                         priority={index === 0}
-                        loading={index <= 2 ? "eager" : "lazy"}
+                        loading={index <= 1 ? "eager" : "lazy"}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
                         className="object-contain p-3 px-11 sm:p-4 sm:px-14"
                         onLoad={() => {

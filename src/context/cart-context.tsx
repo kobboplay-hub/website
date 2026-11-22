@@ -65,15 +65,46 @@ async function fetchCart(cartId: string): Promise<Cart | null> {
   return data.cart;
 }
 
-async function postCart(body: Record<string, unknown>): Promise<Cart> {
-  const res = await fetch("/api/cart", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error ?? "Cart operation failed");
-  return data.cart;
+function mapCartError(err: unknown, defaultMessage: string): string {
+  if (err instanceof Error) {
+    const lower = err.message.toLowerCase();
+    if (
+      lower.includes("failed to fetch") ||
+      lower.includes("networkerror") ||
+      lower.includes("load failed") ||
+      lower.includes("fetch failed")
+    ) {
+      return "Network connection slow or interrupted. Please try again.";
+    }
+    return err.message;
+  }
+  return defaultMessage;
+}
+
+async function postCart(
+  body: Record<string, unknown>,
+  retries = 1,
+): Promise<Cart> {
+  let attempt = 0;
+  while (true) {
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Cart operation failed");
+      return data.cart;
+    } catch (err) {
+      if (attempt < retries) {
+        attempt++;
+        await new Promise((r) => setTimeout(r, 350));
+        continue;
+      }
+      throw err;
+    }
+  }
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -171,9 +202,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       saveCartId(updated.id);
       return updated.checkoutUrl;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Could not start checkout",
-      );
+      setError(mapCartError(err, "Could not start checkout"));
       return null;
     } finally {
       checkoutInFlight.current = false;
@@ -197,9 +226,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         saveCartId(checkoutCart.id);
         return checkoutCart.checkoutUrl;
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Could not start checkout",
-        );
+        setError(mapCartError(err, "Could not start checkout"));
         return null;
       } finally {
         checkoutInFlight.current = false;
@@ -230,9 +257,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (options?.openDrawer !== false) setIsDrawerOpen(true);
         return updated;
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Could not add item to cart",
-        );
+        setError(mapCartError(err, "Could not add item to cart"));
         if (options?.openDrawer !== false) setIsDrawerOpen(true);
         return null;
       } finally {
@@ -277,9 +302,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         setCart(previousCart);
-        setError(
-          err instanceof Error ? err.message : "Could not update quantity",
-        );
+        setError(mapCartError(err, "Could not update quantity"));
       } finally {
         setPendingAction(null);
       }

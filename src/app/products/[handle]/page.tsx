@@ -30,7 +30,7 @@ interface ProductPageProps {
   params: Promise<{ handle: string }>;
 }
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const results = await Promise.allSettled([
@@ -112,7 +112,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <SiteLayout mainClassName="bg-kobbo-cream">
       <ProductPurchaseProvider key={product.id} product={product}>
-      <div className="min-w-0 overflow-x-hidden pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <div className="min-w-0 overflow-x-hidden pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0">
         <ProductBreadcrumb productName={product.title} />
 
         <section className="pb-14 sm:pb-16 lg:pb-6">

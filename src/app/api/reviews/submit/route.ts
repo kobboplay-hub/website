@@ -4,6 +4,7 @@ import { getCustomerToken } from "@/lib/auth/session";
 import { apiErrorResponse } from "@/lib/auth/errors";
 import { getCurrentCustomer } from "@/lib/shopify/customer";
 import { submitProductReview } from "@/lib/judgeme";
+import { saveReviewImage } from "@/lib/reviews-storage";
 import { getReviewEligibility } from "@/lib/review-eligibility";
 import { LIFESTYLE_BASE_PATH, getProductPath } from "@/lib/storefront/product-routing";
 
@@ -61,6 +62,24 @@ export async function POST(request: Request) {
       [customer.firstName, customer.lastName].filter(Boolean).join(" ").trim() ||
       customer.email;
 
+    const imagesRaw = Array.isArray(body.images) ? body.images : [];
+    const pictureUrls: string[] = [];
+
+    for (const img of imagesRaw) {
+      if (typeof img !== "string" || !img.trim()) continue;
+      if (/^https?:\/\//i.test(img)) {
+        pictureUrls.push(img.trim());
+      } else if (img.startsWith("data:image/")) {
+        try {
+          const publicUrl = await saveReviewImage(img);
+          pictureUrls.push(publicUrl);
+        } catch (err) {
+          console.warn("Failed to process review image:", err);
+        }
+      }
+      if (pictureUrls.length >= 5) break;
+    }
+
     const result = await submitProductReview({
       shopifyProductId: productId,
       name: reviewerName,
@@ -68,6 +87,7 @@ export async function POST(request: Request) {
       rating,
       title,
       body: reviewBody,
+      pictureUrls: pictureUrls.length > 0 ? pictureUrls : undefined,
     });
 
     if (!result.success) {

@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import {
-  Minus,
-  Plus,
-  Loader2,
-  ShieldCheck,
-  type LucideProps,
-} from "lucide-react";
+import { Minus, Plus, Loader2 } from "lucide-react";
 import { formatPrice, type Product } from "@/lib/shopify/types";
 import { useCart } from "@/context/cart-context";
 import AddToCartButton from "@/components/cart/AddToCartButton";
@@ -16,32 +9,8 @@ import ProductDescription from "@/components/product/ProductDescription";
 import ProductDetailRating from "@/components/product/ProductDetailRating";
 import ProductShareButton from "@/components/product/ProductShareButton";
 import ProductHighlights from "@/components/product/ProductHighlights";
+import PrepaidOfferBanner from "@/components/product/PrepaidOfferBanner";
 import { useProductPurchase } from "@/components/product/ProductPurchaseContext";
-
-/** Amazon-style box + return arrow icon */
-function ReplacementIcon({ className, strokeWidth = 1.75 }: LucideProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      {/* Return arrow */}
-      <path d="M7 7H4a1 1 0 0 0-1 1v3" />
-      <path d="M4 8c2.5-3 6-4.5 9.5-4 4.5.6 7.5 4 8 8" />
-      <path d="m5.5 4.5-2 3.5 3.8.2" />
-      {/* Package */}
-      <path d="M7.5 12.5 12 10l4.5 2.5v5.5L12 20.5 7.5 18z" />
-      <path d="M12 10v10.5" />
-      <path d="m7.5 12.5 4.5 2.5 4.5-2.5" />
-    </svg>
-  );
-}
 
 export default function ProductInfo({ product }: { product: Product }) {
   const { quantity, setQuantity, selectedVariantId, setSelectedVariantId } = useProductPurchase();
@@ -132,6 +101,9 @@ export default function ProductInfo({ product }: { product: Product }) {
               </span>
             )}
           </div>
+
+          {/* Top Placement: Prominent Prepaid Deal Highlight */}
+          <PrepaidOfferBanner variant="top" />
         </div>
 
         <ProductDescription description={product.description} />
@@ -208,45 +180,30 @@ export default function ProductInfo({ product }: { product: Product }) {
             Buy Now
           </button>
           {buyNowFailed && (
-            <p role="alert" className="text-center text-sm text-red-700">
-              {error ?? "Checkout could not open. Please try again."}
-            </p>
-          )}
-          {product.isKit && (
-            <p className="rounded-2xl border border-kobbo-yellow/60 bg-kobbo-yellow/15 px-4 py-3 text-center font-heading text-base font-extrabold leading-snug text-kobbo-black sm:text-lg">
-              ₹150 OFF on Prepaid Orders + A FREE GIFT 🎁
-            </p>
-          )}
-        </div>
-
-        <div className="mt-5 border-t border-kobbo-beige/80 pt-4">
-          <div className="grid grid-cols-2 gap-2.5">
-            <Link
-              href="/return-policy"
-              className="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-kobbo-beige bg-kobbo-white/75 px-2.5 py-2.5 text-xs font-semibold leading-snug text-kobbo-black transition-colors hover:border-kobbo-yellow sm:gap-3 sm:px-4 sm:text-sm"
-            >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-kobbo-yellow/15 sm:size-9">
-                <ReplacementIcon className="size-4.5 text-[#c96921] sm:size-5" strokeWidth={1.75} />
-              </span>
-              <span>7 days Replacement</span>
-            </Link>
-            <div className="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-kobbo-beige bg-kobbo-white/75 px-2.5 py-2.5 text-xs font-semibold leading-snug text-kobbo-black sm:gap-3 sm:px-4 sm:text-sm">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-kobbo-yellow/15 sm:size-9">
-                <ShieldCheck className="size-4.5 text-kobbo-black sm:size-5" strokeWidth={1.75} aria-hidden="true" />
-              </span>
-              <span>Secure Transaction</span>
+            <div role="alert" className="flex flex-col items-center gap-1.5 text-center text-sm text-red-600">
+              <p>{error ?? "Checkout could not open. Please try again."}</p>
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                className="text-xs font-semibold text-kobbo-black underline hover:text-kobbo-muted transition-colors"
+              >
+                Tap here to retry
+              </button>
             </div>
-          </div>
+          )}
+          {/* Bottom Placement: Big, bold & impossible to miss (all products) */}
+          <PrepaidOfferBanner variant="bottom" />
         </div>
       </div>
 
-      {/* Mobile sticky buy bar — standard ecommerce pattern */}
+      {/* Mobile sticky buy bar — standard ecommerce pattern with sticky reminder */}
       <div
         id="product-mobile-buy-bar"
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-kobbo-beige bg-kobbo-white/95 px-4 py-3 shadow-soft-lg backdrop-blur-md lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden border-t border-kobbo-beige bg-kobbo-white/95 shadow-soft-lg backdrop-blur-md lg:hidden"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
-        <div className="mx-auto flex max-w-lg items-center gap-3">
+        <PrepaidOfferBanner variant="sticky" />
+        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 pt-2.5">
           <div className="min-w-0 shrink-0">
             <p className="text-[10px] font-medium text-kobbo-muted">Price</p>
             <p className="text-lg font-bold leading-tight text-kobbo-black">

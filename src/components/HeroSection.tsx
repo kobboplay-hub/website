@@ -248,7 +248,7 @@ export default function HeroSection() {
             alt={imageAlt}
             fill
             priority
-            quality={95}
+            quality={85}
             sizes="100vw"
             className="animate-hero-image object-cover object-[center_35%]"
           />
@@ -317,7 +317,7 @@ export default function HeroSection() {
             alt={imageAlt}
             fill
             priority
-            quality={95}
+            quality={85}
             sizes="100vw"
             className="animate-hero-image object-cover object-[70%_22%] lg:object-[70%_18%] xl:object-[58%_15%]"
           />
