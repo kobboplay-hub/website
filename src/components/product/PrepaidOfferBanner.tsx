@@ -32,7 +32,7 @@ export default function PrepaidOfferBanner({
               ₹150 OFF on Prepaid Orders + A FREE GIFT 🎁
             </p>
             <p className="mt-0.5 text-[11px] font-medium text-kobbo-black/75 sm:text-xs">
-              Automatic discount on UPI &amp; Cards • Free surprise developmental gift inside
+              Automatic discount on UPI &amp; Cards • Free surprise gift inside
             </p>
           </div>
         </div>
