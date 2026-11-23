@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, Loader2 } from "lucide-react";
 import { formatPrice, type Product } from "@/lib/shopify/types";
 import { useCart } from "@/context/cart-context";
+import { trackEvent } from "@/lib/analytics/facebook-pixel";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import ProductDescription from "@/components/product/ProductDescription";
 import ProductDetailRating from "@/components/product/ProductDetailRating";
@@ -32,6 +33,16 @@ export default function ProductInfo({ product }: { product: Product }) {
   const currencyCode =
     selectedVariant?.price.currencyCode ?? product.currencyCode;
 
+  useEffect(() => {
+    trackEvent("ViewContent", {
+      content_name: product.title,
+      content_ids: [product.id, selectedVariant?.id].filter(Boolean),
+      content_type: "product",
+      value: displayPrice,
+      currency: currencyCode,
+    });
+  }, [product.id, product.title, selectedVariant?.id, displayPrice, currencyCode]);
+
   const hasMultipleVariants =
     product.variants.length > 1 &&
     !(
@@ -49,6 +60,14 @@ export default function ProductInfo({ product }: { product: Product }) {
   const handleBuyNow = async () => {
     if (!selectedVariant?.id) return;
     setBuyNowFailed(false);
+    trackEvent("InitiateCheckout", {
+      content_name: product.title,
+      content_ids: [selectedVariant.id],
+      content_type: "product",
+      value: displayPrice * quantity,
+      currency: currencyCode,
+      num_items: quantity,
+    });
     const checkoutUrl = await buyNow(selectedVariant.id, quantity);
     if (checkoutUrl) {
       window.location.href = checkoutUrl;

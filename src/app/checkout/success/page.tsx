@@ -4,6 +4,7 @@ import { Banknote, CheckCircle2, PackageCheck, Truck } from "lucide-react";
 
 import SiteLayout from "@/components/SiteLayout";
 import LifestyleShell from "@/components/lifestyle/LifestyleShell";
+import PurchaseTracker from "@/components/checkout/PurchaseTracker";
 import { footerBrand } from "@/data/footer";
 import { getLifestyleNavCategories } from "@/lib/shopify/lifestyle";
 import { getStorefrontHomePath, getStorefrontPath, parseStorefront } from "@/lib/storefront/product-routing";
@@ -61,6 +62,11 @@ export default async function OrderConfirmedPage({ searchParams }: OrderConfirme
 
   const content = (
       <section className={`px-4 py-10 sm:py-16 ${storefront === "lifestyle" ? "ls-themed" : ""}`}>
+        <PurchaseTracker
+          orderNumber={orderNumber}
+          totalPaise={totalPaise}
+          paymentMethod={paymentMethod}
+        />
         <div className="mx-auto max-w-xl">
           <div className="rounded-3xl border border-kobbo-beige bg-kobbo-white p-6 text-center shadow-soft-lg sm:p-10">
             <div className="order-success-badge mx-auto flex size-20 items-center justify-center rounded-full bg-kobbo-green/10">

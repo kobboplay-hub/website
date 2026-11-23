@@ -2,6 +2,7 @@
 
 import { Loader2, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { trackEvent } from "@/lib/analytics/facebook-pixel";
 
 interface AddToCartButtonProps {
   merchandiseId: string | null;
@@ -33,6 +34,12 @@ export default function AddToCartButton({
     e.preventDefault();
     e.stopPropagation();
     if (!merchandiseId || disabled || isLoading) return;
+    trackEvent("AddToCart", {
+      content_name: productTitle,
+      content_ids: [merchandiseId],
+      content_type: "product",
+      currency: "INR",
+    });
     await addToCart(merchandiseId, quantity, { openDrawer });
   };
 

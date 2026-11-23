@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import Providers from "@/components/Providers";
+import FacebookPixel from "@/components/analytics/FacebookPixel";
 import { homeMetadata } from "@/data/seo";
 import { getNavAgeGroups } from "@/lib/shopify";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default async function RootLayout({
       className={`${baloo.variable} ${inter.variable} min-h-screen antialiased`}
     >
       <body className="min-h-screen bg-kobbo-cream text-kobbo-black antialiased">
+        <FacebookPixel />
         <Providers ageGroups={ageGroups}>{children}</Providers>
       </body>
     </html>
