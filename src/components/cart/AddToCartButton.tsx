@@ -10,6 +10,7 @@ interface AddToCartButtonProps {
   disabled?: boolean;
   className?: string;
   variant?: "icon" | "full";
+  buttonVariant?: "primary" | "secondary";
   label?: string;
   openDrawer?: boolean;
 }
@@ -21,6 +22,7 @@ export default function AddToCartButton({
   disabled,
   className = "",
   variant = "icon",
+  buttonVariant = "primary",
   label = "Add to Cart",
   openDrawer = true,
 }: AddToCartButtonProps) {
@@ -52,12 +54,17 @@ export default function AddToCartButton({
     );
   }
 
+  const variantStyles =
+    buttonVariant === "secondary"
+      ? "border-2 border-kobbo-black bg-kobbo-white text-kobbo-black hover:bg-kobbo-cream"
+      : "bg-kobbo-yellow text-kobbo-black shadow-soft hover:bg-kobbo-yellow-light hover:shadow-soft-lg";
+
   return (
     <button
       type="button"
       disabled={disabled || !merchandiseId || isLoading}
       onClick={handleClick}
-      className={`inline-flex w-full items-center justify-center gap-2 rounded-full bg-kobbo-yellow text-sm font-bold text-kobbo-black shadow-soft transition-all hover:bg-kobbo-yellow-light hover:shadow-soft-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 lg:hover:-translate-y-0.5 ${className}`}
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-full text-sm font-bold transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 lg:hover:-translate-y-0.5 ${variantStyles} ${className}`}
     >
       {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
       {label}

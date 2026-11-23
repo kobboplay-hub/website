@@ -162,23 +162,28 @@ export default function ProductInfo({ product }: { product: Product }) {
 
         {/* Primary actions */}
         <div className="mt-5 space-y-2.5">
+          {/* 1st button: Buy Now */}
+          <button
+            type="button"
+            disabled={!isAvailable || buyNowLoading}
+            onClick={handleBuyNow}
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-kobbo-yellow py-3.5 text-sm font-bold text-kobbo-black shadow-soft transition-all active:scale-[0.99] hover:bg-kobbo-yellow-light hover:shadow-soft-lg disabled:cursor-not-allowed disabled:opacity-50 lg:hover:-translate-y-0.5"
+          >
+            {buyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+            Buy Now
+          </button>
+
+          {/* 2nd button: Add to Cart */}
           <AddToCartButton
             merchandiseId={selectedVariant?.id ?? null}
             quantity={quantity}
             productTitle={product.title}
             disabled={!isAvailable}
             variant="full"
+            buttonVariant="secondary"
             className="w-full min-h-12"
           />
-          <button
-            type="button"
-            disabled={!isAvailable || buyNowLoading}
-            onClick={handleBuyNow}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-kobbo-black bg-kobbo-black py-3.5 text-sm font-bold text-kobbo-white transition-all active:scale-[0.99] hover:bg-kobbo-black/90 disabled:cursor-not-allowed disabled:opacity-50 lg:hover:-translate-y-0.5"
-          >
-            {buyNowLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Buy Now
-          </button>
+
           {buyNowFailed && (
             <div role="alert" className="flex flex-col items-center gap-1.5 text-center text-sm text-red-600">
               <p>{error ?? "Checkout could not open. Please try again."}</p>
@@ -203,21 +208,33 @@ export default function ProductInfo({ product }: { product: Product }) {
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
         <PrepaidOfferBanner variant="sticky" />
-        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 pt-2.5">
-          <div className="min-w-0 shrink-0">
+        <div className="mx-auto flex max-w-lg items-center gap-2 px-3 pt-2">
+          <div className="min-w-0 shrink-0 pr-1">
             <p className="text-[10px] font-medium text-kobbo-muted">Price</p>
-            <p className="text-lg font-bold leading-tight text-kobbo-black">
+            <p className="text-base font-bold leading-tight text-kobbo-black">
               {priceDisplay}
             </p>
           </div>
+          {/* 1st button: Buy Now */}
+          <button
+            type="button"
+            disabled={!isAvailable || buyNowLoading}
+            onClick={handleBuyNow}
+            className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-kobbo-yellow px-3 py-2 text-xs font-bold text-kobbo-black shadow-soft transition-all active:scale-[0.99] hover:bg-kobbo-yellow-light disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
+          >
+            {buyNowLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            Buy Now
+          </button>
+          {/* 2nd button: Add to Cart */}
           <AddToCartButton
             merchandiseId={selectedVariant?.id ?? null}
             quantity={quantity}
             productTitle={product.title}
             disabled={!isAvailable}
             variant="full"
+            buttonVariant="secondary"
             label="Add to Cart"
-            className="min-h-11 flex-1"
+            className="min-h-11 flex-1 px-2 text-xs sm:text-sm"
           />
         </div>
       </div>
