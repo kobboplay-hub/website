@@ -197,6 +197,7 @@ export function normalizeProduct(node: ShopifyProductNode): Product {
       : null,
     merchandising: normalizeMerchandisingFlags(node.merchandisingFlags),
     isKit: node.kitFlag?.value?.toLowerCase() === "true",
+    showSpecialOffer: node.specialOfferFlag?.value?.toLowerCase() === "true",
     isLifestyle: node.lifestyleFlag?.value?.toLowerCase() === "true",
     category: node.category?.name ?? null,
     options: (node.options ?? []).map((option) => ({

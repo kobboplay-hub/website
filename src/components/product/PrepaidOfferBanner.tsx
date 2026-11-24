@@ -2,13 +2,16 @@ import { Gift, Sparkles } from "lucide-react";
 
 interface PrepaidOfferBannerProps {
   variant: "top" | "bottom" | "sticky";
+  show?: boolean;
   className?: string;
 }
 
 export default function PrepaidOfferBanner({
   variant,
+  show = true,
   className = "",
 }: PrepaidOfferBannerProps) {
+  if (!show) return null;
   if (variant === "top") {
     return (
       <div
@@ -32,7 +35,7 @@ export default function PrepaidOfferBanner({
               ₹150 OFF on Prepaid Orders + A FREE GIFT 🎁
             </p>
             <p className="mt-0.5 text-[11px] font-medium text-kobbo-black/75 sm:text-xs">
-              Automatic discount on UPI &amp; Cards • Free surprise gift inside
+              Discount on UPI &amp; Cards • Free surprise gift inside
             </p>
           </div>
         </div>
@@ -65,7 +68,7 @@ export default function PrepaidOfferBanner({
           </span>
         </div>
         <p className="mt-1 text-[11px] font-semibold text-kobbo-black/75 sm:text-xs">
-          Automatic ₹150 discount at checkout • No promo code needed
+          ₹150 discount at checkout • No promo code needed
         </p>
       </div>
     );

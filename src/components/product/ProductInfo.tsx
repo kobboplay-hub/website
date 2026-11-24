@@ -122,7 +122,7 @@ export default function ProductInfo({ product }: { product: Product }) {
           </div>
 
           {/* Top Placement: Prominent Prepaid Deal Highlight */}
-          <PrepaidOfferBanner variant="top" />
+          <PrepaidOfferBanner variant="top" show={product.showSpecialOffer} />
         </div>
 
         <ProductDescription description={product.description} />
@@ -216,7 +216,7 @@ export default function ProductInfo({ product }: { product: Product }) {
             </div>
           )}
           {/* Bottom Placement: Big, bold & impossible to miss (all products) */}
-          <PrepaidOfferBanner variant="bottom" />
+          <PrepaidOfferBanner variant="bottom" show={product.showSpecialOffer} />
         </div>
       </div>
 
@@ -226,7 +226,7 @@ export default function ProductInfo({ product }: { product: Product }) {
         className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden border-t border-kobbo-beige bg-kobbo-white/95 shadow-soft-lg backdrop-blur-md lg:hidden"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
-        <PrepaidOfferBanner variant="sticky" />
+        <PrepaidOfferBanner variant="sticky" show={product.showSpecialOffer} />
         <div className="mx-auto flex max-w-lg items-center gap-2 px-3 pt-2">
           <div className="min-w-0 shrink-0 pr-1">
             <p className="text-[10px] font-medium text-kobbo-muted">Price</p>

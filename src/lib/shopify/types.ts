@@ -133,6 +133,8 @@ export interface Product {
   /** Populated by the Lifestyle listing only */
   publishedAt?: string | null;
   playKitItems: PlayKitItem[];
+  /** `custom.tags = true`; show special offer coupon on product detail page */
+  showSpecialOffer: boolean;
 }
 
 export interface Collection {
@@ -179,6 +181,7 @@ export interface ShopifyProductNode {
   options?: { name: string; optionValues: { name: string }[] }[];
   publishedAt?: string;
   kitFlag?: { value: string } | null;
+  specialOfferFlag?: { value: string } | null;
   insidePlayKitItems?: {
     references: { edges: { node: ShopifyKitItemNode }[] } | null;
   } | null;

@@ -147,6 +147,9 @@ export const PRODUCT_DETAIL_FRAGMENT = `
     kitFlag: metafield(namespace: "custom", key: "kit") {
       value
     }
+    specialOfferFlag: metafield(namespace: "custom", key: "tags") {
+      value
+    }
     insidePlayKitItems: metafield(namespace: "custom", key: "inside_the_play_kit_items") {
       references(first: 50) {
         edges {
