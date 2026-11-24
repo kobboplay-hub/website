@@ -29,6 +29,7 @@ interface ProductCardProps {
   layout?: "compact" | "featured";
   imageSizes?: string;
   deferRating?: boolean;
+  className?: string;
 }
 
 export default function ProductCard({
@@ -38,6 +39,7 @@ export default function ProductCard({
   layout = "compact",
   imageSizes = DEFAULT_IMAGE_SIZES,
   deferRating = false,
+  className = "",
 }: ProductCardProps) {
   const isFeaturedLayout = layout === "featured";
   const hasDiscount =
@@ -105,7 +107,7 @@ export default function ProductCard({
   return (
     <article
       ref={cardRef}
-      className="group relative flex flex-col overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft-lg"
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-kobbo-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-soft-lg ${className}`}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
     >
@@ -172,16 +174,18 @@ export default function ProductCard({
       </button>
 
       <div className="flex flex-1 flex-col p-3 sm:p-4">
-        <Link href={getProductPath(product)}>
-          <h3 className="font-heading line-clamp-2 text-sm font-bold text-kobbo-black transition-colors hover:text-kobbo-muted sm:text-base">
+        <Link href={getProductPath(product)} className="block">
+          <h3 className="font-heading line-clamp-2 min-h-[2.5rem] sm:min-h-[2.85rem] text-sm font-bold text-kobbo-black transition-colors hover:text-kobbo-muted sm:text-base">
             {product.title}
           </h3>
         </Link>
-        <ProductCardRating
-          productId={product.id}
-          initialSummary={reviewSummary}
-          fetchIfMissing={!deferRating}
-        />
+        <div className="min-h-[24px] mt-1.5 flex items-center">
+          <ProductCardRating
+            productId={product.id}
+            initialSummary={reviewSummary}
+            fetchIfMissing={!deferRating}
+          />
+        </div>
         {isFeaturedLayout ? (
           <div className="mt-auto pt-2">
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">

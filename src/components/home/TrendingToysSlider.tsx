@@ -92,7 +92,7 @@ export default function TrendingToysSlider({
       <div
         ref={scrollRef}
         onScroll={checkScrollability}
-        className="scrollbar-none flex gap-3.5 sm:gap-4 overflow-x-auto overscroll-x-contain pb-4 pt-1 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
+        className="scrollbar-none flex items-stretch gap-3.5 sm:gap-4 overflow-x-auto overscroll-x-contain pb-4 pt-1 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0"
         tabIndex={0}
         role="region"
         aria-label="Trending toys slider"
@@ -100,9 +100,10 @@ export default function TrendingToysSlider({
         {products.map((product) => (
           <div
             key={product.id}
-            className="w-[72vw] max-w-[280px] sm:w-[260px] md:w-[270px] shrink-0 snap-start"
+            className="w-[72vw] max-w-[280px] sm:w-[260px] md:w-[270px] shrink-0 snap-start flex flex-col"
           >
             <ProductCard
+              className="h-full"
               product={product}
               reviewSummary={
                 reviewSummaries[parseShopifyProductId(product.id)] ?? null
