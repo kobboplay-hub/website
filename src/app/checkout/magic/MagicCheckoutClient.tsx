@@ -130,7 +130,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
           }
           const fallbackOrder: CompletedOrder = {
             orderNumber: payment.razorpay_payment_id,
-            paymentMethod: "online",
+            paymentMethod: null,
             totalAmount: null,
           };
           window.location.replace(confirmationUrl(fallbackOrder, storefront));
@@ -265,7 +265,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
             )}
             {paymentId && (
               <a
-                href={confirmationUrl({ orderNumber: paymentId, paymentMethod: "online", totalAmount: null }, storefront)}
+                href={confirmationUrl({ orderNumber: paymentId, paymentMethod: null, totalAmount: null }, storefront)}
                 className="rounded-full bg-kobbo-green px-5 py-3 font-semibold text-kobbo-white transition-colors hover:bg-kobbo-green/90"
               >
                 View Order Confirmation

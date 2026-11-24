@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     // and Meta Pixel Purchase event fires instead of getting stuck on a pending screen.
     return NextResponse.json({
       orderNumber: paymentId,
-      paymentMethod: "online",
+      paymentMethod: null,
       totalAmount: null,
     });
   }

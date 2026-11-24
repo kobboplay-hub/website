@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Banknote, CheckCircle2, PackageCheck, Truck } from "lucide-react";
 
 import SiteLayout from "@/components/SiteLayout";
 import LifestyleShell from "@/components/lifestyle/LifestyleShell";
@@ -21,17 +20,6 @@ export async function generateMetadata({ searchParams }: OrderConfirmedPageProps
   };
 }
 
-const PAYMENT_LABELS: Record<string, string> = {
-  cod: "Cash on Delivery",
-  upi: "UPI",
-  card: "Card",
-  netbanking: "Netbanking",
-  wallet: "Wallet",
-  emi: "EMI",
-  cardless_emi: "EMI",
-  paylater: "Pay Later",
-};
-
 function formatRupees(paise: number): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -48,19 +36,6 @@ export default async function OrderConfirmedPage({ searchParams }: OrderConfirme
   const referenceId = order && /^[A-Za-z0-9_-]{4,64}$/.test(order) ? order : null;
   const paymentMethod = method && /^[a-z_]{1,20}$/.test(method) ? method : null;
   const totalPaise = total && /^\d{1,10}$/.test(total) ? Number(total) : null;
-  const isCod = paymentMethod === "cod";
-
-  const steps = [
-    { icon: CheckCircle2, title: "Order confirmed", detail: "We have received your order.", done: true },
-    { icon: PackageCheck, title: "Packed & dispatched", detail: "Usually within 5 business days. You'll get a tracking link." },
-    {
-      icon: isCod ? Banknote : Truck,
-      title: "Delivered to your door",
-      detail: isCod
-        ? "Typically 7–15 days after dispatch. Keep the amount due ready at delivery."
-        : "Typically 7–15 days after dispatch.",
-    },
-  ];
 
   const content = (
       <section className={`px-4 py-10 sm:py-16 ${storefront === "lifestyle" ? "ls-themed" : ""}`}>
@@ -86,23 +61,12 @@ export default async function OrderConfirmedPage({ searchParams }: OrderConfirme
                 Order updates will be sent to the phone number and email you shared at checkout.
               </p>
 
-              {(orderNumber || referenceId || paymentMethod || totalPaise !== null) && (
+              {(orderNumber || totalPaise !== null) && (
                 <dl className="mt-7 divide-y divide-kobbo-beige rounded-2xl border border-kobbo-beige bg-kobbo-cream/60 text-left text-sm">
-                  {orderNumber ? (
+                  {orderNumber && (
                     <div className="flex items-center justify-between gap-4 px-5 py-3.5">
                       <dt className="text-kobbo-muted">Order number</dt>
                       <dd className="font-heading text-lg font-extrabold text-kobbo-black">#{orderNumber}</dd>
-                    </div>
-                  ) : referenceId ? (
-                    <div className="flex items-center justify-between gap-4 px-5 py-3.5">
-                      <dt className="text-kobbo-muted">Payment reference</dt>
-                      <dd className="font-mono text-sm font-bold text-kobbo-black">{referenceId}</dd>
-                    </div>
-                  ) : null}
-                  {paymentMethod && (
-                    <div className="flex items-center justify-between gap-4 px-5 py-3.5">
-                      <dt className="text-kobbo-muted">Payment</dt>
-                      <dd className="font-semibold text-kobbo-black">{PAYMENT_LABELS[paymentMethod] ?? "Paid online"}</dd>
                     </div>
                   )}
                   {totalPaise !== null && (
@@ -113,24 +77,6 @@ export default async function OrderConfirmedPage({ searchParams }: OrderConfirme
                   )}
                 </dl>
               )}
-
-              <ol className="mt-7 space-y-4 text-left">
-                {steps.map(({ icon: Icon, title, detail, done }) => (
-                  <li key={title} className="flex gap-4">
-                    <span
-                      className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
-                        done ? "bg-kobbo-green text-kobbo-white" : "bg-kobbo-yellow/20 text-kobbo-black"
-                      }`}
-                    >
-                      <Icon className="size-5" aria-hidden />
-                    </span>
-                    <div>
-                      <p className="font-semibold text-kobbo-black">{title}</p>
-                      <p className="text-sm text-kobbo-muted">{detail}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
