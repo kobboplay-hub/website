@@ -4,14 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import PlayKitCard from "@/components/home/PlayKitCard";
+import TrendingToysSlider from "@/components/home/TrendingToysSlider";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
 import type { AgeGroup, Product } from "@/lib/shopify/types";
 
 interface PlayKitsSectionProps {
   ageGroups: AgeGroup[];
   products: Product[];
+  trendingProducts?: Product[];
+  reviewSummaries?: Record<string, JudgeMeProductSummary>;
 }
 
-export default function PlayKitsSection({ ageGroups, products }: PlayKitsSectionProps) {
+export default function PlayKitsSection({ ageGroups, products, trendingProducts = [], reviewSummaries = {} }: PlayKitsSectionProps) {
   const [selectedAgeId, setSelectedAgeId] = useState(ageGroups[0]?.id ?? "");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -156,7 +160,15 @@ export default function PlayKitsSection({ ageGroups, products }: PlayKitsSection
           </p>
         )}
 
-        <div className="mt-5 flex justify-center sm:mt-7">
+        {/* Trending Toys Section right above Shop all toys CTA */}
+        {trendingProducts.length > 0 && (
+          <TrendingToysSlider
+            products={trendingProducts}
+            reviewSummaries={reviewSummaries}
+          />
+        )}
+
+        <div className="mt-8 flex justify-center sm:mt-10">
           <Link
             href="/shop"
             className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-kobbo-yellow bg-kobbo-yellow px-8 py-3 text-sm font-bold text-kobbo-black transition-colors hover:bg-kobbo-yellow-light hover:border-kobbo-yellow-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kobbo-black sm:text-base"

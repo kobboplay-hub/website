@@ -10,25 +10,51 @@ import { Suspense } from "react";
 import {
   getAgeGroups,
   getHomepageAgeProducts,
+  getTrendingProducts,
   getProductsWithVideos,
 } from "@/lib/shopify";
+import { getProductReviewSummaries } from "@/lib/judgeme";
 import type { AgeGroup, Product } from "@/lib/shopify/types";
+import type { JudgeMeProductSummary } from "@/lib/judgeme";
 
 export const revalidate = 60;
 
 async function PlayKitsContent() {
   let ageGroups: AgeGroup[] = [];
   let products: Product[] = [];
+  let trendingProducts: Product[] = [];
+  let reviewSummaries: Record<string, JudgeMeProductSummary> = {};
 
-  const [ageResult, productResult] = await Promise.allSettled([
+  const [ageResult, productResult, trendingResult] = await Promise.allSettled([
     getAgeGroups(),
     getHomepageAgeProducts(),
+    getTrendingProducts(),
   ]);
   if (ageResult.status === "fulfilled") ageGroups = ageResult.value;
   else console.error("Failed to fetch Shopify age groups:", ageResult.reason);
   if (productResult.status === "fulfilled") products = productResult.value;
   else console.error("Failed to fetch Shopify age-group products:", productResult.reason);
-  return <PlayKitsSection ageGroups={ageGroups} products={products} />;
+  if (trendingResult.status === "fulfilled") trendingProducts = trendingResult.value;
+  else console.error("Failed to fetch Shopify trending products:", trendingResult.reason);
+
+  if (trendingProducts.length > 0) {
+    try {
+      reviewSummaries = await getProductReviewSummaries(
+        trendingProducts.map((p) => p.id),
+      );
+    } catch {
+      // summaries fallback to empty
+    }
+  }
+
+  return (
+    <PlayKitsSection
+      ageGroups={ageGroups}
+      products={products}
+      trendingProducts={trendingProducts}
+      reviewSummaries={reviewSummaries}
+    />
+  );
 }
 
 async function PlayMomentsContent() {

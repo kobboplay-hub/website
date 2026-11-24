@@ -566,6 +566,12 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 }
 
 /** Products flagged with the `custom.best_selling_toys` boolean metafield */
+/** Products flagged with the `custom.trending_toys` boolean metafield */
+export async function getTrendingProducts(): Promise<Product[]> {
+  const products = await getAllProducts("featured");
+  return products.filter((product) => product.merchandising.trending);
+}
+
 export async function getBestSellingProducts(): Promise<Product[]> {
   const products = await getAllProducts("featured");
   return products.filter((product) => product.merchandising.bestSelling);
