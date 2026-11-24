@@ -113,19 +113,23 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
       setState("confirming");
       setPaymentId(payment.razorpay_payment_id);
 
-      let redirected = false;
+      let cleaned = false;
       const doRedirect = (order: CompletedOrder) => {
-        if (redirected) return;
-        redirected = true;
-        try {
-          localStorage.removeItem(PAYMENT_STORAGE_KEY);
-          if (localStorage.getItem(CART_STORAGE_KEY) === cartId) {
-            localStorage.removeItem(CART_STORAGE_KEY);
+        if (!cleaned) {
+          cleaned = true;
+          try {
+            localStorage.removeItem(PAYMENT_STORAGE_KEY);
+            if (localStorage.getItem(CART_STORAGE_KEY) === cartId) {
+              localStorage.removeItem(CART_STORAGE_KEY);
+            }
+          } catch {
+            // Ignore storage issues
           }
-        } catch {
-          // Ignore storage issues
         }
-        window.location.replace(confirmationUrl(order, storefront, amountPaiseRef.current));
+        const url = confirmationUrl(order, storefront, amountPaiseRef.current);
+        // Use assign instead of replace — replace can be silently blocked in
+        // some mobile browsers or by browser extensions.
+        try { window.location.assign(url); } catch { window.location.href = url; }
       };
 
       // Hard safety ceiling: maximum 4 seconds on confirming screen.
@@ -152,6 +156,15 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
           totalAmount: amountPaiseRef.current,
         });
       }
+
+      // Last-resort fallback: if navigation hasn't happened within 6s (e.g. the
+      // browser blocked location.assign due to an extension or pop-up blocker),
+      // show the "pending" state which has a direct clickable link.
+      setTimeout(() => {
+        // If we're still on this page, the redirect failed silently.
+        confirming.current = false;
+        setState("pending");
+      }, 6000);
     },
     [cartId, storefront],
   );
@@ -165,15 +178,10 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
     return () => clearTimeout(timer);
   }, [cartId, confirmPayment]);
 
-  useEffect(() => {
-    if (state !== "confirming") return;
-    const warn = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [state]);
+  // NOTE: No beforeunload handler during "confirming" state.
+  // Payment is already captured by Razorpay; the "Leave site?" dialog was
+  // blocking window.location.replace() and causing the page to stay stuck on
+  // the confirming spinner permanently when the user clicked Cancel.
 
   useEffect(() => {
     if (!scriptReady || started.current) return;
