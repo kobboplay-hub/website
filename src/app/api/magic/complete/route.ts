@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const order = await completeShopifyOrder(config.keyId, paymentId, orderId, 20000);
+    const order = await completeShopifyOrder(config.keyId, paymentId, orderId, 3000);
     return NextResponse.json(order);
   } catch (error) {
     console.error("Magic Checkout payment received, Shopify order sync pending:", paymentId, error);

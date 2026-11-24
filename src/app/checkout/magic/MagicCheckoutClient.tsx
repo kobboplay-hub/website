@@ -44,7 +44,7 @@ type CheckoutState = "loading" | "open" | "cancelled" | "failed" | "confirming" 
 
 const PAYMENT_STORAGE_KEY = "kobbo_magic_payment";
 const SAVED_PAYMENT_TTL_MS = 24 * 60 * 60 * 1000;
-const RETRY_DELAYS_MS = [0, 1500, 3000, 6000];
+const RETRY_DELAYS_MS = [0, 800];
 
 class PermanentConfirmError extends Error {}
 
@@ -80,6 +80,7 @@ async function completeOrder(payment: RazorpayResponse): Promise<CompletedOrder>
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payment),
+        signal: AbortSignal.timeout(3500),
       });
       if (response.ok) return (await response.json()) as CompletedOrder;
       if (response.status >= 400 && response.status < 500) {
@@ -111,34 +112,45 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
       confirming.current = true;
       setState("confirming");
       setPaymentId(payment.razorpay_payment_id);
-      try {
-        const order = await completeOrder(payment);
-        localStorage.removeItem(PAYMENT_STORAGE_KEY);
-        if (localStorage.getItem(CART_STORAGE_KEY) === cartId) {
-          localStorage.removeItem(CART_STORAGE_KEY);
-        }
-        // A full navigation resets the in-memory cart, and replace keeps Back from reopening checkout.
-        window.location.replace(confirmationUrl(order, storefront, amountPaiseRef.current));
-      } catch (err) {
-        console.error("Order confirmation error, recovering gracefully:", err);
-        confirming.current = false;
-        // The payment handler was called, meaning the payment was captured by Razorpay.
-        // If server order sync is slow or failed, recover gracefully to the confirmation page
-        // using the payment ID as the reference so the user sees the Thank You page and cart is cleared.
-        if (payment.razorpay_payment_id) {
+
+      let redirected = false;
+      const doRedirect = (order: CompletedOrder) => {
+        if (redirected) return;
+        redirected = true;
+        try {
           localStorage.removeItem(PAYMENT_STORAGE_KEY);
           if (localStorage.getItem(CART_STORAGE_KEY) === cartId) {
             localStorage.removeItem(CART_STORAGE_KEY);
           }
-          const fallbackOrder: CompletedOrder = {
-            orderNumber: payment.razorpay_payment_id,
-            paymentMethod: null,
-            totalAmount: amountPaiseRef.current,
-          };
-          window.location.replace(confirmationUrl(fallbackOrder, storefront, amountPaiseRef.current));
-          return;
+        } catch {
+          // Ignore storage issues
         }
-        setState("pending");
+        window.location.replace(confirmationUrl(order, storefront, amountPaiseRef.current));
+      };
+
+      // Hard safety ceiling: maximum 4 seconds on confirming screen.
+      // Since payment was already collected by Razorpay and Shopify webhook creates the order,
+      // never let the customer wait or get stuck on a loading screen.
+      const safetyTimer = setTimeout(() => {
+        doRedirect({
+          orderNumber: payment.razorpay_payment_id,
+          paymentMethod: null,
+          totalAmount: amountPaiseRef.current,
+        });
+      }, 4000);
+
+      try {
+        const order = await completeOrder(payment);
+        clearTimeout(safetyTimer);
+        doRedirect(order);
+      } catch (err) {
+        console.warn("Order confirmation background sync:", err);
+        clearTimeout(safetyTimer);
+        doRedirect({
+          orderNumber: payment.razorpay_payment_id,
+          paymentMethod: null,
+          totalAmount: amountPaiseRef.current,
+        });
       }
     },
     [cartId, storefront],
