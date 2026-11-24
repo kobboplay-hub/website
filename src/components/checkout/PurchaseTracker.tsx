@@ -27,21 +27,22 @@ export default function PurchaseTracker({
       }
     }
 
-    const valueInRupees = totalPaise !== null ? totalPaise / 100 : 0;
+    const valueInRupees = totalPaise !== null && totalPaise > 0 ? totalPaise / 100 : undefined;
 
-    trackEvent(
-      "Purchase",
-      {
-        value: valueInRupees,
-        currency: "INR",
-        content_type: "product",
-        order_id: orderNumber,
-        payment_method: paymentMethod ?? "online",
-      },
-      {
-        eventID: `order_${orderNumber}`, // Deduplication key with CAPI
-      },
-    );
+    const eventData: Record<string, unknown> = {
+      currency: "INR",
+      content_type: "product",
+      order_id: orderNumber,
+      payment_method: paymentMethod ?? "online",
+    };
+
+    if (valueInRupees !== undefined) {
+      eventData.value = valueInRupees;
+    }
+
+    trackEvent("Purchase", eventData, {
+      eventID: `order_${orderNumber}`, // Deduplication key with CAPI
+    });
 
     try {
       sessionStorage.setItem(storageKey, "true");

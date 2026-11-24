@@ -63,10 +63,11 @@ function savePayment(cartId: string, payment: RazorpayResponse) {
   localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(saved));
 }
 
-function confirmationUrl(order: CompletedOrder, storefront: Storefront): string {
+function confirmationUrl(order: CompletedOrder, storefront: Storefront, defaultTotal?: number | null): string {
   const params = new URLSearchParams({ order: order.orderNumber });
   if (order.paymentMethod) params.set("method", order.paymentMethod);
-  if (order.totalAmount !== null) params.set("total", String(order.totalAmount));
+  const total = order.totalAmount ?? defaultTotal ?? null;
+  if (total !== null) params.set("total", String(total));
   return withStorefrontParam(`/checkout/success?${params}`, storefront);
 }
 
@@ -100,6 +101,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const started = useRef(false);
   const confirming = useRef(false);
+  const amountPaiseRef = useRef<number | null>(null);
   const lifestyle = storefront === "lifestyle";
 
   const confirmPayment = useCallback(
@@ -116,7 +118,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
           localStorage.removeItem(CART_STORAGE_KEY);
         }
         // A full navigation resets the in-memory cart, and replace keeps Back from reopening checkout.
-        window.location.replace(confirmationUrl(order, storefront));
+        window.location.replace(confirmationUrl(order, storefront, amountPaiseRef.current));
       } catch (err) {
         console.error("Order confirmation error, recovering gracefully:", err);
         confirming.current = false;
@@ -131,9 +133,9 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
           const fallbackOrder: CompletedOrder = {
             orderNumber: payment.razorpay_payment_id,
             paymentMethod: null,
-            totalAmount: null,
+            totalAmount: amountPaiseRef.current,
           };
-          window.location.replace(confirmationUrl(fallbackOrder, storefront));
+          window.location.replace(confirmationUrl(fallbackOrder, storefront, amountPaiseRef.current));
           return;
         }
         setState("pending");
@@ -174,8 +176,9 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
           body: JSON.stringify({ cartId }),
         });
         if (!response.ok) throw new Error("Checkout could not be started");
-        const data = (await response.json()) as { keyId: string; orderId: string };
+        const data = (await response.json()) as { keyId: string; orderId: string; amountPaise?: number | null };
         if (disposed) return;
+        amountPaiseRef.current = data.amountPaise ?? null;
 
         const Razorpay = (window as RazorpayWindow).Razorpay;
         if (!Razorpay) throw new Error("Payment form did not load");
@@ -265,7 +268,7 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
             )}
             {paymentId && (
               <a
-                href={confirmationUrl({ orderNumber: paymentId, paymentMethod: null, totalAmount: null }, storefront)}
+                href={confirmationUrl({ orderNumber: paymentId, paymentMethod: null, totalAmount: amountPaiseRef.current }, storefront)}
                 className="rounded-full bg-kobbo-green px-5 py-3 font-semibold text-kobbo-white transition-colors hover:bg-kobbo-green/90"
               >
                 View Order Confirmation
