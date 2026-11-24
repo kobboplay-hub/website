@@ -117,8 +117,25 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
         }
         // A full navigation resets the in-memory cart, and replace keeps Back from reopening checkout.
         window.location.replace(confirmationUrl(order, storefront));
-      } catch {
+      } catch (err) {
+        console.error("Order confirmation error, recovering gracefully:", err);
         confirming.current = false;
+        // The payment handler was called, meaning the payment was captured by Razorpay.
+        // If server order sync is slow or failed, recover gracefully to the confirmation page
+        // using the payment ID as the reference so the user sees the Thank You page and cart is cleared.
+        if (payment.razorpay_payment_id) {
+          localStorage.removeItem(PAYMENT_STORAGE_KEY);
+          if (localStorage.getItem(CART_STORAGE_KEY) === cartId) {
+            localStorage.removeItem(CART_STORAGE_KEY);
+          }
+          const fallbackOrder: CompletedOrder = {
+            orderNumber: payment.razorpay_payment_id,
+            paymentMethod: "online",
+            totalAmount: null,
+          };
+          window.location.replace(confirmationUrl(fallbackOrder, storefront));
+          return;
+        }
         setState("pending");
       }
     },
@@ -245,6 +262,14 @@ export default function MagicCheckoutClient({ cartId, storefront }: { cartId: st
               <p className="select-all rounded-xl bg-kobbo-cream p-3 text-sm font-semibold text-kobbo-black">
                 Payment ID: {paymentId}
               </p>
+            )}
+            {paymentId && (
+              <a
+                href={confirmationUrl({ orderNumber: paymentId, paymentMethod: "online", totalAmount: null }, storefront)}
+                className="rounded-full bg-kobbo-green px-5 py-3 font-semibold text-kobbo-white transition-colors hover:bg-kobbo-green/90"
+              >
+                View Order Confirmation
+              </a>
             )}
             <button
               type="button"

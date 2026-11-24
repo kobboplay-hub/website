@@ -43,7 +43,9 @@ function formatRupees(paise: number): string {
 export default async function OrderConfirmedPage({ searchParams }: OrderConfirmedPageProps) {
   const { order, method, total, store } = await searchParams;
   const storefront = parseStorefront(store);
-  const orderNumber = order && /^\d{1,12}$/.test(order) ? order : null;
+  const isNumericOrder = order && /^\d{1,12}$/.test(order);
+  const orderNumber = isNumericOrder ? order : null;
+  const referenceId = order && /^[A-Za-z0-9_-]{4,64}$/.test(order) ? order : null;
   const paymentMethod = method && /^[a-z_]{1,20}$/.test(method) ? method : null;
   const totalPaise = total && /^\d{1,10}$/.test(total) ? Number(total) : null;
   const isCod = paymentMethod === "cod";
@@ -63,7 +65,7 @@ export default async function OrderConfirmedPage({ searchParams }: OrderConfirme
   const content = (
       <section className={`px-4 py-10 sm:py-16 ${storefront === "lifestyle" ? "ls-themed" : ""}`}>
         <PurchaseTracker
-          orderNumber={orderNumber}
+          orderNumber={orderNumber || referenceId}
           totalPaise={totalPaise}
           paymentMethod={paymentMethod}
         />
@@ -84,14 +86,19 @@ export default async function OrderConfirmedPage({ searchParams }: OrderConfirme
                 Order updates will be sent to the phone number and email you shared at checkout.
               </p>
 
-              {(orderNumber || paymentMethod || totalPaise !== null) && (
+              {(orderNumber || referenceId || paymentMethod || totalPaise !== null) && (
                 <dl className="mt-7 divide-y divide-kobbo-beige rounded-2xl border border-kobbo-beige bg-kobbo-cream/60 text-left text-sm">
-                  {orderNumber && (
+                  {orderNumber ? (
                     <div className="flex items-center justify-between gap-4 px-5 py-3.5">
                       <dt className="text-kobbo-muted">Order number</dt>
                       <dd className="font-heading text-lg font-extrabold text-kobbo-black">#{orderNumber}</dd>
                     </div>
-                  )}
+                  ) : referenceId ? (
+                    <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+                      <dt className="text-kobbo-muted">Payment reference</dt>
+                      <dd className="font-mono text-sm font-bold text-kobbo-black">{referenceId}</dd>
+                    </div>
+                  ) : null}
                   {paymentMethod && (
                     <div className="flex items-center justify-between gap-4 px-5 py-3.5">
                       <dt className="text-kobbo-muted">Payment</dt>

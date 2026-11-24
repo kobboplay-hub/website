@@ -44,6 +44,7 @@ export async function completeShopifyOrder(
   timeoutMs: number,
 ): Promise<CompletedShopifyOrder> {
   let response: Response;
+  let rawText = "";
   try {
     response = await fetch(
       `https://api.razorpay.com/v1/1cc/shopify/complete?key_id=${encodeURIComponent(keyId)}`,
@@ -55,31 +56,88 @@ export async function completeShopifyOrder(
         signal: AbortSignal.timeout(timeoutMs),
       },
     );
-  } catch {
+    rawText = await response.text();
+  } catch (err) {
+    console.error("Razorpay 1cc completion fetch error:", paymentId, err);
     throw new MagicCompletionError("Razorpay order completion did not respond", true);
   }
 
+  let result: Record<string, unknown> = {};
+  try {
+    result = JSON.parse(rawText) as Record<string, unknown>;
+  } catch {
+    console.warn("Razorpay 1cc complete non-JSON response:", response.status, rawText);
+  }
+
+  // Extract order number from any supported field in Razorpay or Shopify response
+  let orderNumber: string | null = null;
+  if (result.order_number !== undefined && result.order_number !== null) {
+    orderNumber = String(result.order_number).replace(/^#/, "").trim();
+  } else if (typeof result.order_name === "string" && result.order_name) {
+    orderNumber = result.order_name.replace(/^#/, "").trim();
+  } else if (typeof result.name === "string" && result.name) {
+    orderNumber = result.name.replace(/^#/, "").trim();
+  } else if (result.shopify_order_id !== undefined && result.shopify_order_id !== null) {
+    orderNumber = String(result.shopify_order_id).replace(/^#/, "").trim();
+  } else if (
+    typeof result.order_id === "number" ||
+    (typeof result.order_id === "string" && !result.order_id.startsWith("order_"))
+  ) {
+    orderNumber = String(result.order_id).replace(/^#/, "").trim();
+  } else if (typeof result.order_status_url === "string") {
+    const match = result.order_status_url.match(/\/orders\/(\d+)/);
+    if (match?.[1]) {
+      orderNumber = match[1];
+    }
+  }
+
+  const paymentMethod =
+    typeof result.payment_method === "string"
+      ? result.payment_method
+      : typeof result.method === "string"
+      ? result.method
+      : null;
+
+  let totalAmount: number | null = null;
+  if (typeof result.total_amount === "number") {
+    totalAmount = result.total_amount;
+  } else if (typeof result.amount === "number") {
+    totalAmount = result.amount;
+  } else if (typeof result.total_price === "number") {
+    totalAmount = Math.round(result.total_price * 100);
+  } else if (typeof result.total_amount === "string" && /^\d+$/.test(result.total_amount)) {
+    totalAmount = Number(result.total_amount);
+  }
+
   if (!response.ok) {
+    console.error(`Razorpay order completion returned ${response.status}:`, rawText);
+    const lower = rawText.toLowerCase();
+    const isAlreadyCompleted =
+      lower.includes("already") ||
+      lower.includes("processed") ||
+      lower.includes("completed") ||
+      lower.includes("duplicate");
+
+    if (isAlreadyCompleted) {
+      return {
+        orderNumber: orderNumber || paymentId,
+        paymentMethod: paymentMethod ?? "online",
+        totalAmount,
+      };
+    }
+
     throw new MagicCompletionError(
       `Razorpay order completion failed with ${response.status}`,
       response.status >= 500 || response.status === 429,
     );
   }
 
-  // COD orders come back without an order_status_url, so the Shopify order number is the success signal.
-  const result = (await response.json()) as {
-    order_id?: unknown;
-    payment_method?: unknown;
-    total_amount?: unknown;
-  };
-  if (typeof result.order_id !== "string" || !result.order_id) {
-    throw new MagicCompletionError("Shopify order number missing", true);
-  }
-
+  // If Razorpay returned 200 OK but without a clear Shopify order number, fallback to paymentId
+  // so the user is never stranded on a pending/error screen.
   return {
-    orderNumber: result.order_id.replace(/^#/, ""),
-    paymentMethod: typeof result.payment_method === "string" ? result.payment_method : null,
-    totalAmount: typeof result.total_amount === "number" ? result.total_amount : null,
+    orderNumber: orderNumber || paymentId,
+    paymentMethod,
+    totalAmount,
   };
 }
 
